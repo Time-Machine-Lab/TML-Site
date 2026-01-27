@@ -15,6 +15,7 @@ on:
 env:
   SERVER_HOST: ${{ secrets.SERVER_HOST }}
   SERVER_USER: ${{ secrets.SERVER_USER }}
+  SERVER_PASS: ${{ secrets.SERVER_PASS }}
   DEPLOY_PATH: /var/www/static-sites
 
 jobs:
@@ -61,10 +62,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.8.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
 
       - name: Add server to known hosts
         run: |
@@ -74,8 +73,9 @@ jobs:
       - name: Deploy ${{ matrix.product }}
         run: |
           echo "Deploying product: ${{ matrix.product }}"
-          rsync -avz --delete \
+          sshpass -p "${{ env.SERVER_PASS }}" rsync -avz --delete \
             --exclude='.git*' \
+            -e "ssh -o StrictHostKeyChecking=no" \
             products/${{ matrix.product }}/ \
             ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.DEPLOY_PATH }}/${{ matrix.product }}/
 
@@ -83,10 +83,8 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.8.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
 
       - name: Add server to known hosts
         run: |
@@ -95,4 +93,6 @@ jobs:
 
       - name: Reload Nginx
         run: |
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "docker exec static-sites nginx -s reload || true"
+          sshpass -p "${{ secrets.SERVER_PASS }}" ssh -o StrictHostKeyChecking=no \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+            "docker exec static-sites nginx -s reload || true"
