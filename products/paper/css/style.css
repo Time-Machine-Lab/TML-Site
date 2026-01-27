@@ -1,0 +1,161 @@
+/* ========================================
+   Wallpaper Shop V4 - 手绘/插画风格
+   基础样式 + CSS变量
+   ======================================== */
+
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&family=Noto+Serif+SC:wght@400;600&display=swap');
+
+/* CSS 变量 */
+:root {
+  /* 主色调 - 温暖奶油色系 */
+  --cream: #FDF8F3;
+  --cream-dark: #F5EDE4;
+  --paper: #FFFEF9;
+
+  /* 强调色 - 复古暖色 */
+  --terracotta: #C67B5C;
+  --terracotta-light: #E8A88A;
+  --sage: #8FA68A;
+  --sage-light: #B5C9B1;
+  --dusty-rose: #D4A5A5;
+  --mustard: #D4A84B;
+
+  /* 文字色 */
+  --ink: #3D3229;
+  --ink-light: #6B5D4D;
+  --ink-faded: #9A8B7A;
+
+  /* 边框与装饰 */
+  --sketch: #8B7355;
+  --sketch-light: #C4B5A0;
+
+  /* 功能色 */
+  --heart: #E07A7A;
+  --success: #7BA07A;
+  --warning: #D4A84B;
+
+  /* 字体 */
+  --font-handwriting: 'Ma Shan Zheng', cursive;
+  --font-artistic: 'ZCOOL XiaoWei', serif;
+  --font-body: 'Noto Serif SC', serif;
+  --font-system: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  /* 间距 */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+
+  /* 圆角 - 手绘风格不对称 */
+  --radius-hand: 2px 8px 4px 12px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+
+  /* 阴影 */
+  --shadow-sm: 2px 2px 0 var(--sketch-light);
+  --shadow-md: 3px 3px 0 var(--sketch-light);
+  --shadow-lg: 4px 4px 8px rgba(61, 50, 41, 0.15);
+
+  /* 过渡 */
+  --transition: all 0.2s ease;
+}
+
+/* 重置样式 */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background-color: var(--cream);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* 链接 */
+a {
+  color: var(--terracotta);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+a:hover {
+  color: var(--terracotta-light);
+}
+
+/* 图片 */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* 列表 */
+ul, ol {
+  list-style: none;
+}
+
+/* 按钮重置 */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* 容器 */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+/* 文字样式 */
+.handwriting {
+  font-family: var(--font-handwriting);
+  font-size: 1.5rem;
+  line-height: 2;
+}
+
+.artistic {
+  font-family: var(--font-artistic);
+  letter-spacing: 0.05em;
+}
+
+/* 隐藏元素 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* 响应式断点 */
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 var(--space-md);
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}

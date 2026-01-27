@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>壁纸详情 - 小纸的壁纸铺</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <!-- 导航栏 -->
+  <nav class="navbar">
+    <div class="container navbar-inner">
+      <a href="index.html" class="logo">小纸的<span>壁纸铺</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">首页</a></li>
+        <li><a href="category.html" class="nav-link">画廊</a></li>
+        <li><a href="membership.html" class="nav-link">会员</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="favorites.html" class="btn-icon" title="我的收藏">♡</a>
+        <button class="btn btn-primary">登录</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 详情内容 -->
+  <main class="detail-page">
+    <div class="container">
+      <!-- 面包屑 -->
+      <nav class="breadcrumb">
+        <a href="index.html">首页</a>
+        <span>→</span>
+        <a href="category.html">画廊</a>
+        <span>→</span>
+        <span id="breadcrumb-name">壁纸详情</span>
+      </nav>
+
+      <!-- 主要内容 -->
+      <div class="detail-grid">
+        <!-- 左侧图片 -->
+        <div class="detail-image">
+          <div class="photo-frame">
+            <img id="wallpaper-image" src="" alt="壁纸预览">
+            <p class="caption" id="wallpaper-name"></p>
+          </div>
+        </div>
+
+        <!-- 右侧信息 -->
+        <div class="detail-info">
+          <h1 class="detail-title" id="detail-title"></h1>
+          <div class="tag-group" id="detail-tags"></div>
+
+          <!-- 壁纸故事 -->
+          <div class="story-card">
+            <h3 class="story-title">关于这张壁纸</h3>
+            <p class="story-content" id="wallpaper-story"></p>
+          </div>
+
+          <!-- 操作按钮 -->
+          <div class="detail-actions">
+            <button class="btn btn-primary" id="btn-download">下载壁纸</button>
+            <button class="btn btn-secondary" id="btn-favorite">♡ 收藏</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-text">小纸的壁纸铺 · 用心挑选每一张壁纸</p>
+    </div>
+  </footer>
+
+  <script src="js/detail.js"></script>
+</body>
+</html>

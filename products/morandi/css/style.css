@@ -1,0 +1,144 @@
+/* ===== 莫兰迪风格 - 基础样式 ===== */
+
+:root {
+  /* 莫兰迪配色 - 低饱和度灰调 */
+  --morandi-pink: #C9B2A6;      /* 灰粉 */
+  --morandi-blue: #A8B4B8;      /* 灰蓝 */
+  --morandi-green: #B5C4B1;     /* 灰绿 */
+  --morandi-beige: #D4C8BE;     /* 米灰 */
+  --morandi-mauve: #B8A9A3;     /* 豆沙 */
+
+  /* 主色调 */
+  --primary: #B8A9A3;
+  --secondary: #F5F2EF;
+  --accent: #9A8B85;
+  --white: #FDFCFB;
+  --bg: #F8F6F3;
+
+  /* 文字颜色 */
+  --text: #5C5552;
+  --text-light: #8A8280;
+  --text-muted: #A9A5A2;
+
+  /* 边框 */
+  --border: #E5E0DB;
+  --border-dark: #D1CBC5;
+
+  /* 间距 */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+
+  /* 圆角 */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 50%;
+
+  /* 阴影 */
+  --shadow-sm: 0 2px 8px rgba(92, 85, 82, 0.06);
+  --shadow-md: 0 4px 16px rgba(92, 85, 82, 0.08);
+  --shadow-lg: 0 8px 32px rgba(92, 85, 82, 0.1);
+
+  /* 过渡 */
+  --transition: all 0.3s ease;
+}
+
+/* ===== 重置样式 ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Noto Serif SC", "Georgia", serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition);
+}
+
+ul, ol {
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* ===== 容器 ===== */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-xl);
+}
+
+/* ===== 网格系统 ===== */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-xl);
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-xl);
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-lg);
+}
+
+/* ===== 响应式网格 ===== */
+@media (max-width: 992px) {
+  .grid-4 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .container {
+    padding: 0 var(--space-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: 1fr;
+  }
+}
