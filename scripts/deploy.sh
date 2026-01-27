@@ -6,8 +6,8 @@ set -e
 ACTION=${1:-"sync"}
 PRODUCT=${2:-"all"}
 
-SERVER_HOST="${SERVER_HOST:-your-server.com}"
-SERVER_USER="${SERVER_USER:-deploy}"
+SERVER_HOST="${SERVER_HOST:-tmlab.site}"
+SERVER_USER="${SERVER_USER:-root}"
 DEPLOY_PATH="${DEPLOY_PATH:-/var/www/static-sites}"
 
 case $ACTION in
