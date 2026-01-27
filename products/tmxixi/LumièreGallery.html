@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMIÈRE | The Liquid Archive</title>
+    <meta name="description" content="A curated exhibition of synthetic imagination.">
+    <meta name="theme-color" content="#F4F4F0">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Flip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+    <script src="https://unpkg.com/split-type"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Manrope:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ========================================================================
+           1. DESIGN SYSTEM & VARIABLES
+           ======================================================================== */
+        :root {
+            /* Palette: High-End Editorial Paper */
+            --c-bg: #F4F4F0;           /* 暖米灰背景 */
+            --c-bg-modal: #FBFBF9;     /* 模态框背景 */
+            --c-text-main: #1A1A1A;    /* 近似黑 */
+            --c-text-muted: #666666;   /* 灰色文本 */
+            --c-accent: #CD3F31;       /* 砖红色点缀 (International Klein Blue 替代品) */
+            --c-line: rgba(0, 0, 0, 0.08);
+            --c-overlay: rgba(244, 244, 240, 0.9);
+
+            /* Typography */
+            --f-display: 'Italiana', serif;
+            --f-ui: 'Manrope', sans-serif;
+
+            /* Spacing System */
+            --gap-xs: 0.5rem;
+            --gap-sm: 1.5rem;
+            --gap-md: 3rem;
+            --gap-lg: 6rem;
+            --gap-xl: 12rem;
+            --page-padding: 4vw;
+            --header-height: 120px;
+
+            /* Animation Easing */
+            --ease-fluid: cubic-bezier(0.19, 1, 0.22, 1); /* Expo Out */
+            --ease-smooth: cubic-bezier(0.65, 0, 0.35, 1); /* Cubic */
+            --ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+
+            /* Z-Index Layers */
+            --z-noise: 50;
+            --z-content: 100;
+            --z-nav: 500;
+            --z-cursor: 999;
+            --z-loader: 1000;
+            --z-modal: 2000;
+        }
+
+        /* ========================================================================
+           2. RESET & BASE
+           ======================================================================== */
+        *, *::before, *::after {
+            margin: 0; padding: 0; box-sizing: border-box; cursor: none; /* Hide Default Cursor */
+        }
+
+        html {
+            font-size: 16px;
+            background-color: var(--c-bg);
+        }
+
+        html.lenis, html.lenis body { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto !important; }
+        .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+        .lenis.lenis-stopped { overflow: hidden; }
+
+        body {
+            font-family: var(--f-ui);
+            color: var(--c-text-main);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.6;
+        }
+
+        img {
+            display: block; width: 100%; height: auto; object-fit: cover;
+        }
+
+        a, button {
+            color: inherit; text-decoration: none; border: none; background: none; outline: none; cursor: none;
+        }
+
+        ::selection {
+            background: var(--c-text-main); color: var(--c-bg);
+        }
+
+        /* ========================================================================
+           3. TYPOGRAPHY CLASSES
+           ======================================================================== */
+        .t-hero {
+            font-family: var(--f-display);
+            font-size: clamp(4rem, 13vw, 16rem);
+            line-height: 0.85;
+            letter-spacing: -0.04em;
+            text-transform: uppercase;
+            font-weight: 400;
+            color: var(--c-text-main);
+        }
+
+        .t-h2 {
+            font-family: var(--f-display);
+            font-size: clamp(2rem, 5vw, 5rem);
+            line-height: 1;
+            font-weight: 400;
+            margin-bottom: var(--gap-sm);
+        }
+
+        .t-h3 {
+            font-family: var(--f-ui);
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: var(--gap-xs);
+        }
+
+        .t-body {
+            font-size: 1.1rem;
+            color: var(--c-text-muted);
+            max-width: 60ch;
+            font-weight: 300;
+        }
+
+        .t-meta {
+            font-family: var(--f-ui);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--c-text-muted);
+        }
+
+        .u-overflow-hidden { overflow: hidden; }
+        .u-relative { position: relative; }
+        .u-full-height { height: 100vh; }
+
+        /* ========================================================================
+           4. VISUAL FX LAYERS (Noise & Cursor)
+           ======================================================================== */
+        /* Dynamic Noise Canvas */
+        #noise-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: var(--z-noise); opacity: 0.05;
+        }
+
+        /* Custom Magnetic Cursor */
+        .cursor-wrapper {
+            position: fixed; top: 0; left: 0; pointer-events: none; z-index: var(--z-cursor);
+            mix-blend-mode: exclusion;
+        }
+        .cursor-dot {
+            width: 8px; height: 8px; background: #fff; border-radius: 50%;
+            position: absolute; transform: translate(-50%, -50%);
+        }
+        .cursor-ring {
+            width: 40px; height: 40px; border: 1px solid #fff; border-radius: 50%;
+            position: absolute; transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background-color 0.3s;
+        }
+
+        /* Cursor Interactions */
+        body.is-hovering .cursor-ring {
+            width: 80px; height: 80px;
+            background-color: rgba(255,255,255,0.1);
+            border-color: transparent;
+        }
+        body.is-hovering-link .cursor-ring {
+            width: 20px; height: 20px;
+            background-color: #fff;
+            border-color: transparent;
+        }
+
+        /* SVG Filter Container (Hidden) */
+        .svg-filters { position: absolute; width: 0; height: 0; pointer-events: none; }
+
+        /* ========================================================================
+           5. PRELOADER
+           ======================================================================== */
+        .loader {
+            position: fixed; inset: 0; background: var(--c-text-main);
+            z-index: var(--z-loader); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; color: var(--c-bg);
+        }
+        .loader-percent {
+            font-family: var(--f-display); font-size: 8vw; line-height: 1;
+        }
+        .loader-bar-wrap {
+            width: 200px; height: 1px; background: rgba(255,255,255,0.2); margin-top: 2rem; position: relative;
+        }
+        .loader-bar {
+            position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: #fff;
+        }
+
+        /* ========================================================================
+           6. NAVIGATION
+           ======================================================================== */
+        .nav {
+            position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 var(--page-padding); z-index: var(--z-nav);
+            mix-blend-mode: difference; color: #fff;
+        }
+
+        .nav-logo {
+            font-family: var(--f-display); font-size: 1.8rem; font-weight: 400;
+        }
+
+        .nav-list {
+            display: flex; gap: 3rem;
+        }
+
+        .nav-item {
+            position: relative; font-family: var(--f-ui); font-size: 0.85rem;
+            text-transform: uppercase; letter-spacing: 0.1em;
+        }
+        .nav-item::after {
+            content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 1px;
+            background: #fff; transition: width 0.4s var(--ease-fluid);
+        }
+        .nav-item:hover::after { width: 100%; }
+
+        /* ========================================================================
+           7. HERO SECTION (Specific Ink Flow)
+           ======================================================================== */
+        .hero {
+            position: relative; min-height: 120vh; width: 100%;
+            overflow: hidden; display: flex; align-items: stretch;
+            padding-top: var(--header-height);
+        }
+
+        .hero-bg-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1;
+        }
+
+        .hero-bg-container::before {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(60% 60% at 70% 30%, rgba(244,244,240,0.2), transparent 60%),
+                radial-gradient(45% 45% at 20% 70%, rgba(205,63,49,0.2), transparent 65%),
+                linear-gradient(180deg, rgba(10,10,10,0.75) 0%, rgba(10,10,10,0.25) 45%, rgba(244,244,240,0.1) 100%);
+            z-index: 2;
+        }
+
+        .hero-grid {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(248,246,240,0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(248,246,240,0.06) 1px, transparent 1px);
+            background-size: 120px 120px;
+            opacity: 0.2;
+            z-index: 2;
+            mask-image: radial-gradient(70% 60% at 50% 20%, #000 0%, transparent 70%);
+        }
+
+        .hero-orb {
+            position: absolute; border-radius: 50%;
+            filter: blur(8px);
+            opacity: 0.6; z-index: 2;
+            mix-blend-mode: screen;
+            animation: orbFloat 18s var(--ease-smooth) infinite;
+        }
+        .hero-orb.orb-1 {
+            width: 32vw; height: 32vw; left: -10vw; top: 10vh;
+            background: radial-gradient(circle at 30% 30%, rgba(205,63,49,0.8), transparent 70%);
+        }
+        .hero-orb.orb-2 {
+            width: 22vw; height: 22vw; right: 6vw; top: 20vh;
+            background: radial-gradient(circle at 70% 30%, rgba(248,246,240,0.7), transparent 70%);
+            animation-delay: -6s;
+        }
+        .hero-orb.orb-3 {
+            width: 26vw; height: 26vw; right: 20vw; bottom: -10vh;
+            background: radial-gradient(circle at 50% 50%, rgba(120,160,190,0.6), transparent 70%);
+            animation-delay: -12s;
+        }
+
+        @keyframes orbFloat {
+            0% { transform: translateY(0) translateX(0) scale(1); }
+            50% { transform: translateY(-30px) translateX(20px) scale(1.05); }
+            100% { transform: translateY(0) translateX(0) scale(1); }
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute; left: 0; bottom: 0; width: 100%; height: 35vh;
+            background: linear-gradient(180deg, rgba(244,244,240,0) 0%, var(--c-bg) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* 强制使用用户指定的 Ink Flow 图片 */
+        .hero-img {
+            width: 100%; height: 130%; /* Extra height for parallax */
+            object-fit: cover;
+            /* Initial State */
+            transform: scale(1.1); filter: grayscale(100%) blur(20px);
+            transition: filter 2s ease, transform 2s ease;
+        }
+
+        .hero.is-loaded .hero-img {
+            filter: grayscale(0%) blur(0px); transform: scale(1);
+        }
+
+        .hero-content {
+            position: relative; z-index: 3; width: 100%;
+            padding: var(--gap-lg) var(--page-padding) var(--gap-lg);
+            color: #f8f6f0;
+            display: flex; flex-direction: column; justify-content: flex-end;
+        }
+
+        .hero-inner {
+            display: grid; grid-template-columns: 1.25fr 0.75fr;
+            gap: 6vw; align-items: end;
+        }
+
+        .hero-left { display: flex; flex-direction: column; gap: 1.5rem; }
+
+        .hero-meta-row {
+            display: flex; flex-wrap: wrap; gap: 1.2rem;
+            font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase;
+            color: rgba(248,246,240,0.65);
+        }
+        .hero-meta-row span {
+            position: relative; padding-left: 1rem;
+        }
+        .hero-meta-row span::before {
+            content: ''; position: absolute; left: 0; top: 50%;
+            width: 6px; height: 6px; border-radius: 50%;
+            background: rgba(248,246,240,0.6); transform: translateY(-50%);
+        }
+
+        .hero-line {
+            display: block; overflow: hidden;
+        }
+        .hero-line span {
+            display: block; transform: translateY(120%);
+        }
+
+        .hero-label {
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            font-family: var(--f-ui); font-size: 0.75rem;
+            letter-spacing: 0.35em; text-transform: uppercase;
+            padding: 0.6rem 1.2rem; border: 1px solid rgba(248,246,240,0.4);
+            border-radius: 999px; width: fit-content;
+            opacity: 0; /* JS Reveal */
+            backdrop-filter: blur(6px);
+        }
+
+        .hero-label::before {
+            content: '';
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--c-accent);
+            box-shadow: 0 0 12px rgba(205,63,49,0.8);
+        }
+
+        .hero .t-hero {
+            font-size: clamp(3.5rem, 9vw, 12rem);
+            color: #f8f6f0;
+            text-shadow: 0 20px 50px rgba(0,0,0,0.35);
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem; max-width: 48ch;
+            color: rgba(248,246,240,0.75);
+        }
+
+        .hero-tags {
+            display: flex; flex-wrap: wrap; gap: 0.6rem;
+        }
+        .hero-tag {
+            font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+            padding: 0.4rem 0.9rem; border-radius: 999px;
+            border: 1px solid rgba(248,246,240,0.25);
+            color: rgba(248,246,240,0.7);
+            backdrop-filter: blur(6px);
+        }
+
+        .hero-actions {
+            display: flex; gap: 1rem; flex-wrap: wrap;
+        }
+
+        .hero-btn {
+            font-family: var(--f-ui); font-size: 0.85rem; text-transform: uppercase;
+            letter-spacing: 0.12em;
+            padding: 0.9rem 1.6rem; border-radius: 999px;
+            transition: transform 0.4s var(--ease-fluid), box-shadow 0.4s var(--ease-fluid), background 0.4s;
+        }
+        .hero-btn.primary {
+            background: #f8f6f0; color: #0f0f0f;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+        }
+        .hero-btn.ghost {
+            border: 1px solid rgba(248,246,240,0.5);
+            color: #f8f6f0;
+            backdrop-filter: blur(6px);
+        }
+        .hero-btn:hover { transform: translateY(-2px); }
+
+        .hero-stats {
+            display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(248,246,240,0.15);
+        }
+        .hero-stat { display: flex; flex-direction: column; gap: 0.3rem; }
+        .stat-value {
+            font-family: var(--f-display); font-size: 2rem; line-height: 1;
+        }
+        .stat-label {
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.2em;
+            color: rgba(248,246,240,0.6);
+        }
+
+        .hero-right { display: flex; justify-content: flex-end; }
+        .hero-panel {
+            width: min(360px, 100%);
+            padding: 2rem; border-radius: 28px;
+            background: rgba(20,20,20,0.45);
+            border: 1px solid rgba(248,246,240,0.2);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+        }
+        .hero-chip {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.2em;
+            color: rgba(248,246,240,0.7);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-card-stack {
+            position: relative; height: 240px; margin-bottom: 1.5rem;
+        }
+        .hero-card {
+            position: absolute; inset: 0;
+            border-radius: 18px; overflow: hidden;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(248,246,240,0.15);
+            display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 1rem;
+        }
+        .hero-card::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.65) 80%);
+        }
+        .hero-card-img {
+            position: absolute; inset: 0;
+            background-size: cover; background-position: center;
+            filter: saturate(110%);
+        }
+        .hero-card-info {
+            position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: baseline;
+        }
+        .hero-card-title {
+            font-family: var(--f-display); font-size: 1.3rem;
+        }
+        .hero-card-meta {
+            font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(248,246,240,0.7);
+        }
+        .hero-card--back { transform: translate(18px, 18px) rotate(2deg); opacity: 0.6; z-index: 1; }
+        .hero-card--mid { transform: translate(9px, 9px) rotate(1deg); opacity: 0.8; z-index: 2; }
+        .hero-card--top { box-shadow: 0 20px 40px rgba(0,0,0,0.4); z-index: 3; }
+
+        .hero-quote {
+            font-family: var(--f-display);
+            font-size: 1.2rem; line-height: 1.4; color: rgba(248,246,240,0.85);
+        }
+
+        .hero-panel-list {
+            display: grid; gap: 0.8rem; margin: 1.4rem 0;
+        }
+        .hero-panel-item {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase;
+            color: rgba(248,246,240,0.7);
+        }
+        .hero-panel-item strong {
+            font-weight: 500; letter-spacing: 0.1em; color: #f8f6f0;
+        }
+
+        .hero-side-list {
+            display: grid; gap: 0.8rem;
+        }
+        .hero-side-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.8rem 1rem; border-radius: 16px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(248,246,240,0.1);
+            transition: background 0.3s var(--ease-fluid), border-color 0.3s var(--ease-fluid), transform 0.3s var(--ease-fluid);
+        }
+        .hero-side-item:hover { transform: translateY(-2px); }
+        .hero-side-item.active {
+            background: rgba(248,246,240,0.12);
+            border-color: rgba(248,246,240,0.35);
+        }
+        .hero-side-item span {
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.2em;
+            color: rgba(248,246,240,0.6);
+        }
+        .hero-side-item strong {
+            font-family: var(--f-display); font-size: 1.1rem; color: #f8f6f0;
+        }
+
+        .hero-scroll {
+            position: absolute; left: var(--page-padding); bottom: 2.5rem;
+            display: flex; align-items: center; gap: 0.75rem;
+            font-size: 0.75rem; letter-spacing: 0.3em; text-transform: uppercase;
+            color: rgba(248,246,240,0.6);
+        }
+        .hero-scroll-line {
+            width: 40px; height: 1px; background: rgba(248,246,240,0.5);
+        }
+        .hero-scroll-text {
+            position: relative;
+        }
+        .hero-scroll-text::after {
+            content: '';
+            position: absolute; left: 0; bottom: -8px; width: 100%; height: 1px;
+            background: rgba(248,246,240,0.4);
+            transform-origin: left;
+            animation: scrollPulse 2.2s var(--ease-smooth) infinite;
+        }
+        @keyframes scrollPulse {
+            0% { transform: scaleX(0); opacity: 0.4; }
+            50% { transform: scaleX(1); opacity: 0.8; }
+            100% { transform: scaleX(0); opacity: 0.4; }
+        }
+
+        @media (max-width: 1024px) {
+            .hero-inner { grid-template-columns: 1fr; gap: 3rem; }
+            .hero-right { justify-content: flex-start; }
+            .hero-panel { width: min(420px, 100%); }
+        }
+
+        @media (max-width: 768px) {
+            .hero { min-height: 110vh; }
+            .hero-content { padding: var(--gap-md) var(--page-padding) var(--gap-md); }
+            .hero-stats { grid-template-columns: 1fr; }
+            .hero-scroll { display: none; }
+        }
+
+        /* ========================================================================
+           8. MANIFESTO (Text Block)
+           ======================================================================== */
+        .manifesto {
+            padding: var(--gap-xl) var(--page-padding);
+            background: var(--c-bg);
+            position: relative; z-index: 5; /* Above Hero */
+        }
+
+        .manifesto-grid {
+            display: grid; grid-template-columns: 1fr 2fr; gap: var(--gap-lg);
+        }
+
+        @media (max-width: 768px) { .manifesto-grid { grid-template-columns: 1fr; } }
+
+        .manifesto-p {
+            font-family: var(--f-display); font-size: clamp(1.5rem, 3vw, 2.5rem);
+            line-height: 1.4; margin-bottom: 2rem; color: var(--c-text-main);
+        }
+        .highlight { color: var(--c-accent); font-style: italic; }
+
+        /* ========================================================================
+           9. LIQUID GALLERY (The 3-Column System)
+           ======================================================================== */
+        .gallery-section {
+            padding: 0 var(--page-padding) var(--gap-xl);
+            background: var(--c-bg);
+            position: relative; z-index: 5;
+        }
+
+        .gallery-controls {
+            position: sticky; top: var(--header-height); z-index: 50;
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-bottom: var(--gap-lg); padding-bottom: 2rem;
+            border-bottom: 1px solid var(--c-line);
+            background: var(--c-bg); /* Cover content behind */
+        }
+
+        .filter-group { display: flex; gap: 1rem; }
+        .filter-btn {
+            font-family: var(--f-ui); font-size: 0.8rem; text-transform: uppercase;
+            padding: 0.6rem 1.2rem; border: 1px solid var(--c-line); border-radius: 50px;
+            transition: all 0.3s;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--c-text-main); color: #fff; border-color: var(--c-text-main);
+        }
+
+        /* Three Columns Layout */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4vw;
+            width: 100%;
+        }
+
+        @media (max-width: 1024px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .gallery-grid { grid-template-columns: 1fr; } }
+
+        .col {
+            display: flex; flex-direction: column; gap: 10vh;
+        }
+
+        /* Offset columns for masonry feel */
+        .col:nth-child(2) { padding-top: 15vh; }
+        .col:nth-child(3) { padding-top: 5vh; }
+
+        /* Card Component */
+        .card {
+            position: relative; width: 100%;
+            display: flex; flex-direction: column;
+        }
+
+        .card-img-container {
+            width: 100%; overflow: hidden; position: relative;
+            /* Apply Liquid SVG Filter here */
+            filter: url('#liquidDistortion');
+        }
+
+        .card-img {
+            width: 100%; height: auto; display: block;
+            transform: scale(1.05); /* Pre-scale for movement */
+            transition: opacity 0.5s;
+        }
+
+        .card-info {
+            display: flex; justify-content: space-between; margin-top: 1rem;
+            opacity: 0.6; transition: opacity 0.3s;
+        }
+        .card:hover .card-info { opacity: 1; color: var(--c-text-main); }
+
+        .card-title { font-family: var(--f-display); font-size: 1.2rem; }
+        .card-cat { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; border: 1px solid var(--c-line); padding: 2px 8px; border-radius: 20px; }
+
+        /* ========================================================================
+           10. JOURNAL / EDITORIAL STRIP
+           ======================================================================== */
+        .journal-section {
+            padding: var(--gap-lg) 0;
+            border-top: 1px solid var(--c-line);
+            border-bottom: 1px solid var(--c-line);
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .marquee {
+            display: flex; white-space: nowrap; overflow: hidden;
+        }
+        .marquee-inner {
+            display: flex; animation: scroll 30s linear infinite;
+        }
+        .marquee-item {
+            font-family: var(--f-display); font-size: 4rem; padding: 0 3rem;
+            text-transform: uppercase; color: transparent; -webkit-text-stroke: 1px var(--c-text-main);
+            transition: all 0.3s;
+        }
+        .marquee-item:hover { color: var(--c-text-main); font-style: italic; }
+
+        @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        /* ========================================================================
+           11. FOOTER
+           ======================================================================== */
+        .footer {
+            height: 100vh; background: var(--c-text-main); color: var(--c-bg);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            position: relative;
+        }
+
+        .footer-cta {
+            font-family: var(--f-display); font-size: 12vw; line-height: 0.9;
+            text-align: center; cursor: none;
+        }
+        .footer-cta span { display: block; transition: transform 0.5s var(--ease-fluid); }
+        .footer-cta:hover span { transform: skewX(-10deg); color: transparent; -webkit-text-stroke: 1px #fff; }
+
+        .footer-copy {
+            position: absolute; bottom: 2rem; width: 100%; padding: 0 var(--page-padding);
+            display: flex; justify-content: space-between; font-size: 0.8rem; text-transform: uppercase; opacity: 0.5;
+        }
+
+        /* ========================================================================
+           12. MODAL (Lightbox)
+           ======================================================================== */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: var(--c-bg-modal); z-index: var(--z-modal);
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.6s var(--ease-fluid);
+        }
+        .modal.is-open { opacity: 1; pointer-events: auto; }
+
+        .modal-inner {
+            width: 85vw; height: 85vh; display: flex; justify-content: center; align-items: center;
+        }
+
+        .modal-img {
+            max-width: 100%; max-height: 100%;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.15);
+            transform: scale(0.95); transition: transform 0.8s var(--ease-fluid);
+        }
+        .modal.is-open .modal-img { transform: scale(1); }
+
+        .modal-close {
+            position: absolute; top: 2rem; right: 2rem; font-size: 1rem;
+            text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+
+<canvas id="noise-canvas"></canvas>
+
+<svg class="svg-filters">
+    <defs>
+        <filter id="liquidDistortion">
+            <feTurbulence type="fractalNoise" baseFrequency="0.01 0.005" numOctaves="2" result="warp" />
+            <feDisplacementMap xChannelSelector="R" yChannelSelector="G" scale="0" in="SourceGraphic" in2="warp" />
+        </filter>
+    </defs>
+</svg>
+
+<div class="cursor-wrapper">
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+</div>
+
+<div class="loader">
+    <div class="loader-percent">0%</div>
+    <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+</div>
+
+<nav class="nav">
+    <a href="#" class="nav-logo interact">Lumière.</a>
+    <div class="nav-list">
+        <a href="#manifesto" class="nav-item interact">Editorial</a>
+        <a href="#gallery" class="nav-item interact">Exhibition</a>
+        <a href="#journal" class="nav-item interact">Journal</a>
+    </div>
+</nav>
+
+<header class="hero" id="top">
+    <div class="hero-bg-container">
+        <img src="https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=1920&auto=format&fit=crop"
+             alt="Ink Flow Hero" class="hero-img" id="hero-bg">
+        <div class="hero-grid"></div>
+        <div class="hero-orb orb-1"></div>
+        <div class="hero-orb orb-2"></div>
+        <div class="hero-orb orb-3"></div>
+    </div>
+
+    <div class="hero-content">
+        <div class="hero-inner">
+            <div class="hero-left">
+                <span class="hero-label">Volume 05 — Fluid Intelligence</span>
+                <div class="hero-meta-row">
+                    <span>Curated 2026</span>
+                    <span>Liquid Series</span>
+                    <span>Desktop + Mobile</span>
+                </div>
+                <h1 class="t-hero">
+                    <div class="hero-line"><span>Digital</span></div>
+                    <div class="hero-line"><span style="font-family:var(--f-ui); font-weight:300; font-style:italic; text-transform:none;">Alchemy</span></div>
+                    <div class="hero-line"><span>Archive</span></div>
+                </h1>
+                <p class="hero-subtitle">A curated wallpaper atlas of liquid light and synthetic textures - crafted for high-resolution desks, immersive workspaces, and cinematic displays.</p>
+                <div class="hero-tags">
+                    <span class="hero-tag">Abstract Flow</span>
+                    <span class="hero-tag">High Contrast</span>
+                    <span class="hero-tag">Minimal Grain</span>
+                </div>
+                <div class="hero-actions">
+                    <button class="hero-btn primary interact">Explore Collection</button>
+                    <button class="hero-btn ghost interact">Download Starter Pack</button>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <span class="stat-value">320+</span>
+                        <span class="stat-label">Curated Wallpapers</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="stat-value">8K</span>
+                        <span class="stat-label">Ultra-HD Masters</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="stat-value">14</span>
+                        <span class="stat-label">Editorial Drops</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-right">
+                <div class="hero-panel">
+                    <div class="hero-chip">Featured Drop</div>
+                    <div class="hero-card-stack">
+                        <div class="hero-card hero-card--back">
+                            <div class="hero-card-img" style="background-image:url('https://images.unsplash.com/photo-1489515217757-5fd1be406fef?q=80&w=900&auto=format&fit=crop');"></div>
+                            <div class="hero-card-info">
+                                <div class="hero-card-title">Midnight Bloom</div>
+                                <div class="hero-card-meta">8K · 26MB</div>
+                            </div>
+                        </div>
+                        <div class="hero-card hero-card--mid">
+                            <div class="hero-card-img" style="background-image:url('https://images.unsplash.com/photo-1471879832106-c7ab9e0cee23?q=80&w=1200&auto=format&fit=crop');"></div>
+                            <div class="hero-card-info">
+                                <div class="hero-card-title">Midnight Bloom</div>
+                                <div class="hero-card-meta">8K · 26MB</div>
+                            </div>
+                        </div>
+                        <div class="hero-card hero-card--top">
+                            <div class="hero-card-img" style="background-image:url('https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=1400&auto=format&fit=crop');"></div>
+                            <div class="hero-card-info">
+                                <div class="hero-card-title">Ink Flow</div>
+                                <div class="hero-card-meta">8K · 32MB</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-panel-list">
+                        <div class="hero-panel-item"><span>Format</span><strong>JPG + PNG</strong></div>
+                        <div class="hero-panel-item"><span>Colorway</span><strong>Obsidian</strong></div>
+                        <div class="hero-panel-item"><span>License</span><strong>Personal</strong></div>
+                    </div>
+                    <div class="hero-side-list">
+                        <button class="hero-side-item interact active" data-hero-index="0"><strong>Glass Tides</strong><span>12 Works</span></button>
+                        <button class="hero-side-item interact" data-hero-index="1"><strong>Liquid Noir</strong><span>18 Works</span></button>
+                        <button class="hero-side-item interact" data-hero-index="2"><strong>Chromatic Silt</strong><span>9 Works</span></button>
+                    </div>
+                    <div class="hero-quote">"The liquid archive where light becomes texture."</div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-scroll">
+            <span class="hero-scroll-line"></span>
+            <span class="hero-scroll-text">Scroll</span>
+        </div>
+    </div>
+</header>
+
+<section class="manifesto" id="manifesto">
+    <div class="manifesto-grid">
+        <div class="t-meta">Editorial Statement</div>
+        <div class="manifesto-text">
+            <p class="manifesto-p">Code is the <span class="highlight">new clay</span>.</p>
+            <p class="manifesto-p">In this curated exhibition, we explore the liminal spaces between mathematical probability and artistic intent. Every pixel here is hallucinated, yet undeniably felt.</p>
+            <p class="t-body" style="margin-top:2rem;">Lumière is not just a gallery; it is a documentation of the machine's first dreams. We invite you to scroll, distort, and explore the latent space.</p>
+        </div>
+    </div>
+</section>
+
+<section class="gallery-section" id="gallery">
+    <div class="gallery-header">
+        <div>
+            <h2 class="t-h2">Curated<br>Selections</h2>
+            <p class="t-body">Physics-based interactions. Scroll to distort.</p>
+        </div>
+        <div class="filter-group">
+            <button class="filter-btn active interact" data-filter="all">All Works</button>
+            <button class="filter-btn interact" data-filter="Abstract">Abstract</button>
+            <button class="filter-btn interact" data-filter="Cyberpunk">Cyberpunk</button>
+            <button class="filter-btn interact" data-filter="Nature">Nature</button>
+        </div>
+    </div>
+
+    <div class="gallery-grid">
+        <div class="col" id="col-1"></div>
+        <div class="col" id="col-2"></div>
+        <div class="col" id="col-3"></div>
+    </div>
+</section>
+
+<section class="journal-section" id="journal">
+    <div class="marquee">
+        <div class="marquee-inner">
+            <div class="marquee-item interact">Generative Art</div>
+            <div class="marquee-item interact">Neural Networks</div>
+            <div class="marquee-item interact">Latent Space</div>
+            <div class="marquee-item interact">StyleGAN</div>
+            <div class="marquee-item interact">Diffusion Models</div>
+            <div class="marquee-item interact">Generative Art</div>
+            <div class="marquee-item interact">Neural Networks</div>
+            <div class="marquee-item interact">Latent Space</div>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="t-meta" style="margin-bottom: 2rem;">Next Chapter</div>
+    <div class="footer-cta interact">
+        <span>UNSEEN</span><br><span>REALITY</span>
+    </div>
+    <div class="footer-copy">
+        <div>© 2026 Lumière Systems</div>
+        <div>Designed by AI</div>
+    </div>
+</footer>
+
+<div class="modal" id="modal">
+    <div class="modal-close interact">CLOSE [ESC]</div>
+    <div class="modal-inner">
+        <img src="" class="modal-img" id="modal-img" alt="Detail View">
+    </div>
+</div>
+
+<script>
+    // ============================================
+    // 1. DATA SOURCE (Merged & Cleaned)
+    // ============================================
+    const resources = [
+        // Abstract
+        { category: 'Abstract', tag: 'Glass', url: 'https://images.unsplash.com/photo-1615715757401-f30e7b27b912?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Holographic', url: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Dark Flow', url: 'https://images.unsplash.com/photo-1634152962476-4b8a00e1915c?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Liquid', url: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Purple Haze', url: 'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Chrome', url: 'https://images.unsplash.com/photo-1618172193622-ae2d025f4032?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Ink Water', url: 'https://images.unsplash.com/photo-1550684848-86a5d8727436?q=80&w=800&auto=format&fit=crop' },
+
+        // Cyberpunk
+        { category: 'Cyberpunk', tag: 'Neon Rain', url: 'https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Cyber Tokyo', url: 'https://images.unsplash.com/photo-1542931287-023b922fa89b?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Hardware', url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Wet Neon', url: 'https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Neon Signage', url: 'https://images.unsplash.com/photo-1574169208507-84376144848b?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Arcade Glow', url: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Matrix', url: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=800&auto=format&fit=crop' },
+
+        // Nature
+        { category: 'Nature', tag: 'Space', url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Nebula', url: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Iceland', url: 'https://images.unsplash.com/photo-1476610182048-b716b8518aae?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Dark Waves', url: 'https://images.unsplash.com/photo-1551009175-8a68da93d5f9?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Volcano', url: 'https://images.unsplash.com/photo-1462332420958-a05d1e002413?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Deep Forest', url: 'https://images.unsplash.com/photo-1508138221679-760a23a2285b?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Rainy Night', url: 'https://images.unsplash.com/photo-1516912481808-3406841bd33c?q=80&w=800&auto=format&fit=crop' },
+
+        // Urban & Minimal (Mixed into General for variety)
+        { category: 'Urban', tag: 'Tokyo Night', url: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Minimal', tag: 'Oil Slick', url: 'https://images.unsplash.com/photo-1515462277126-2dd0c162007a?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Minimal', tag: 'Dark Texture', url: 'https://images.unsplash.com/photo-1507090960745-b32f65d3113a?q=80&w=800&auto=format&fit=crop' }
+    ];
+
+    // ============================================
+    // 2. SETUP & UTILS
+    // ============================================
+    gsap.registerPlugin(ScrollTrigger);
+
+    // --- Lenis Smooth Scroll ---
+    const lenis = new Lenis({
+        duration: 1.5,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        direction: 'vertical',
+        gestureDirection: 'vertical',
+        smooth: true,
+        mouseMultiplier: 1,
+        smoothTouch: false,
+        touchMultiplier: 2,
+    });
+
+    function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    // ============================================
+    // 3. CURSOR LOGIC
+    // ============================================
+    const cursor = {
+        dot: document.querySelector('.cursor-dot'),
+        ring: document.querySelector('.cursor-ring'),
+        x: window.innerWidth / 2, y: window.innerHeight / 2,
+        targetX: window.innerWidth / 2, targetY: window.innerHeight / 2
+    };
+
+    window.addEventListener('mousemove', (e) => {
+        cursor.targetX = e.clientX;
+        cursor.targetY = e.clientY;
+
+        // Dot follows instantly
+        gsap.to(cursor.dot, { x: cursor.targetX, y: cursor.targetY, duration: 0.1 });
+
+        // Check hover states
+        const target = e.target;
+        const isInteract = target.classList.contains('interact') || target.closest('.interact');
+        const isLink = target.tagName === 'A' || target.tagName === 'BUTTON';
+
+        if (isInteract || isLink) {
+            document.body.classList.add(isLink ? 'is-hovering-link' : 'is-hovering');
+        } else {
+            document.body.classList.remove('is-hovering', 'is-hovering-link');
+        }
+    });
+
+    // Ring follows with physics lag
+    gsap.ticker.add(() => {
+        const dt = 1.0 - Math.pow(1.0 - 0.15, gsap.ticker.deltaRatio());
+        cursor.x += (cursor.targetX - cursor.x) * dt;
+        cursor.y += (cursor.targetY - cursor.y) * dt;
+        gsap.set(cursor.ring, { x: cursor.x, y: cursor.y });
+    });
+
+    // ============================================
+    // 4. CANVAS NOISE GENERATOR
+    // ============================================
+    const noiseCanvas = document.getElementById('noise-canvas');
+    const ctx = noiseCanvas.getContext('2d');
+
+    const resizeNoise = () => {
+        noiseCanvas.width = window.innerWidth;
+        noiseCanvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', resizeNoise);
+    resizeNoise();
+
+    const noiseData = () => {
+        const w = noiseCanvas.width;
+        const h = noiseCanvas.height;
+        const idata = ctx.createImageData(w, h);
+        const buffer32 = new Uint32Array(idata.data.buffer);
+        const len = buffer32.length;
+
+        for (let i = 0; i < len; i++) {
+            if (Math.random() < 0.5) buffer32[i] = 0xff000000;
+        }
+        ctx.putImageData(idata, 0, 0);
+    };
+
+    let noiseFrame = 0;
+    const loopNoise = () => {
+        noiseFrame++;
+        if (noiseFrame % 4 === 0) noiseData(); // Update every 4th frame for performance
+        requestAnimationFrame(loopNoise);
+    };
+    loopNoise();
+
+    // ============================================
+    // 5. GALLERY GENERATION (3-Column)
+    // ============================================
+    const cols = [
+        document.getElementById('col-1'),
+        document.getElementById('col-2'),
+        document.getElementById('col-3')
+    ];
+
+    function renderGallery(filter = 'all') {
+        // Clear existing
+        cols.forEach(c => c.innerHTML = '');
+
+        const filtered = filter === 'all'
+            ? resources
+            : resources.filter(r => r.category === filter);
+
+        filtered.forEach((item, index) => {
+            // Distribute to columns: 0->1, 1->2, 2->3
+            const colIndex = index % 3;
+
+            const card = document.createElement('div');
+            card.className = 'card interact';
+            card.innerHTML = `
+                    <div class="card-img-container">
+                        <img src="${item.url}" class="card-img" loading="lazy" alt="${item.tag}">
+                    </div>
+                    <div class="card-info">
+                        <span class="card-title">${item.tag}</span>
+                        <span class="card-cat">${item.category}</span>
+                    </div>
+                `;
+
+            // Click to open modal
+            card.addEventListener('click', () => openModal(item.url));
+
+            cols[colIndex].appendChild(card);
+        });
+
+        // Re-calc ScrollTrigger
+        ScrollTrigger.refresh();
+    }
+
+    renderGallery();
+
+    // Filter Logic
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Simple fade transition for grid
+            gsap.to('.gallery-grid', { opacity: 0, duration: 0.3, onComplete: () => {
+                    renderGallery(btn.dataset.filter);
+                    gsap.to('.gallery-grid', { opacity: 1, duration: 0.5 });
+                }});
+        });
+    });
+
+    // ============================================
+    // 6. ANIMATIONS & LIQUID PHYSICS
+    // ============================================
+
+    // 6.1 Preloader Sequence
+    window.addEventListener('load', () => {
+        const tl = gsap.timeline();
+
+        // 1. Counter
+        const count = { val: 0 };
+        tl.to(count, {
+            val: 100, duration: 2, ease: 'power3.inOut',
+            onUpdate: () => document.querySelector('.loader-percent').innerText = Math.floor(count.val) + '%'
+        })
+            .to('.loader-bar', { width: '100%', duration: 2, ease: 'power3.inOut' }, '<')
+
+            // 2. Reveal
+            .to('.loader', { yPercent: -100, duration: 1.2, ease: 'power4.inOut' })
+
+            // 3. Hero Elements
+            .to('.hero', { className: 'hero is-loaded', duration: 0.1 }) // Trigger CSS filter transition
+            .from('.hero-line span', { yPercent: 120, duration: 1.5, stagger: 0.1, ease: 'power4.out' }, "-=0.5")
+            .to('.hero-label', { opacity: 1, duration: 1 }, "-=1")
+            .from('.hero-meta-row span', { y: 10, opacity: 0, duration: 0.8, stagger: 0.08 }, "-=0.9")
+            .from('.hero-subtitle', { y: 20, opacity: 0, duration: 1 }, "-=0.9")
+            .from('.hero-tag', { y: 10, opacity: 0, duration: 0.6, stagger: 0.08 }, "-=0.8")
+            .from('.hero-actions .hero-btn', { y: 20, opacity: 0, duration: 0.8, stagger: 0.1 }, "-=0.9")
+            .from('.hero-stat', { y: 20, opacity: 0, duration: 0.8, stagger: 0.1 }, "-=0.8")
+            .from('.hero-card', { y: 30, opacity: 0, duration: 1, stagger: 0.12 }, "-=1")
+            .from('.hero-panel-item', { y: 12, opacity: 0, duration: 0.6, stagger: 0.08 }, "-=0.9")
+            .from('.hero-side-item', { y: 12, opacity: 0, duration: 0.6, stagger: 0.08 }, "-=0.8")
+            .from('.hero-quote', { y: 10, opacity: 0, duration: 0.8 }, "-=0.8")
+            .from('.hero-scroll', { y: 10, opacity: 0, duration: 0.8 }, "-=0.6");
+    });
+
+    // 6.2 Parallax for Hero
+    gsap.to('.hero-img', {
+        yPercent: 30, ease: 'none',
+        scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }
+    });
+
+    // 6.3 Inertial Columns (The "Depth" Effect)
+    // Move middle column faster/slower than others
+    if (window.innerWidth > 768) {
+        gsap.to('#col-2', {
+            y: -150, // Moves up 150px over the course of the scroll
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '.gallery-grid',
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 1 // smooth scrubbing
+            }
+        });
+    }
+
+    // 6.4 The LIQUID SVG Filter Logic
+    const displMap = document.querySelector('feDisplacementMap');
+    const turb = document.querySelector('feTurbulence');
+
+    let proxy = { skew: 0 };
+
+    // React to Lenis scroll velocity
+    lenis.on('scroll', (e) => {
+        // Calculate intensity based on velocity
+        const v = e.velocity;
+        const intensity = Math.min(Math.abs(v) * 2, 60); // Cap at 60
+
+        // Smoothly animate the filter scale
+        gsap.to(proxy, {
+            skew: intensity,
+            duration: 0.2,
+            overwrite: true,
+            onUpdate: () => {
+                // Update SVG attributes
+                displMap.setAttribute('scale', proxy.skew);
+                // Subtle noise shift
+                const freq = 0.01 + (proxy.skew * 0.0005);
+                turb.setAttribute('baseFrequency', `${freq} 0.005`);
+            }
+        });
+
+        // Reset to 0 when stopped
+        gsap.to(proxy, {
+            skew: 0,
+            duration: 0.5,
+            ease: 'power2.out',
+            overwrite: false
+        });
+    });
+
+    // ============================================
+    // 7. MODAL LOGIC
+    // ============================================
+    const modal = document.getElementById('modal');
+    const modalImg = document.getElementById('modal-img');
+    const modalClose = document.querySelector('.modal-close');
+
+    function openModal(url) {
+        // Swap to high res logic (remove compression params for demo if needed)
+        const hiRes = url.replace('w=800', 'w=1600');
+        modalImg.src = hiRes;
+        modal.classList.add('is-open');
+        lenis.stop();
+    }
+
+    function closeModal() {
+        modal.classList.remove('is-open');
+        lenis.start();
+    }
+
+    modalClose.addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => {
+        if(e.key === 'Escape') closeModal();
+    });
+
+    // ============================================
+    // 8. HERO FEATURE SWITCHER
+    // ============================================
+    const heroSets = [
+        {
+            title: 'Glass Tides',
+            meta: '8K · 28MB',
+            top: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=1400&auto=format&fit=crop',
+            mid: 'https://images.unsplash.com/photo-1471879832106-c7ab9e0cee23?q=80&w=1200&auto=format&fit=crop',
+            back: 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?q=80&w=900&auto=format&fit=crop',
+            quote: '"The liquid archive where light becomes texture."'
+        },
+        {
+            title: 'Liquid Noir',
+            meta: '8K · 31MB',
+            top: 'https://images.unsplash.com/photo-1473172707857-f9e276582ab6?q=80&w=1400&auto=format&fit=crop',
+            mid: 'https://images.unsplash.com/photo-1471879832106-c7ab9e0cee23?q=80&w=1200&auto=format&fit=crop',
+            back: 'https://images.unsplash.com/photo-1444090542259-0af8fa96557e?q=80&w=900&auto=format&fit=crop',
+            quote: '"Dark waters, luminous grain, infinite depth."'
+        },
+        {
+            title: 'Chromatic Silt',
+            meta: '8K · 24MB',
+            top: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1400&auto=format&fit=crop',
+            mid: 'https://images.unsplash.com/photo-1444090542259-0af8fa96557e?q=80&w=1200&auto=format&fit=crop',
+            back: 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?q=80&w=900&auto=format&fit=crop',
+            quote: '"A spectrum of calm, engineered for focus."'
+        }
+    ];
+
+    const heroButtons = document.querySelectorAll('.hero-side-item');
+    const heroCards = {
+        top: document.querySelector('.hero-card--top .hero-card-img'),
+        mid: document.querySelector('.hero-card--mid .hero-card-img'),
+        back: document.querySelector('.hero-card--back .hero-card-img'),
+        title: document.querySelector('.hero-card--top .hero-card-title'),
+        meta: document.querySelector('.hero-card--top .hero-card-meta'),
+        quote: document.querySelector('.hero-quote'),
+        heroBg: document.getElementById('hero-bg')
+    };
+
+    function setHeroFeature(index) {
+        const data = heroSets[index];
+        if (!data) return;
+
+        heroButtons.forEach(btn => btn.classList.toggle('active', Number(btn.dataset.heroIndex) === index));
+
+        gsap.to([heroCards.top, heroCards.mid, heroCards.back, heroCards.heroBg], {
+            opacity: 0, duration: 0.3, onComplete: () => {
+                heroCards.top.style.backgroundImage = `url('${data.top}')`;
+                heroCards.mid.style.backgroundImage = `url('${data.mid}')`;
+                heroCards.back.style.backgroundImage = `url('${data.back}')`;
+                heroCards.heroBg.src = data.top;
+                heroCards.title.textContent = data.title;
+                heroCards.meta.textContent = data.meta;
+                heroCards.quote.textContent = data.quote;
+                gsap.to([heroCards.top, heroCards.mid, heroCards.back, heroCards.heroBg], { opacity: 1, duration: 0.4 });
+            }
+        });
+    }
+
+    heroButtons.forEach(btn => {
+        btn.addEventListener('click', () => setHeroFeature(Number(btn.dataset.heroIndex)));
+    });
+
+</script>
+</body>
+</html>

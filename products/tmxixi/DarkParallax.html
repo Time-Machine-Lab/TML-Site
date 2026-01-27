@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AETHER | The Latent Space Archive v2.0</title>
+    <meta name="description" content="Premium AI Wallpaper Gallery">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+    <script src="https://unpkg.com/split-type"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Syncopate:wght@400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================
+           1. CORE VARIABLES & RESET
+           ========================================= */
+        :root {
+            --c-bg: #030303;
+            --c-surface: #0a0a0a;
+            --c-surface-hover: #141414;
+            --c-border: rgba(255, 255, 255, 0.08);
+            --c-border-active: rgba(255, 255, 255, 0.2);
+
+            --c-text-main: #ededed;
+            --c-text-muted: #666666;
+
+            --c-accent: #ccff00; /* 赛博酸性绿 */
+            --c-accent-dim: rgba(204, 255, 0, 0.1);
+            --c-accent-glow: rgba(204, 255, 0, 0.4);
+
+            --f-display: 'Syncopate', sans-serif;
+            --f-tech: 'Rajdhani', sans-serif;
+            --f-body: 'Inter', sans-serif;
+
+            --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+            --ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+
+            --header-height: 80px;
+            --gutter: 2rem;
+        }
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none; /* 全局隐藏原生光标 */
+        }
+
+        html {
+            font-size: 16px;
+            background-color: var(--c-bg);
+        }
+
+        body {
+            color: var(--c-text-main);
+            font-family: var(--f-body);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            border: none;
+            background: none;
+            color: inherit;
+            font-family: inherit;
+            outline: none;
+        }
+
+        /* 选区样式 */
+        ::selection {
+            background: var(--c-accent);
+            color: var(--c-bg);
+        }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--c-bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--c-accent);
+        }
+
+        /* =========================================
+           2. UTILITIES & FX
+           ========================================= */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 var(--gutter);
+        }
+
+        .flex-center { display: flex; justify-content: center; align-items: center; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .flex-col { display: flex; flex-direction: column; }
+
+        .text-accent { color: var(--c-accent); }
+        .text-tech { font-family: var(--f-tech); letter-spacing: 0.05em; text-transform: uppercase; }
+        .text-display { font-family: var(--f-display); text-transform: uppercase; font-weight: 700; }
+
+        /* 故障文字效果类 */
+        .glitch-text {
+            position: relative;
+        }
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--c-bg);
+        }
+        .glitch-text::before {
+            left: 2px;
+            text-shadow: -1px 0 #ff00c1;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+            display: none;
+        }
+        .glitch-text::after {
+            left: -2px;
+            text-shadow: -1px 0 #00fff9;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim2 5s infinite linear alternate-reverse;
+            display: none;
+        }
+        .glitch-text:hover::before, .glitch-text:hover::after {
+            display: block;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip: rect(30px, 9999px, 10px, 0); }
+            20% { clip: rect(80px, 9999px, 90px, 0); }
+            40% { clip: rect(10px, 9999px, 50px, 0); }
+            60% { clip: rect(60px, 9999px, 20px, 0); }
+            80% { clip: rect(5px, 9999px, 70px, 0); }
+            100% { clip: rect(90px, 9999px, 40px, 0); }
+        }
+        @keyframes glitch-anim2 {
+            0% { clip: rect(15px, 9999px, 85px, 0); }
+            20% { clip: rect(65px, 9999px, 25px, 0); }
+            40% { clip: rect(35px, 9999px, 60px, 0); }
+            60% { clip: rect(5px, 9999px, 95px, 0); }
+            80% { clip: rect(55px, 9999px, 15px, 0); }
+            100% { clip: rect(25px, 9999px, 55px, 0); }
+        }
+
+        /* =========================================
+           3. CUSTOM CURSOR
+           ========================================= */
+        .cursor-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 10000;
+            mix-blend-mode: difference;
+        }
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            transform: translate(-50%, -50%);
+        }
+        .cursor-ring {
+            width: 40px;
+            height: 40px;
+            border: 1px solid white;
+            border-radius: 50%;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+        /* 交互状态 */
+        body.is-hovering .cursor-ring {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(255,255,255,0.1);
+            border-color: transparent;
+        }
+        body.is-hovering-text .cursor-ring {
+            width: 2px;
+            height: 40px;
+            border-radius: 0;
+            background-color: var(--c-accent);
+            border: none;
+        }
+
+        /* =========================================
+           4. LOADER
+           ========================================= */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 20000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .loader-content {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .loader-text {
+            font-family: var(--f-tech);
+            color: var(--c-accent);
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+        }
+        .progress-bar-wrap {
+            width: 100%;
+            height: 2px;
+            background: #222;
+            position: relative;
+            overflow: hidden;
+        }
+        .progress-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0%;
+            background: var(--c-accent);
+        }
+        .loader-code {
+            position: absolute;
+            bottom: 2rem;
+            left: 2rem;
+            font-family: monospace;
+            font-size: 10px;
+            color: #333;
+            line-height: 1.4;
+            white-space: pre;
+        }
+
+        /* =========================================
+           5. NAVIGATION
+           ========================================= */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--header-height);
+            z-index: 1000;
+            transition: transform 0.4s var(--ease-out-expo), background-color 0.4s;
+            border-bottom: 1px solid transparent;
+        }
+        .navbar.scrolled {
+            background-color: rgba(3, 3, 3, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--c-border);
+        }
+        .nav-inner {
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-family: var(--f-display);
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: -0.05em;
+            color: #fff;
+            position: relative;
+            z-index: 2;
+        }
+        .logo span { color: var(--c-accent); }
+
+        .nav-menu {
+            display: flex;
+            gap: 3rem;
+        }
+        .nav-link {
+            font-family: var(--f-tech);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: var(--c-text-muted);
+            transition: color 0.3s;
+            position: relative;
+            letter-spacing: 0.1em;
+        }
+        .nav-link:hover { color: #fff; }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0%;
+            height: 1px;
+            background: var(--c-accent);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after { width: 100%; }
+
+        .btn-outline {
+            padding: 0.8rem 1.5rem;
+            border: 1px solid var(--c-border);
+            border-radius: 50px;
+            font-family: var(--f-tech);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-outline:hover {
+            border-color: var(--c-accent);
+            color: var(--c-accent);
+            background: var(--c-accent-dim);
+        }
+
+        /* =========================================
+           6. HERO SECTION
+           ========================================= */
+        .hero {
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding-top: var(--header-height);
+        }
+
+        /* WebGL/Canvas Background */
+        #canvas-stage {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            mix-blend-mode: difference;
+        }
+
+        .hero-label {
+            display: inline-block;
+            border: 1px solid var(--c-accent);
+            color: var(--c-accent);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-family: var(--f-tech);
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            font-family: var(--f-display);
+            font-size: clamp(3rem, 12vw, 11rem);
+            line-height: 0.85;
+            letter-spacing: -0.04em;
+            color: #fff;
+            margin-bottom: 2rem;
+        }
+        .hero-title .line {
+            display: block;
+            overflow: hidden;
+        }
+        .hero-title .word {
+            display: inline-block;
+            transform: translateY(100%); /* for GSAP */
+        }
+
+        .hero-desc {
+            font-family: var(--f-body);
+            color: var(--c-text-muted);
+            max-width: 500px;
+            margin: 0 auto 3rem;
+            font-size: 1.1rem;
+            opacity: 0; /* for GSAP */
+        }
+
+        .hero-actions {
+            opacity: 0; /* for GSAP */
+        }
+
+        /* 3D Floating Cards */
+        .card-floater {
+            position: absolute;
+            width: 220px;
+            height: 300px;
+            border-radius: 12px;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            opacity: 0;
+            z-index: 1;
+            filter: grayscale(100%) brightness(0.7);
+            transition: filter 0.5s;
+        }
+        .card-floater:hover {
+            filter: grayscale(0%) brightness(1);
+            z-index: 10;
+        }
+
+        /* =========================================
+           7. MARQUEE
+           ========================================= */
+        .marquee-section {
+            padding: 3rem 0;
+            background: var(--c-accent);
+            color: #000;
+            overflow: hidden;
+            transform: skewY(-2deg);
+            margin: 4rem 0;
+            border-top: 2px solid #000;
+            border-bottom: 2px solid #000;
+        }
+        .marquee-inner {
+            display: flex;
+            width: fit-content;
+            animation: marquee 20s linear infinite;
+        }
+        .marquee-item {
+            font-family: var(--f-display);
+            font-size: 5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0 2rem;
+            white-space: nowrap;
+        }
+        .marquee-item.outline {
+            color: transparent;
+            -webkit-text-stroke: 2px #000;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* =========================================
+           8. GALLERY FILTER & GRID
+           ========================================= */
+        .gallery-section {
+            padding: 6rem 0;
+            position: relative;
+        }
+
+        .filter-bar {
+            position: sticky;
+            top: calc(var(--header-height) + 20px);
+            z-index: 100;
+            margin-bottom: 4rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            mix-blend-mode: exclusion;
+        }
+
+        .filter-btn {
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--c-border);
+            color: var(--c-text-muted);
+            padding: 0.6rem 1.5rem;
+            border-radius: 30px;
+            font-family: var(--f-tech);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            color: #000;
+            background: var(--c-accent);
+            border-color: var(--c-accent);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2rem;
+            grid-auto-rows: 100px; /* Base unit for masonry height */
+        }
+
+        .gallery-item {
+            position: relative;
+            background: var(--c-surface);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid transparent;
+            transition: border-color 0.3s;
+            opacity: 0; /* for staggered reveal */
+        }
+
+        /* Grid Spans */
+        .span-col-4 { grid-column: span 4; }
+        .span-col-6 { grid-column: span 6; }
+        .span-col-3 { grid-column: span 3; }
+        .span-row-3 { grid-row: span 3; }
+        .span-row-4 { grid-row: span 4; }
+        .span-row-5 { grid-row: span 5; }
+
+        @media (max-width: 1024px) {
+            .gallery-grid { grid-template-columns: repeat(6, 1fr); }
+            .span-col-4, .span-col-3 { grid-column: span 3; }
+            .span-col-6 { grid-column: span 6; }
+        }
+        @media (max-width: 768px) {
+            .gallery-grid { grid-template-columns: repeat(1, 1fr); }
+            .gallery-item { grid-column: span 1 !important; grid-row: span 4 !important; }
+        }
+
+        .g-img-wrap {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .g-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s var(--ease-out-expo), filter 0.3s;
+            filter: grayscale(100%);
+        }
+        .gallery-item:hover { border-color: var(--c-accent); }
+        .gallery-item:hover .g-img {
+            transform: scale(1.1);
+            filter: grayscale(0%);
+        }
+
+        /* Item Overlay */
+        .g-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent 60%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1.5rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s ease;
+        }
+        .gallery-item:hover .g-overlay { opacity: 1; transform: translateY(0); }
+
+        .g-title {
+            font-family: var(--f-display);
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+        .g-tags {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .g-tag {
+            font-size: 0.7rem;
+            font-family: var(--f-tech);
+            color: var(--c-accent);
+            border: 1px solid var(--c-accent-glow);
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        /* =========================================
+           9. FEATURED (Horizontal)
+           ========================================= */
+        .featured-section {
+            height: 100vh;
+            background: #fff;
+            color: #000;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .h-scroll-container {
+            display: flex;
+            padding: 0 10vw;
+            gap: 5vw;
+        }
+        .h-card {
+            width: 40vw;
+            height: 60vh;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .h-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 16px;
+        }
+        .h-text {
+            position: absolute;
+            top: -3rem;
+            left: 0;
+            font-family: var(--f-display);
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        .big-statement {
+            font-family: var(--f-display);
+            font-size: 15vw;
+            line-height: 0.8;
+            white-space: nowrap;
+            position: absolute;
+            bottom: -5vw;
+            left: 0;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        /* =========================================
+           10. FOOTER
+           ========================================= */
+        footer {
+            min-height: 80vh;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 6rem var(--gutter) 2rem;
+            position: relative;
+            border-top: 1px solid var(--c-border);
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+        }
+        .cta-title {
+            font-family: var(--f-display);
+            font-size: clamp(2rem, 5vw, 4rem);
+            line-height: 1.1;
+            margin-bottom: 2rem;
+        }
+        .cta-title span { color: var(--c-accent); }
+
+        .huge-link {
+            font-size: 1.5rem;
+            font-family: var(--f-tech);
+            color: var(--c-text-muted);
+            display: block;
+            margin-bottom: 1rem;
+            transition: color 0.3s, transform 0.3s;
+        }
+        .huge-link:hover {
+            color: var(--c-accent);
+            transform: translateX(10px);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 4rem;
+        }
+        .footer-logo {
+            font-family: var(--f-display);
+            font-size: 12vw;
+            line-height: 0.8;
+            color: #111;
+            user-select: none;
+        }
+        .copyright {
+            font-family: var(--f-tech);
+            color: var(--c-text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* =========================================
+           11. LIGHTBOX (Modal)
+           ========================================= */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 11000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .lightbox.active { opacity: 1; pointer-events: auto; }
+        .lb-img {
+            max-width: 90%;
+            max-height: 90%;
+            box-shadow: 0 0 50px rgba(204, 255, 0, 0.2);
+            border: 1px solid var(--c-border);
+        }
+        .lb-close {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            color: #fff;
+            font-family: var(--f-tech);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="noise-overlay"></div>
+<div class="cursor-wrapper">
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+</div>
+
+<div class="preloader">
+    <div class="loader-content">
+        <div class="loader-text">
+            <span>SYSTEM BOOT</span>
+            <span id="loader-percent">0%</span>
+        </div>
+        <div class="progress-bar-wrap">
+            <div class="progress-bar"></div>
+        </div>
+        <div class="loader-code" id="loader-code">
+            > INITIALIZING NEURAL NET...
+            > LOADING ASSETS...
+        </div>
+    </div>
+</div>
+
+<nav class="navbar">
+    <div class="container nav-inner">
+        <a href="#" class="logo magnetic">AETHER<span>.AI</span></a>
+        <div class="nav-menu">
+            <a href="#gallery" class="nav-link magnetic">Archive</a>
+            <a href="#featured" class="nav-link magnetic">Featured</a>
+            <a href="#about" class="nav-link magnetic">Manifesto</a>
+        </div>
+        <button class="btn-outline magnetic">Connect Wallet</button>
+    </div>
+</nav>
+
+<main>
+
+    <section class="hero">
+        <canvas id="canvas-stage"></canvas>
+
+        <div id="hero-floaters"></div>
+
+        <div class="hero-content">
+            <div class="hero-label">v2.4.0 Stable Diffusion XL</div>
+            <h1 class="hero-title">
+                <div class="line"><span class="word">Latent</span></div>
+                <div class="line"><span class="word">Dreams</span></div>
+                <div class="line"><span class="word" style="color:transparent;-webkit-text-stroke:1px #fff; font-style: italic;">Unveiled</span></div>
+            </h1>
+            <p class="hero-desc">
+                A curated archive of high-fidelity neural network hallucinations.
+                Explore the boundaries between synthetic imagination and digital reality.
+            </p>
+            <div class="hero-actions">
+                <a href="#gallery" class="btn-outline magnetic" style="background:var(--c-text-main); color:var(--c-bg); border:none;">Explore Collection</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="marquee-section">
+        <div class="marquee-inner">
+            <div class="marquee-item">Generative Art</div>
+            <div class="marquee-item outline">8K Ultra HD</div>
+            <div class="marquee-item">Neural Style Transfer</div>
+            <div class="marquee-item outline">Midjourney V6</div>
+            <div class="marquee-item">Stable Diffusion</div>
+            <div class="marquee-item outline">DALL-E 3</div>
+            <div class="marquee-item">Generative Art</div>
+            <div class="marquee-item outline">8K Ultra HD</div>
+            <div class="marquee-item">Neural Style Transfer</div>
+        </div>
+    </section>
+
+    <section id="gallery" class="gallery-section">
+        <div class="container">
+            <div class="flex-between" style="margin-bottom: 3rem;">
+                <h2 class="text-display" style="font-size: 2.5rem;">The Archive</h2>
+                <div class="text-tech" style="color:var(--c-text-muted)">// Updated Daily</div>
+            </div>
+
+            <div class="filter-bar">
+                <button class="filter-btn active magnetic" data-filter="all">All</button>
+                <button class="filter-btn magnetic" data-filter="cyberpunk">Cyberpunk</button>
+                <button class="filter-btn magnetic" data-filter="abstract">Abstract</button>
+                <button class="filter-btn magnetic" data-filter="space">Cosmos</button>
+                <button class="filter-btn magnetic" data-filter="nature">Organic</button>
+            </div>
+
+            <div class="gallery-grid" id="main-grid">
+            </div>
+        </div>
+    </section>
+
+    <section id="featured" class="featured-section">
+        <div class="big-statement">BEYOND IMAGINATION</div>
+        <div class="h-scroll-container">
+            <div class="h-card">
+                <div class="h-text">NEON GENESIS</div>
+                <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1200&auto=format&fit=crop" class="h-img" alt="Matrix">
+            </div>
+            <div class="h-card">
+                <div class="h-text">VOID WALKER</div>
+                <img src="https://images.unsplash.com/photo-1516912481808-3406841bd33c?q=80&w=1200&auto=format&fit=crop" class="h-img" alt="Rain">
+            </div>
+            <div class="h-card">
+                <div class="h-text">CYBER SOUL</div>
+                <img src="https://images.unsplash.com/photo-1574169208507-84376144848b?q=80&w=1200&auto=format&fit=crop" class="h-img" alt="Neon">
+            </div>
+            <div class="h-card" style="width: 20vw; display:flex; align-items:center; justify-content:center;">
+                <a href="#gallery" class="text-display magnetic" style="font-size: 1.5rem; text-decoration: underline;">View All -></a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h2 class="cta-title">Ready to define<br>your <span>reality</span>?</h2>
+                    <p style="color:var(--c-text-muted); max-width: 400px; margin-bottom: 2rem;">
+                        Join 50,000+ designers and futurists accessing the world's most premium AI art library.
+                    </p>
+                    <form style="display:flex; gap:10px; border-bottom:1px solid #333; padding-bottom:10px; max-width:400px;">
+                        <input type="email" placeholder="ENTER EMAIL FOR ACCESS" style="background:none; border:none; color:#fff; font-family:var(--f-tech); width:100%; outline:none;">
+                        <button type="submit" class="text-accent magnetic">SUBMIT</button>
+                    </form>
+                </div>
+                <div style="text-align: right; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <a href="#" class="huge-link magnetic">INSTAGRAM</a>
+                        <a href="#" class="huge-link magnetic">TWITTER / X</a>
+                        <a href="#" class="huge-link magnetic">DISCORD</a>
+                        <a href="#" class="huge-link magnetic">OPENSEA</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="copyright">
+                    © 2024 AETHER INC. <br>
+                    DESIGNED BY AI, CURATED BY HUMANS.
+                </div>
+                <div class="footer-logo">AETHER</div>
+            </div>
+        </div>
+    </footer>
+
+</main>
+
+<div class="lightbox" id="lightbox">
+    <div class="lb-close magnetic">CLOSE [ESC]</div>
+    <img src="" class="lb-img" id="lb-image" alt="Preview">
+</div>
+
+<script>
+    // ============================================
+    // 0. DATA SOURCE (The Wallpaper Archive)
+    // ============================================
+    // 这里集成了你提供的特定 URL，以及补充的高质量图源
+    const wallpapers = [
+        // ============================================
+        // 1. 用户指定核心资源 (User Priority)
+        // ============================================
+        { id: 1, url: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=800', title: 'Arcade Glow', tag: 'cyberpunk', size: 'span-col-4 span-row-4' },
+        { id: 2, url: 'https://images.unsplash.com/photo-1574169208507-84376144848b?q=80&w=800', title: 'Neon Signage', tag: 'cyberpunk', size: 'span-col-4 span-row-3' },
+        { id: 3, url: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=800', title: 'The Matrix', tag: 'abstract', size: 'span-col-4 span-row-5' },
+        { id: 4, url: 'https://images.unsplash.com/photo-1634152962476-4b8a00e1915c?q=80&w=800', title: 'Dark Flow', tag: 'abstract', size: 'span-col-6 span-row-4' },
+        { id: 5, url: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800', title: 'TV Static', tag: 'cyberpunk', size: 'span-col-6 span-row-4' },
+        { id: 6, url: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=800', title: 'Deep Nebula', tag: 'space', size: 'span-col-3 span-row-3' },
+        { id: 7, url: 'https://images.unsplash.com/photo-1516912481808-3406841bd33c?q=80&w=800', title: 'Rainy Night', tag: 'nature', size: 'span-col-3 span-row-3' },
+        { id: 8, url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800', title: 'Oil Slick', tag: 'abstract', size: 'span-col-3 span-row-4' },
+        { id: 10, url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800', title: 'Orbit', tag: 'space', size: 'span-col-6 span-row-3' },
+        { id: 13, url: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=800', title: 'Red Beam', tag: 'abstract', size: 'span-col-4 span-row-3' },
+        { id: 14, url: 'https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?q=80&w=800', title: 'Void', tag: 'space', size: 'span-col-4 span-row-3' },
+
+        // ============================================
+        // 2. 精选补充资源 (Selected from Resource Pool)
+        // ============================================
+
+        // --- Cyberpunk / Sci-Fi ---
+        { id: 15, url: 'https://images.unsplash.com/photo-1542931287-023b922fa89b?q=80&w=800', title: 'Neo Tokyo', tag: 'cyberpunk', size: 'span-col-6 span-row-4' },
+        { id: 16, url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800', title: 'Hardware Core', tag: 'cyberpunk', size: 'span-col-3 span-row-4' },
+        { id: 17, url: 'https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=800', title: 'Wet Neon', tag: 'cyberpunk', size: 'span-col-3 span-row-3' },
+        { id: 19, url: 'https://images.unsplash.com/photo-1496564203457-11bb12075d90?q=80&w=800', title: 'Corridor 7', tag: 'cyberpunk', size: 'span-col-4 span-row-3' },
+        { id: 20, url: 'https://images.unsplash.com/photo-1624397640148-949b1732bb0a?q=80&w=800', title: 'Virtual Reality', tag: 'cyberpunk', size: 'span-col-4 span-row-4' },
+
+        // --- Abstract / 3D ---
+        { id: 21, url: 'https://images.unsplash.com/photo-1618172193622-ae2d025f4032?q=80&w=800', title: 'Liquid Chrome', tag: 'abstract', size: 'span-col-3 span-row-5' },
+        { id: 22, url: 'https://images.unsplash.com/photo-1633078654544-61b3455b9161?q=80&w=800', title: 'Geometry', tag: 'abstract', size: 'span-col-3 span-row-3' },
+        { id: 24, url: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800', title: 'Holographic', tag: 'abstract', size: 'span-col-3 span-row-3' },
+
+        // --- Space / Cosmos ---
+        { id: 25, url: 'https://images.unsplash.com/photo-1465101162946-4377e57745c3?q=80&w=800', title: 'Event Horizon', tag: 'space', size: 'span-col-4 span-row-4' },
+        { id: 26, url: 'https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?q=80&w=800', title: 'Aurora', tag: 'space', size: 'span-col-4 span-row-3' },
+        { id: 27, url: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=800', title: 'Deep Star', tag: 'space', size: 'span-col-4 span-row-3' },
+
+        // --- Nature / Atmospheric ---
+        { id: 28, url: 'https://images.unsplash.com/photo-1476610182048-b716b8518aae?q=80&w=800', title: 'Black Sand', tag: 'nature', size: 'span-col-6 span-row-3' },
+        { id: 29, url: 'https://images.unsplash.com/photo-1551009175-8a68da93d5f9?q=80&w=800', title: 'Dark Waves', tag: 'nature', size: 'span-col-3 span-row-4' },
+        { id: 30, url: 'https://images.unsplash.com/photo-1462332420958-a05d1e002413?q=80&w=800', title: 'Volcano', tag: 'nature', size: 'span-col-3 span-row-3' }
+    ];
+
+    // ============================================
+    // 1. INITIALIZATION & UTILS
+    // ============================================
+    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+    // Lenis Smooth Scroll
+    const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smooth: true
+    });
+    function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    // Custom Cursor Logic
+    const cursor = {
+        dot: document.querySelector('.cursor-dot'),
+        ring: document.querySelector('.cursor-ring'),
+        x: 0, y: 0,
+        targetX: 0, targetY: 0
+    };
+
+    window.addEventListener('mousemove', (e) => {
+        cursor.targetX = e.clientX;
+        cursor.targetY = e.clientY;
+
+        // Dot follows instantly
+        gsap.set(cursor.dot, { x: e.clientX, y: e.clientY });
+    });
+
+    // Ring follows with lag
+    gsap.ticker.add(() => {
+        cursor.x += (cursor.targetX - cursor.x) * 0.15;
+        cursor.y += (cursor.targetY - cursor.y) * 0.15;
+        gsap.set(cursor.ring, { x: cursor.x, y: cursor.y });
+    });
+
+    // Hover Effects for Cursor
+    document.querySelectorAll('a, button, .gallery-item').forEach(el => {
+        el.addEventListener('mouseenter', () => document.body.classList.add('is-hovering'));
+        el.addEventListener('mouseleave', () => document.body.classList.remove('is-hovering'));
+    });
+
+    // Magnetic Button Effect
+    document.querySelectorAll('.magnetic').forEach(btn => {
+        btn.addEventListener('mousemove', (e) => {
+            const rect = btn.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            gsap.to(btn, { x: x * 0.3, y: y * 0.3, duration: 0.3 });
+        });
+        btn.addEventListener('mouseleave', () => {
+            gsap.to(btn, { x: 0, y: 0, duration: 0.3 });
+        });
+    });
+
+    // ============================================
+    // 2. DOM GENERATION (Gallery & Hero)
+    // ============================================
+
+    // Populate Grid
+    const grid = document.getElementById('main-grid');
+
+    function renderGrid(filter = 'all') {
+        // Clear grid with fade out if needed (simplified here)
+        grid.innerHTML = '';
+
+        const filtered = filter === 'all'
+            ? wallpapers
+            : wallpapers.filter(wp => wp.tag === filter);
+
+        filtered.forEach(wp => {
+            const item = document.createElement('div');
+            item.className = `gallery-item ${wp.size}`;
+            item.innerHTML = `
+                    <div class="g-img-wrap">
+                        <img src="${wp.url}" class="g-img" alt="${wp.title}" loading="lazy">
+                    </div>
+                    <div class="g-overlay">
+                        <div class="g-title glitch-text" data-text="${wp.title}">${wp.title}</div>
+                        <div class="g-tags">
+                            <span class="g-tag">#${wp.tag}</span>
+                            <span class="g-tag">AI</span>
+                        </div>
+                    </div>
+                `;
+
+            // Add click to open lightbox
+            item.addEventListener('click', () => openLightbox(wp.url));
+
+            grid.appendChild(item);
+        });
+
+        // Trigger animation for new items
+        gsap.fromTo('.gallery-item',
+            { opacity: 0, y: 50 },
+            { opacity: 1, y: 0, stagger: 0.05, duration: 0.8, ease: "power2.out" }
+        );
+
+        // Re-bind cursor listeners for new items
+        itemHoverRebind();
+    }
+
+    function itemHoverRebind() {
+        document.querySelectorAll('.gallery-item').forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('is-hovering-text'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('is-hovering-text'));
+        });
+    }
+
+    // Initial Render
+    renderGrid();
+
+    // Filter Logic
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderGrid(btn.dataset.filter);
+        });
+    });
+
+    // Hero Floating Cards (Use 3 random user assets)
+    const floaterContainer = document.getElementById('hero-floaters');
+    const floatAssets = [wallpapers[0], wallpapers[3], wallpapers[6]];
+
+    floatAssets.forEach((wp, i) => {
+        const el = document.createElement('div');
+        el.className = 'card-floater';
+        el.style.backgroundImage = `url(${wp.url})`;
+        // Position them randomly around center
+        const offsetX = (i - 1) * 35; // -35, 0, 35
+        const offsetY = (i % 2 === 0) ? -10 : 20;
+        const rot = (i - 1) * 10;
+
+        el.style.left = `calc(50% + ${offsetX}vw)`;
+        el.style.top = `calc(50% + ${offsetY}vh)`;
+        el.style.transform = `translate(-50%, -50%) rotate(${rot}deg) translateZ(${i*50}px)`;
+
+        floaterContainer.appendChild(el);
+    });
+
+    // Hero Parallax on Mouse Move
+    document.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth - 0.5);
+        const y = (e.clientY / window.innerHeight - 0.5);
+
+        gsap.to('.card-floater', {
+            x: (i) => i * 40 * x, // Parallax intensity based on index
+            y: (i) => (3-i) * 40 * y,
+            rotationY: x * 20,
+            rotationX: -y * 20,
+            duration: 1,
+            ease: "power2.out"
+        });
+    });
+
+    // ============================================
+    // 3. ANIMATION SEQUENCES
+    // ============================================
+
+    // Preloader Sequence
+    window.addEventListener('load', () => {
+        const tl = gsap.timeline();
+
+        // Animate numbers
+        let progress = { val: 0 };
+        tl.to(progress, {
+            val: 100,
+            duration: 2,
+            onUpdate: () => {
+                document.getElementById('loader-percent').innerText = Math.round(progress.val) + '%';
+                if(Math.random() > 0.8) {
+                    // Random code scramble effect
+                    document.getElementById('loader-code').innerText += `\n> PROCESSING CHUNK ${Math.round(Math.random()*9999)}...`;
+                }
+            }
+        })
+            .to('.progress-bar', { width: '100%', duration: 2, ease: "expo.inOut" }, "<")
+            .to('.preloader', { yPercent: -100, duration: 1, ease: "power4.inOut" })
+            .from('.hero-title .word', { yPercent: 120, stagger: 0.1, duration: 1.2, ease: "power4.out" }, "-=0.5")
+            .to('.card-floater', { opacity: 1, duration: 1, stagger: 0.2 }, "-=1")
+            .to('.hero-desc, .hero-actions', { opacity: 1, y: 0, duration: 1 }, "-=0.8");
+    });
+
+    // Navbar Scroll Effect
+    window.addEventListener('scroll', () => {
+        const nav = document.querySelector('.navbar');
+        if(window.scrollY > 50) nav.classList.add('scrolled');
+        else nav.classList.remove('scrolled');
+    });
+
+    // Horizontal Scroll Animation
+    const raceContainer = document.querySelector('.h-scroll-container');
+
+    gsap.to(raceContainer, {
+        x: () => -(raceContainer.scrollWidth - window.innerWidth),
+        ease: "none",
+        scrollTrigger: {
+            trigger: "#featured",
+            start: "top top",
+            end: () => "+=" + raceContainer.scrollWidth,
+            pin: true,
+            scrub: 1,
+            invalidateOnRefresh: true
+        }
+    });
+
+    // ============================================
+    // 4. CANVAS BACKGROUND (Particles)
+    // ============================================
+    const canvas = document.getElementById('canvas-stage');
+    const ctx = canvas.getContext('2d');
+    let w, h;
+    let particles = [];
+
+    function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+        initParticles();
+    }
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * w;
+            this.y = Math.random() * h;
+            this.vx = (Math.random() - 0.5) * 0.5;
+            this.vy = (Math.random() - 0.5) * 0.5;
+            this.size = Math.random() * 2;
+            this.color = Math.random() > 0.9 ? '#ccff00' : '#ffffff';
+        }
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            if(this.x < 0) this.x = w;
+            if(this.x > w) this.x = 0;
+            if(this.y < 0) this.y = h;
+            if(this.y > h) this.y = 0;
+        }
+        draw() {
+            ctx.beginPath();
+            ctx.fillStyle = this.color;
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    function initParticles() {
+        particles = [];
+        for(let i=0; i<80; i++) particles.push(new Particle());
+    }
+
+    function animateCanvas() {
+        ctx.clearRect(0,0,w,h);
+
+        // Draw connections
+        ctx.lineWidth = 0.5;
+        for(let i=0; i<particles.length; i++) {
+            particles[i].update();
+            particles[i].draw();
+
+            for(let j=i; j<particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+
+                if(dist < 100) {
+                    ctx.strokeStyle = `rgba(255,255,255, ${0.1 - dist/1000})`;
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(animateCanvas);
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+    animateCanvas();
+
+    // ============================================
+    // 5. LIGHTBOX LOGIC
+    // ============================================
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lb-image');
+    const lbClose = document.querySelector('.lb-close');
+
+    function openLightbox(url) {
+        // High res swap (remove compression params for demo logic)
+        const highRes = url.replace('w=800', 'w=1600');
+        lbImg.src = highRes;
+        lightbox.classList.add('active');
+        lenis.stop(); // Stop scrolling
+    }
+
+    function closeLightbox() {
+        lightbox.classList.remove('active');
+        lenis.start();
+    }
+
+    lbClose.addEventListener('click', closeLightbox);
+    // Click outside to close
+    lightbox.addEventListener('click', (e) => {
+        if(e.target === lightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', (e) => {
+        if(e.key === 'Escape') closeLightbox();
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ORIFOLD ARCHIVE | Infinite Paper System</title>
+    <meta name="description" content="A procedural WebGL archive for digital assets.">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/gsap.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================================================
+           1. CSS ARCHITECTURE
+           ========================================================================= */
+        :root {
+            --c-bg: #F2F0EB;
+            --c-ink: #1A1A1A;
+            --c-accent: #D64933;
+            --c-paper-shadow: #D1CFCD;
+
+            --f-serif: 'Cormorant Garamond', serif;
+            --f-sans: 'Inter', sans-serif;
+            --f-mono: 'Inter', sans-serif;
+
+            --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box; margin: 0; padding: 0;
+            user-select: none; cursor: none;
+        }
+
+        body {
+            background-color: var(--c-bg);
+            color: var(--c-ink);
+            font-family: var(--f-sans);
+            overflow: hidden; width: 100vw; height: 100vh;
+        }
+
+        /* --- WEBGL LAYER --- */
+        #gl-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0; pointer-events: auto;
+        }
+
+        /* --- UI OVERLAY --- */
+        #ui-layer {
+            position: fixed; inset: 0; z-index: 10; pointer-events: none;
+            display: flex; flex-direction: column; justify-content: space-between;
+            padding: 3rem; transition: color 0.5s;
+        }
+
+        /* Header */
+        .header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            pointer-events: auto;
+        }
+        .brand h1 {
+            font-family: var(--f-serif); font-size: 3rem; line-height: 0.8;
+            letter-spacing: -0.02em; margin-bottom: 0.5rem;
+        }
+        .brand-meta {
+            font-family: var(--f-sans); font-size: 0.7rem; text-transform: uppercase;
+            letter-spacing: 0.1em; opacity: 0.6; display: flex; gap: 20px;
+        }
+        .brand-meta span::before { content: '●'; margin-right: 5px; color: var(--c-accent); font-size: 0.6em; }
+
+        .filter-nav {
+            display: flex; flex-direction: column; align-items: flex-end; gap: 5px;
+        }
+        .filter-btn {
+            font-family: var(--f-sans); font-size: 0.8rem; cursor: pointer;
+            opacity: 0.4; transition: 0.3s; text-transform: uppercase;
+        }
+        .filter-btn:hover, .filter-btn.active { opacity: 1; transform: translateX(-5px); }
+        .filter-btn.active { color: var(--c-accent); font-weight: 600; }
+
+        /* Progress Bar */
+        .progress-container {
+            position: absolute; right: 3rem; top: 50%; transform: translateY(-50%);
+            height: 200px; width: 2px; background: rgba(0,0,0,0.1);
+        }
+        .progress-bar {
+            width: 100%; height: 0%; background: var(--c-accent); transition: height 0.1s;
+        }
+
+        /* Detail View UI (Hidden by default) */
+        .detail-ui {
+            position: absolute; bottom: 3rem; left: 3rem; right: 3rem;
+            display: flex; justify-content: space-between; align-items: flex-end;
+            opacity: 0; transform: translateY(20px); transition: 0.5s var(--ease-out);
+            pointer-events: auto;
+        }
+        body.is-detail .detail-ui { opacity: 1; transform: translateY(0); }
+
+        .artwork-info h2 { font-family: var(--f-serif); font-size: 4rem; line-height: 1; }
+        .artwork-meta { font-family: var(--f-mono); font-size: 0.8rem; margin-top: 1rem; opacity: 0.7; }
+
+        .action-btn {
+            padding: 1rem 2rem; border: 1px solid currentColor; background: transparent;
+            font-family: var(--f-sans); text-transform: uppercase; letter-spacing: 1px;
+            cursor: pointer; transition: 0.3s; color: inherit;
+        }
+        .action-btn:hover { background: var(--c-ink); color: var(--c-bg); }
+        body.dark-mode .action-btn:hover { background: var(--c-bg); color: var(--c-ink); }
+
+        /* Back Button */
+        .back-btn {
+            position: fixed; top: 3rem; left: 50%; transform: translateX(-50%) translateY(-100px);
+            z-index: 20; opacity: 0; transition: 0.5s; cursor: pointer; pointer-events: auto;
+            font-family: var(--f-sans); text-transform: uppercase; font-size: 0.8rem;
+            padding: 10px 20px; background: #fff; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        body.is-detail .back-btn { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* --- CURSOR --- */
+        #cursor {
+            position: fixed; top: 0; left: 0; z-index: 9999; pointer-events: none;
+            mix-blend-mode: exclusion;
+        }
+        .c-dot {
+            width: 8px; height: 8px; background: #fff; border-radius: 50%;
+            position: absolute; transform: translate(-50%, -50%);
+        }
+        .c-circle {
+            width: 40px; height: 40px; border: 1px solid #fff; border-radius: 50%;
+            position: absolute; transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background 0.3s;
+        }
+        .c-label {
+            position: absolute; left: 30px; top: -5px; font-family: var(--f-sans);
+            font-size: 10px; color: #fff; white-space: nowrap; opacity: 0; transition: 0.3s;
+        }
+
+        body.hover-active .c-circle { width: 60px; height: 60px; background: rgba(255,255,255,0.1); }
+        body.hover-active .c-label { opacity: 1; }
+
+        /* Dark Mode State (Triggered by JS) */
+        body.dark-mode { --c-ink: #F2F0EB; --c-bg: #111; }
+        body.dark-mode .header { color: #fff; }
+
+        /* --- HERO PANEL --- */
+        .hero-panel {
+            position: absolute; left: 3rem; top: 50%; transform: translateY(-50%);
+            max-width: 460px; pointer-events: auto;
+            background: rgba(255,255,255,0.65); backdrop-filter: blur(8px);
+            border: 1px solid rgba(0,0,0,0.08); padding: 2rem; border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+        }
+        .hero-kicker {
+            font-family: var(--f-sans); font-size: 0.7rem; letter-spacing: 0.2em;
+            text-transform: uppercase; color: var(--c-accent); margin-bottom: 1rem;
+        }
+        .hero-title {
+            font-family: var(--f-serif); font-size: 3.2rem; line-height: 0.9;
+            margin-bottom: 1rem; color: var(--c-ink);
+        }
+        .hero-desc {
+            font-family: var(--f-sans); font-size: 0.95rem; line-height: 1.6;
+            color: rgba(0,0,0,0.6); margin-bottom: 1.5rem;
+        }
+        .hero-actions { display: flex; gap: 10px; }
+        .ghost-btn {
+            padding: 0.8rem 1.4rem; border: 1px solid rgba(0,0,0,0.2);
+            background: transparent; font-family: var(--f-sans);
+            text-transform: uppercase; letter-spacing: 1px; font-size: 0.7rem;
+            cursor: pointer; pointer-events: auto;
+        }
+
+        .stat-strip {
+            position: absolute; right: 3rem; bottom: 3rem; display: grid;
+            grid-template-columns: repeat(3, 120px); gap: 12px; pointer-events: auto;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.6); border: 1px solid rgba(0,0,0,0.08);
+            padding: 0.8rem; border-radius: 12px; text-align: left;
+        }
+        .stat-label { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.6; }
+        .stat-value { font-family: var(--f-serif); font-size: 1.2rem; margin-top: 0.3rem; }
+
+        .scroll-hint {
+            position: absolute; right: 3rem; bottom: 50%; transform: translateY(50%);
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.6;
+        }
+        .scroll-line {
+            width: 2px; height: 60px; background: rgba(0,0,0,0.2); overflow: hidden;
+            position: relative;
+        }
+        .scroll-line::after {
+            content: ""; position: absolute; left: 0; top: -30px; width: 100%; height: 30px;
+            background: var(--c-accent); animation: scrollPulse 1.6s ease-in-out infinite;
+        }
+        @keyframes scrollPulse { 0% { top: -30px; } 100% { top: 60px; } }
+
+        /* Touch / coarse pointer: disable custom cursor */
+        @media (pointer: coarse) {
+            *, *::before, *::after { cursor: auto; }
+            #cursor { display: none; }
+        }
+
+        /* Loading */
+        #loader {
+            position: fixed; inset: 0; background: var(--c-bg); z-index: 999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .loader-bar {
+            width: 200px; height: 2px; background: rgba(0,0,0,0.1); margin-top: 20px;
+            overflow: hidden;
+        }
+        .loader-fill { width: 0%; height: 100%; background: var(--c-ink); transition: width 0.2s; }
+
+    </style>
+</head>
+<body>
+
+<div id="loader">
+    <div style="font-family:var(--f-serif); font-style:italic;">Constructing Archive...</div>
+    <div class="loader-bar"><div class="loader-fill" id="load-fill"></div></div>
+</div>
+
+<canvas id="gl-canvas"></canvas>
+
+<div class="back-btn" id="btn-back">Close View</div>
+
+<div id="ui-layer">
+    <header class="header">
+        <div class="brand">
+            <h1>ORIFOLD</h1>
+            <div class="brand-meta">
+                <span>Archive Vol.2</span>
+                <span>WebGL System</span>
+            </div>
+        </div>
+        <div class="filter-nav">
+            <div class="filter-btn active" data-cat="all">All Works</div>
+            <div class="filter-btn" data-cat="Abstract">Abstract</div>
+            <div class="filter-btn" data-cat="Architecture">Architecture</div>
+            <div class="filter-btn" data-cat="Nature">Nature</div>
+        </div>
+    </header>
+
+    <div class="hero-panel">
+        <div class="hero-kicker">Curated Archive</div>
+        <div class="hero-title">Paper-Logic<br>Vault System</div>
+        <div class="hero-desc">
+            A tactile archive of procedural artworks. Scroll to traverse the collection,
+            hover to unfold, and open a piece for full inspection.
+        </div>
+        <div class="hero-actions">
+            <button class="action-btn" id="btn-explore">Explore</button>
+            <button class="ghost-btn" id="btn-manifest">Manifest</button>
+        </div>
+    </div>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="scroll-progress"></div>
+    </div>
+
+    <div class="scroll-hint">
+        <div>Scroll</div>
+        <div class="scroll-line"></div>
+    </div>
+
+    <div class="detail-ui">
+        <div class="artwork-info">
+            <h2 id="dt-title">Untitled</h2>
+            <div class="artwork-meta">
+                ID: <span id="dt-id">#000</span> &nbsp;|&nbsp;
+                RES: <span id="dt-res">4K</span> &nbsp;|&nbsp;
+                TYPE: <span id="dt-cat">Paper</span>
+            </div>
+        </div>
+        <button class="action-btn" id="btn-dl">Download Asset</button>
+    </div>
+
+    <div class="stat-strip">
+        <div class="stat-card">
+            <div class="stat-label">Items</div>
+            <div class="stat-value" id="stat-count">00</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Status</div>
+            <div class="stat-value">Online</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Mode</div>
+            <div class="stat-value">Archive</div>
+        </div>
+    </div>
+</div>
+
+<div id="cursor">
+    <div class="c-dot"></div>
+    <div class="c-circle"></div>
+    <div class="c-label">EXPAND</div>
+</div>
+
+<script type="x-shader/x-vertex" id="vertexShader">
+    varying vec2 vUv;
+    varying float vFold;
+    varying vec3 vNormal;
+    varying vec3 vViewPosition;
+
+    uniform float uTime;
+    uniform float uFoldAmount; // 0 = flat, 1 = fully folded
+    uniform float uHover;      // 0 to 1
+
+    // Simplex Noise Function (omitted for brevity, using simple sin waves)
+
+    void main() {
+        vUv = uv;
+        vec3 pos = position;
+
+        // --- FOLDING LOGIC ---
+        // Divide plane into segments based on UV
+        float segment = floor(uv.y * 3.0); // 3 segments vertically
+
+        // Calculate rotation axis (horizontal lines)
+        float pivotY = (segment + 0.5) / 3.0; // Pivot at center of each segment? No, pivot at edges.
+
+        // Simplified Accordion Fold
+        float angle = uFoldAmount * 1.5; // Max fold angle
+
+        // Top Section
+        if (uv.y > 0.66) {
+            float a = -angle;
+            float cy = 0.66; // Pivot line
+            float dy = pos.y - (cy - 0.5); // Local y relative to pivot (plane height is 1)
+            // Rotate around X axis
+            pos.y = (cy - 0.5) + dy * cos(a) - pos.z * sin(a);
+            pos.z = dy * sin(a) + pos.z * cos(a);
+        }
+        // Bottom Section
+        else if (uv.y < 0.33) {
+            float a = angle;
+            float cy = 0.33;
+            float dy = pos.y - (cy - 0.5);
+            pos.y = (cy - 0.5) + dy * cos(a) - pos.z * sin(a);
+            pos.z = dy * sin(a) + pos.z * cos(a);
+        }
+
+        // --- HOVER BREATHE ---
+        pos.z += sin(uv.x * 5.0 + uTime) * 0.02 * uHover;
+
+        // --- WIND NOISE (Subtle vertex displacement) ---
+        float wind = sin(uv.x * 10.0 + uTime * 2.0) * cos(uv.y * 5.0 + uTime);
+        pos.z += wind * 0.01 * (1.0 - uFoldAmount); // Only when open
+
+        vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+        vViewPosition = -mvPosition.xyz;
+        gl_Position = projectionMatrix * mvPosition;
+
+        vNormal = normalMatrix * normal;
+        vFold = uFoldAmount;
+    }
+</script>
+
+<script type="x-shader/x-fragment" id="fragmentShader">
+    uniform sampler2D tDiffuse;
+    uniform vec3 uColor;
+    uniform float uOpacity;
+
+    varying vec2 vUv;
+    varying float vFold;
+    varying vec3 vNormal;
+
+    // Grain function
+    float random(vec2 p) {
+        return fract(sin(dot(p.xy, vec2(12.9898, 78.233))) * 43758.5453);
+    }
+
+    void main() {
+        vec4 texColor = texture2D(tDiffuse, vUv);
+
+        // Paper Texture Grain
+        float noise = random(vUv * 100.0);
+
+        // Crease Shadows (Darken top and bottom edges of segments)
+        float crease = 0.0;
+        float segY = fract(vUv.y * 3.0);
+        // Distance from fold lines (0, 0.33, 0.66, 1)
+        float distToFold = min(segY, 1.0 - segY);
+        crease = (1.0 - smoothstep(0.0, 0.1, distToFold)) * vFold * 0.5;
+
+        vec3 finalColor = texColor.rgb;
+
+        // Desaturate slightly for "paper ink" look
+        vec3 gray = vec3(dot(finalColor, vec3(0.299, 0.587, 0.114)));
+        finalColor = mix(finalColor, gray, 0.2);
+
+        // Apply Paper Grain
+        finalColor += (noise - 0.5) * 0.05;
+
+        // Apply Crease Shadow
+        finalColor -= crease;
+
+        gl_FragColor = vec4(finalColor, uOpacity);
+    }
+</script>
+
+<script>
+    /**
+     * ============================================================================
+     * ORIFOLD SYSTEM CORE
+     * ============================================================================
+     */
+
+        // --- 1. DATA SOURCE ---
+    const COLLECTION = [
+            { id: 1, title: 'Geometric Silence', cat: 'Abstract', url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800' },
+            { id: 2, title: 'Concrete Void', cat: 'Architecture', url: 'https://images.unsplash.com/photo-1487700160041-babef9c3cb55?q=80&w=800' },
+            { id: 3, title: 'Autumn Vein', cat: 'Nature', url: 'https://images.unsplash.com/photo-1533038590840-1cde6e668a91?q=80&w=800' },
+            { id: 4, title: 'Washi Layers', cat: 'Abstract', url: 'https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?q=80&w=800' },
+            { id: 5, title: 'Steel Rhythm', cat: 'Architecture', url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800' },
+            { id: 6, title: 'Dune Shadow', cat: 'Nature', url: 'https://images.unsplash.com/photo-1502933691298-84fc14542831?q=80&w=800' },
+            { id: 7, title: 'Liquid Ink', cat: 'Abstract', url: 'https://images.unsplash.com/photo-1550684848-86a5d8727436?q=80&w=800' },
+            { id: 8, title: 'Glass Prism', cat: 'Abstract', url: 'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?q=80&w=800' },
+            { id: 9, title: 'Moss Grid', cat: 'Nature', url: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=800' },
+            { id: 10, title: 'Urban Light', cat: 'Architecture', url: 'https://images.unsplash.com/photo-1477238134895-98438ad85c30?q=80&w=800' },
+            { id: 11, title: 'Foggy Peak', cat: 'Nature', url: 'https://images.unsplash.com/photo-1465056836041-7f43ac27dcb5?q=80&w=800' },
+            { id: 12, title: 'Noir Texture', cat: 'Abstract', url: 'https://images.unsplash.com/photo-1507090960745-b32f65d3113a?q=80&w=800' },
+            // Duplicates for infinite feel
+            { id: 13, title: 'Geometric Silence II', cat: 'Abstract', url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800' },
+            { id: 14, title: 'Concrete Void II', cat: 'Architecture', url: 'https://images.unsplash.com/photo-1487700160041-babef9c3cb55?q=80&w=800' },
+            { id: 15, title: 'Autumn Vein II', cat: 'Nature', url: 'https://images.unsplash.com/photo-1533038590840-1cde6e668a91?q=80&w=800' }
+        ];
+
+    // --- 2. AUDIO SYNTHESIS (Paper Sounds) ---
+    class PaperSound {
+        constructor() {
+            this.ctx = null;
+            this.master = null;
+        }
+        init() {
+            if(this.ctx) return;
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            this.master = this.ctx.createGain();
+            this.master.gain.value = 0.3;
+            this.master.connect(this.ctx.destination);
+        }
+        playRustle() {
+            if(!this.ctx) return;
+            const bufferSize = this.ctx.sampleRate * 0.3; // 0.3s noise
+            const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for(let i=0; i<bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+            const noise = this.ctx.createBufferSource();
+            noise.buffer = buffer;
+
+            const filter = this.ctx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.value = 1000 + Math.random() * 500;
+
+            const gain = this.ctx.createGain();
+            gain.gain.setValueAtTime(0.5, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(this.master);
+            noise.start();
+        }
+        playClick() {
+            if(!this.ctx) return;
+            const osc = this.ctx.createOscillator();
+            const g = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(200, this.ctx.currentTime);
+            osc.frequency.linearRampToValueAtTime(50, this.ctx.currentTime + 0.1);
+            g.gain.setValueAtTime(0.1, this.ctx.currentTime);
+            g.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.1);
+            osc.connect(g); g.connect(this.master);
+            osc.start(); osc.stop(this.ctx.currentTime + 0.1);
+        }
+    }
+    const SFX = new PaperSound();
+
+    // --- 3. WEBGL APP ---
+    class App {
+        constructor() {
+            this.container = document.getElementById('gl-canvas');
+            this.width = window.innerWidth;
+            this.height = window.innerHeight;
+
+            this.scene = new THREE.Scene();
+            this.scene.background = new THREE.Color(0xF2F0EB);
+            this.scene.fog = new THREE.FogExp2(0xF2F0EB, 0.03); // Depth fog
+
+            this.camera = new THREE.PerspectiveCamera(45, this.width / this.height, 0.1, 100);
+            this.camera.position.set(0, 0, 15);
+
+            this.renderer = new THREE.WebGLRenderer({ canvas: this.container, antialias: true });
+            this.renderer.setSize(this.width, this.height);
+            this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            this.renderer.shadowMap.enabled = true;
+            this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+            this.scroll = 0;
+            this.scrollTarget = 0;
+            this.maxScroll = 0;
+            this.scrollVelocity = 0;
+            this.touch = { active: false, lastY: 0 };
+
+            this.paperMeshes = [];
+            this.activeItem = null; // For detail view
+            this.isDetailMode = false;
+            this.isClosing = false;
+
+            this.mouse = new THREE.Vector2();
+            this.raycaster = new THREE.Raycaster();
+
+            this.initLights();
+            this.loadAssets().then(() => {
+                this.createGrid();
+                this.addEvents();
+                this.render();
+            });
+        }
+
+        initLights() {
+            const ambi = new THREE.AmbientLight(0xffffff, 0.6);
+            this.scene.add(ambi);
+
+            const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+            dir.position.set(5, 10, 10);
+            dir.castShadow = true;
+            dir.shadow.mapSize.width = 1024;
+            dir.shadow.mapSize.height = 1024;
+            this.scene.add(dir);
+        }
+
+        async loadAssets() {
+            const loader = new THREE.TextureLoader();
+            const promises = COLLECTION.map(data => {
+                return new Promise(resolve => {
+                    loader.load(data.url, (tex) => {
+                        data.texture = tex;
+                        resolve();
+                    });
+                });
+            });
+
+            // Loader UI Update
+            let loaded = 0;
+            COLLECTION.forEach(d => {
+                const img = new Image();
+                img.src = d.url;
+                img.onload = () => {
+                    loaded++;
+                    document.getElementById('load-fill').style.width = (loaded/COLLECTION.length*100) + '%';
+                };
+            });
+
+            await Promise.all(promises);
+
+            // Hide Loader
+            gsap.to('#loader', { opacity: 0, duration: 1, onComplete: () => document.getElementById('loader').style.display='none' });
+        }
+
+        createGrid() {
+            // Config
+            const cols = 3;
+            const gap = 3.5;
+            const rows = Math.ceil(COLLECTION.length / cols);
+            this.maxScroll = (rows * gap) - 5; // Approx
+
+            // Shader Material Base
+            const shaderMat = new THREE.ShaderMaterial({
+                uniforms: {
+                    tDiffuse: { value: null },
+                    uTime: { value: 0 },
+                    uFoldAmount: { value: 1.0 }, // 1 = Closed, 0 = Open
+                    uHover: { value: 0 },
+                    uOpacity: { value: 1 }
+                },
+                vertexShader: document.getElementById('vertexShader').textContent,
+                fragmentShader: document.getElementById('fragmentShader').textContent,
+                side: THREE.DoubleSide,
+                transparent: true
+            });
+
+            COLLECTION.forEach((data, i) => {
+                const x = (i % cols) * gap - gap;
+                const y = -Math.floor(i / cols) * gap; // Flowing down
+
+                // Geometry: Highly segmented plane for folding
+                const geo = new THREE.PlaneGeometry(2.5, 3.5, 20, 20); // Width, Height, Segments
+
+                const mat = shaderMat.clone();
+                mat.uniforms.tDiffuse.value = data.texture;
+
+                const mesh = new THREE.Mesh(geo, mat);
+                mesh.position.set(x, y, 0);
+                mesh.userData = {
+                    id: data.id,
+                    data: data,
+                    baseY: y,
+                    hovered: false
+                };
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+
+                this.scene.add(mesh);
+                this.paperMeshes.push(mesh);
+            });
+        }
+
+        addEvents() {
+            window.addEventListener('resize', this.onResize.bind(this));
+            window.addEventListener('mousemove', this.onMouseMove.bind(this));
+            window.addEventListener('click', this.onClick.bind(this));
+            window.addEventListener('pointerdown', (e) => {
+                if (this.isDetailMode && !this.isClosing) {
+                    const isUI = e.target.closest('.detail-ui') || e.target.closest('#btn-back');
+                    if (!isUI) this.closeDetail();
+                }
+            }, true);
+            window.addEventListener('wheel', this.onWheel.bind(this), { passive: false });
+            window.addEventListener('touchstart', this.onTouchStart.bind(this), { passive: false });
+            window.addEventListener('touchmove', this.onTouchMove.bind(this), { passive: false });
+            window.addEventListener('touchend', this.onTouchEnd.bind(this));
+            window.addEventListener('pointerdown', () => SFX.init(), { once: true });
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') this.closeDetail();
+            });
+
+            // Back Button
+            document.getElementById('btn-back').addEventListener('click', this.closeDetail.bind(this));
+            document.getElementById('btn-explore').addEventListener('click', () => {
+                this.scrollTarget = Math.min(this.maxScroll, this.scrollTarget + 6);
+            });
+        }
+
+        onWheel(e) {
+            if (this.isDetailMode) return;
+            e.preventDefault();
+            const delta = e.deltaY * 0.012;
+            this.scrollTarget = Math.max(0, Math.min(this.maxScroll, this.scrollTarget + delta));
+        }
+
+        onTouchStart(e) {
+            if (this.isDetailMode) return;
+            this.touch.active = true;
+            this.touch.lastY = e.touches[0].clientY;
+        }
+
+        onTouchMove(e) {
+            if (!this.touch.active || this.isDetailMode) return;
+            e.preventDefault();
+            const y = e.touches[0].clientY;
+            const dy = this.touch.lastY - y;
+            this.touch.lastY = y;
+            this.scrollTarget = Math.max(0, Math.min(this.maxScroll, this.scrollTarget + dy * 0.02));
+        }
+
+        onTouchEnd() {
+            this.touch.active = false;
+        }
+
+        updateScroll(yOffset) {
+            // Loop meshes logic for infinity could go here,
+            // for now simple translation
+            this.scene.position.y = yOffset;
+
+            // Progress Bar
+            const prog = Math.min(1, yOffset / (this.maxScroll + 5));
+            document.getElementById('scroll-progress').style.height = (prog * 100) + '%';
+        }
+
+        onMouseMove(e) {
+            // Normalize mouse
+            this.mouse.x = (e.clientX / this.width) * 2 - 1;
+            this.mouse.y = -(e.clientY / this.height) * 2 + 1;
+
+            // Cursor UI
+            gsap.to('#cursor', { x: e.clientX, y: e.clientY, duration: 0.1 });
+
+            if(this.isDetailMode) return;
+
+            // Raycasting
+            this.raycaster.setFromCamera(this.mouse, this.camera);
+            const intersects = this.raycaster.intersectObjects(this.paperMeshes);
+
+            let hit = false;
+            if(intersects.length > 0) {
+                const obj = intersects[0].object;
+                if(!obj.userData.hovered) {
+                    // Enter Hover
+                    this.paperMeshes.forEach(m => {
+                        if(m !== obj && m.userData.hovered) {
+                            m.userData.hovered = false;
+                            gsap.to(m.material.uniforms.uFoldAmount, { value: 1.0, duration: 0.5 });
+                            gsap.to(m.material.uniforms.uHover, { value: 0, duration: 0.5 });
+                        }
+                    });
+
+                    obj.userData.hovered = true;
+                    SFX.playRustle();
+                    // Partial Unfold on Hover
+                    gsap.to(obj.material.uniforms.uFoldAmount, { value: 0.2, duration: 0.8, ease: "back.out(1.2)" });
+                    gsap.to(obj.material.uniforms.uHover, { value: 1, duration: 0.5 });
+
+                    // Cursor Label
+                    document.body.classList.add('hover-active');
+                    document.querySelector('.c-label').innerText = obj.userData.data.title;
+                }
+                hit = true;
+            }
+
+            if(!hit) {
+                document.body.classList.remove('hover-active');
+                this.paperMeshes.forEach(m => {
+                    if(m.userData.hovered) {
+                        m.userData.hovered = false;
+                        gsap.to(m.material.uniforms.uFoldAmount, { value: 1.0, duration: 0.5 });
+                        gsap.to(m.material.uniforms.uHover, { value: 0, duration: 0.5 });
+                    }
+                });
+            }
+        }
+
+        onClick() {
+            SFX.init();
+            if(this.isDetailMode) {
+                this.closeDetail();
+                return;
+            }
+
+            // Check Hovered
+            const hovered = this.paperMeshes.find(m => m.userData.hovered);
+            if(hovered) {
+                this.openDetail(hovered);
+            }
+        }
+
+        openDetail(mesh) {
+            if (this.isClosing) return;
+            this.isDetailMode = true;
+            this.activeItem = mesh;
+            SFX.playClick();
+
+            // 1. Calculate Target Position (Center of Screen in 3D)
+            // We need to account for current scroll (scene.position.y)
+            const targetY = -this.scene.position.y;
+
+            // 2. Animate Camera/Scene
+            // Instead of moving camera, we move the clicked item to z=5 (close up)
+            // and push others back/fade out.
+
+            // Store original pos
+            mesh.userData.origPos = mesh.position.clone();
+            mesh.userData.origRot = mesh.rotation.clone();
+
+            const tl = gsap.timeline();
+
+            // Move selected mesh to center
+            tl.to(mesh.position, {
+                x: 0,
+                y: targetY, // Align with camera center vertically
+                z: 10,
+                duration: 1.2,
+                ease: "power3.inOut"
+            }, 0);
+
+            // Fully Unfold
+            tl.to(mesh.material.uniforms.uFoldAmount, { value: 0.0, duration: 1.2 }, 0);
+
+            // Scale Up slightly
+            tl.to(mesh.scale, { x: 1.5, y: 1.5, duration: 1.2 }, 0);
+
+            // Fade out others
+            this.paperMeshes.forEach(m => {
+                if(m !== mesh) {
+                    gsap.to(m.material.uniforms.uOpacity, { value: 0, duration: 0.5 });
+                    gsap.to(m.position, { z: -10, duration: 1 }); // Push away
+                }
+            });
+
+            // UI Transition
+            document.body.classList.add('is-detail');
+            // Set Dark Mode for immersion
+            document.body.classList.add('dark-mode');
+            this.scene.background = new THREE.Color(0x111111);
+            this.scene.fog = new THREE.FogExp2(0x111111, 0.05);
+
+            // Populate Data
+            const data = mesh.userData.data;
+            document.getElementById('dt-title').innerText = data.title;
+            document.getElementById('dt-id').innerText = "#" + data.id;
+            document.getElementById('dt-cat').innerText = data.cat;
+        }
+
+        closeDetail() {
+            if(!this.activeItem || this.isClosing) return;
+            this.isClosing = true;
+            SFX.playClick();
+
+            const mesh = this.activeItem;
+            const tl = gsap.timeline({
+                onComplete: () => {
+                    this.isDetailMode = false;
+                    this.activeItem = null;
+                    this.isClosing = false;
+                }
+            });
+
+            // Return mesh
+            tl.to(mesh.position, {
+                x: mesh.userData.origPos.x,
+                y: mesh.userData.origPos.y,
+                z: 0,
+                duration: 1,
+                ease: "power3.inOut"
+            }, 0);
+
+            tl.to(mesh.scale, { x: 1, y: 1, duration: 1 }, 0);
+
+            // Refold partly
+            tl.to(mesh.material.uniforms.uFoldAmount, { value: 1.0, duration: 1 }, 0);
+
+            // Bring back others
+            this.paperMeshes.forEach(m => {
+                if(m !== mesh) {
+                    gsap.to(m.material.uniforms.uOpacity, { value: 1, duration: 0.5, delay: 0.5 });
+                    gsap.to(m.position, { z: 0, duration: 1 });
+                    m.userData.hovered = false;
+                    gsap.to(m.material.uniforms.uHover, { value: 0, duration: 0.3 });
+                }
+            });
+
+            // UI Reset
+            document.body.classList.remove('is-detail');
+            document.body.classList.remove('dark-mode');
+            this.scene.background = new THREE.Color(0xF2F0EB);
+            this.scene.fog = new THREE.FogExp2(0xF2F0EB, 0.03);
+            document.body.classList.remove('hover-active');
+        }
+
+        render(time) {
+            requestAnimationFrame(this.render.bind(this));
+
+            if (!this.isDetailMode) {
+                this.scroll += (this.scrollTarget - this.scroll) * 0.12;
+                this.updateScroll(this.scroll);
+            }
+
+            // Update Uniforms
+            const t = time * 0.001;
+            this.paperMeshes.forEach(mesh => {
+                mesh.material.uniforms.uTime.value = t;
+
+                // Idle floating animation
+                if(mesh !== this.activeItem) {
+                    mesh.rotation.z = Math.sin(t * 0.5 + mesh.position.x) * 0.02;
+                }
+            });
+
+            this.renderer.render(this.scene, this.camera);
+        }
+
+        onResize() {
+            this.width = window.innerWidth;
+            this.height = window.innerHeight;
+            this.camera.aspect = this.width / this.height;
+            this.camera.updateProjectionMatrix();
+            this.renderer.setSize(this.width, this.height);
+        }
+    }
+
+    // --- 4. STARTUP ---
+    window.onload = () => {
+        const app = new App();
+        const countEl = document.getElementById('stat-count');
+        if (countEl) countEl.innerText = String(COLLECTION.length).padStart(2, '0');
+
+        // Filter Logic
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.onclick = () => {
+                const cat = btn.dataset.cat;
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                app.paperMeshes.forEach(m => {
+                    const match = cat === 'all' || m.userData.data.cat === cat;
+                    gsap.to(m.material.uniforms.uOpacity, { value: match ? 1 : 0.1, duration: 0.5 });
+                    gsap.to(m.scale, { x: match?1:0.8, y: match?1:0.8, duration: 0.5 });
+                });
+            }
+        });
+    };
+
+</script>
+</body>
+</html>
