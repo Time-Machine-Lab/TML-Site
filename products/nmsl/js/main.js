@@ -15,47 +15,48 @@ const initNav = () => {
 };
 
 const initHero = () => {
-  const cards = $$(".hero-card");
-  if (!cards.length) return;
+  const track = $("#hero-track");
+  if (!track) return;
 
-  let index = 0;
-  const setActive = (next) => {
-    cards.forEach((card) => card.classList.remove("is-active"));
-    cards[next].classList.add("is-active");
-    index = next;
+  const scrollByCard = (dir) => {
+    const card = track.querySelector(".hero-card");
+    const gap = parseInt(getComputedStyle(track).columnGap || 14, 10);
+    const amount = (card?.getBoundingClientRect().width || 320) + gap;
+    track.scrollBy({ left: dir * amount, behavior: "smooth" });
   };
 
-  cards.forEach((card, i) => {
-    card.addEventListener("click", () => setActive(i));
-  });
-
+  const prevBtn = $("[data-hero-prev]");
   const nextBtn = $("[data-hero-next]");
-  if (nextBtn) {
-    nextBtn.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      setActive((index + 1) % cards.length);
-    });
-  }
-
-  setActive(0);
-
-  setInterval(() => {
-    setActive((index + 1) % cards.length);
-  }, 6000);
+  if (prevBtn) prevBtn.addEventListener("click", () => scrollByCard(-1));
+  if (nextBtn) nextBtn.addEventListener("click", () => scrollByCard(1));
 };
 
 const initChannels = () => {
   const pills = $$("[data-channel]");
   if (!pills.length) return;
   const title = $("#channel-heading");
+  const cards = $$(".gallery-card");
+  const row = $(".channel-row");
+  const nextBtn = $("[data-channel-next]");
 
   pills.forEach((pill) => {
     pill.addEventListener("click", () => {
       activate(pills, pill);
-      if (title) title.textContent = pill.dataset.channel;
+      const channel = pill.dataset.channel;
+      if (title) title.textContent = channel;
+      const isAll = channel === "All Channels";
+      cards.forEach((card) => {
+        const match = isAll || card.dataset.category === channel;
+        card.style.display = match ? "" : "none";
+      });
     });
   });
+
+  if (row && nextBtn) {
+    nextBtn.addEventListener("click", () => {
+      row.scrollBy({ left: 240, behavior: "smooth" });
+    });
+  }
 };
 
 const initDock = () => {
@@ -69,7 +70,33 @@ const initDock = () => {
   });
 };
 
+const initFilters = () => {
+  const tabs = $$(".filter-tab");
+  const sizeBtns = $$(".size-btn");
+  const sortBadge = $("#sort-badge");
+
+  if (tabs.length) {
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        activate(tabs, tab);
+        if (sortBadge && tab.dataset.sort) sortBadge.textContent = tab.dataset.sort;
+      });
+    });
+  }
+
+  if (sizeBtns.length) {
+    sizeBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        activate(sizeBtns, btn);
+        const size = btn.dataset.size || "medium";
+        document.body.dataset.grid = size;
+      });
+    });
+  }
+};
+
 initNav();
 initHero();
 initChannels();
 initDock();
+initFilters();

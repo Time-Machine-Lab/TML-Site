@@ -1,270 +1,505 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TmlStation - Matte Painting</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@400;600;700&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/components.css" />
-  <link rel="stylesheet" href="css/style.css" />
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TmlStation - Matte Painting</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Cinzel:wght@400;600;700&amp;family=Inter:wght@400;500;600;700;800&amp;family=Playfair+Display:ital,wght@0,600;1,600&amp;display=swap" rel="stylesheet"/>
+<link href="css/components.css" rel="stylesheet"/>
+<link href="css/style.css" rel="stylesheet"/>
 </head>
 <body data-page="explore">
-  <header class="header">
-    <div class="header-inner">
-      <div class="left-group">
-        <div class="brand">
-          <img src="assets/logo-monochrome.svg" alt="TmlStation" />
+<header class="header">
+<div class="header-inner">
+<div class="left-group">
+<div class="brand">
+<img alt="TmlStation" src="assets/logo-monochrome.svg"/>
           TmlStation
         </div>
-        <nav class="nav">
-          <a class="active" data-page="explore" href="index.html">Explore</a>
-          <a data-page="learn" href="channel.html">Learn</a>
-          <a data-page="shop" href="favorites.html">Shop</a>
-          <a data-page="jobs" href="channel.html">Find a Job</a>
-          <a data-page="hire" href="artwork.html">Hire</a>
-        </nav>
-      </div>
-      <div class="search">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 3a7.5 7.5 0 1 0 4.73 13.31l4.73 4.73 1.54-1.54-4.73-4.73A7.5 7.5 0 0 0 10.5 3Zm0 2a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11Z"/></svg>
-        <input type="text" placeholder="Search" />
-      </div>
-      <div class="actions">
-        <button class="icon-btn" type="button" title="Cart">
-          <svg viewBox="0 0 24 24"><path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm9 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM6.2 6H20l-1.2 7H7.2L6.2 6Zm-2.1-2h16.7c.9 0 1.6.8 1.5 1.7l-1.4 8.3c-.1.8-.8 1.3-1.5 1.3H6.5L5.7 5.3H3V3h2.9c.7 0 1.3.5 1.4 1.1l.8 4.9"/></svg>
-        </button>
-        <button class="btn btn-outline" type="button">Sign up</button>
-        <button class="btn btn-primary" type="button">Sign in</button>
-        <button class="icon-btn" type="button" title="More">
-          <svg viewBox="0 0 24 24"><path d="M12 5.5a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2Zm0 5.7a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2Zm0 5.7a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2Z"/></svg>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <main>
-    <section class="hero">
-      <a class="hero-card" href="artwork.html" aria-label="Fab New Year Sale">
-        <img src="assets/fab-2026-new-year-sale-artstation-top-row-890x500.jpg" alt="Fab New Year Sale" />
-        <div class="hero-meta">
-          <div class="hero-tag" style="background:#c21f51;border-color:#d35d7c;">Sale</div>
-          <div class="hero-title">Fab New Year Sale now on!</div>
-          <div class="hero-sub">Get up to 70% off thousands of assets until January 20</div>
-        </div>
-      </a>
-
-      <a class="hero-card" href="artwork.html" aria-label="AFEELA 1 Theme Design Challenge">
-        <img src="assets/artstation-x-afeela-magazine-header-1280x640.jpg" alt="Afeela 1" />
-        <div class="hero-meta">
-          <div class="hero-tag">Challenge</div>
-          <div class="hero-title">AFEELA 1</div>
-          <div class="hero-sub">Theme Design Challenge · Winners Announced</div>
-        </div>
-      </a>
-
-      <a class="hero-card" href="artwork.html" aria-label="Manticore Games Out of Time">
-        <img src="assets/artstation-artblast-edgeoffate-01destiny-eof-890x500-notext.jpg" alt="Art Blast" />
-        <div class="hero-meta">
-          <div class="hero-tag">Art Blast</div>
-          <div class="hero-title">Manticore Games Out of Time</div>
-          <div class="hero-sub">Discover the Art of Out of Time</div>
-        </div>
-      </a>
-
-      <a class="hero-card hero-blue" href="artwork.html" aria-label="New on TmlStation">
-        <img src="assets/image-71.png" alt="New on TmlStation" />
-        <div class="hero-meta">
-          <div class="hero-tag" style="background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.35);">Ad</div>
-          <div class="hero-title">New on TmlStation</div>
-          <div class="hero-sub">Faster Portfolios, Bigger Uploads &amp; Better Job Tools</div>
-        </div>
-        <div class="cards">
-          <img src="assets/890x500.png" alt="Cards" />
-        </div>
-        <div class="hero-arrow" aria-hidden="true" data-hero-next>
-          <svg viewBox="0 0 24 24"><path d="M8.3 5.3 14.9 12l-6.6 6.7 1.4 1.4 8-8-8-8-1.4 1.2Z"/></svg>
-        </div>
-      </a>
-
-      <a class="hero-card hero-mini" href="artwork.html" aria-label="Your feed">
-        <img src="assets/bloodlines2-artstation-toprow-890x500.jpg" alt="Next card" />
-        <div class="hero-meta">
-          <div class="hero-title">Your</div>
-          <div class="hero-sub">See your feed</div>
-        </div>
-      </a>
-    </section>
-
-    <div class="channel-row">
-      <button class="square-btn" type="button" title="Menu">
-        <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4V6Zm0 5h16v2H4v-2Zm0 5h16v2H4v-2Z"/></svg>
-      </button>
-      <button class="square-btn" type="button" title="Channels">
-        <svg viewBox="0 0 24 24"><path d="M3 3h8v8H3V3Zm10 0h8v8h-8V3ZM3 13h8v8H3v-8Zm10 0h8v8h-8v-8Z"/></svg>
-      </button>
-      <button class="channel-pill active" type="button" data-channel="All Channels">All Channels</button>
-      <button class="channel-pill" type="button" data-channel="Matte Painting"><img src="assets/thumb.jpg" alt="Matte Painting" />Matte Painting</button>
-      <button class="channel-pill" type="button" data-channel="Architectural Visualization"><img src="assets/thumb(1).jpg" alt="Architectural Visualization" />Architectural Visualization</button>
-      <button class="channel-pill" type="button" data-channel="Environmental Concept Art & Design"><img src="assets/thumb(2).jpg" alt="Environmental" />Environmental Concept Art &amp; Design</button>
-      <button class="channel-pill" type="button" data-channel="Character Animation"><img src="assets/thumb(3).jpg" alt="Character Animation" />Character Animation</button>
-      <button class="channel-pill" type="button" data-channel="Visual Development"><img src="assets/thumb(4).jpg" alt="Visual Development" />Visual Development</button>
-      <button class="channel-pill" type="button" data-channel="Game Art"><img src="assets/thumb(5).jpg" alt="Game Art" />Game Art</button>
-      <button class="channel-pill" type="button" data-channel="Games & Real-Time 3D Environment"><img src="assets/thumb(6).jpg" alt="Games" />Games and Real-Time 3D Environment Art</button>
-    </div>
-
-    <div class="section-header">
-      <h2 class="section-title" id="channel-heading">All Channels</h2>
-      <div class="section-badge" id="sort-badge">Trending</div>
-    </div>
-
-    <section class="gallery">
-      <a class="gallery-card" href="artwork.html" data-title="Arcane" data-artist="Riot Games">
-        <img src="assets/peter-krasevec-artstation61.jpg" alt="Arcane" />
-        <div class="gallery-label label-arcane">ARCANE</div>
-        <div class="card-info">
-          <div class="card-info-title">Arcane</div>
-          <div class="card-info-artist">Riot Games</div>
-        </div>
-      </a>
-      <a class="gallery-card" href="artwork.html" data-title="Magic" data-artist="Tysen Johnson">
-        <img src="assets/tysen-johnson-img-9860.jpg" alt="Magic" />
-        <div class="gallery-label label-magic">MAGIC</div>
-        <div class="card-info">
-          <div class="card-info-title">Magic the Gathering</div>
-          <div class="card-info-artist">Tysen Johnson</div>
-        </div>
-      </a>
-      <a class="gallery-card" href="artwork.html" data-title="Environment Concept" data-artist="Ainara Blanch">
-        <img src="assets/ainara-blanch-1-d.jpg" alt="Cat" />
-        <div class="card-info">
-          <div class="card-info-title">Environment Concept</div>
-          <div class="card-info-artist">Ainara Blanch</div>
-        </div>
-      </a>
-      <a class="gallery-card" href="artwork.html" data-title="Alexandria" data-artist="Jerome Comentale">
-        <img src="assets/jerome-comentale-jerome-comentale-3.webp" alt="Architectural" />
-        <div class="card-info">
-          <div class="card-info-title">Alexandria FFIX</div>
-          <div class="card-info-artist">Jerome Comentale</div>
-        </div>
-      </a>
-      <a class="gallery-card" href="artwork.html" data-title="Ritual Tides" data-artist="Sergey Semenovykh">
-        <img src="assets/sergey-semenovykh-sergey-semenovykh-chainsaw-man-1x1.jpg" alt="Ritual" />
-        <div class="gallery-label label-ritual">RITUAL<span>TIDES</span></div>
-        <div class="card-info">
-          <div class="card-info-title">Ritual Tides</div>
-          <div class="card-info-artist">Sergey Semenovykh</div>
-        </div>
-      </a>
-      <a class="gallery-card" href="artwork.html" data-title="No Rest" data-artist="Concept Crew">
-        <img src="assets/yf-cg-005eiqs9ly1i5th7gsxj4j34w02804qy-2.jpg" alt="No Rest" />
-        <div class="gallery-label label-wicked">NO REST<br /><span>FOR THE WICKED</span></div>
-        <div class="card-info">
-          <div class="card-info-title">No Rest</div>
-          <div class="card-info-artist">Concept Crew</div>
-        </div>
-      </a>
-      <a class="gallery-card" href="artwork.html" data-title="La Rajeta" data-artist="Alvin Seeber">
-        <img src="assets/alvin-seeber-day.webp" alt="La Rajeta" />
-        <div class="gallery-label label-rajeta">la Rajeta</div>
-        <div class="card-info">
-          <div class="card-info-title">La Rajeta</div>
-          <div class="card-info-artist">Alvin Seeber</div>
-        </div>
-      </a>
-      <a class="gallery-card" href="artwork.html" data-title="Outlaws" data-artist="Col Price">
-        <img src="assets/col-price-smugglersrun-s.webp" alt="Outlaws" />
-        <div class="gallery-label label-outlaws">OUTLAWS</div>
-        <div class="card-info">
-          <div class="card-info-title">Outlaws</div>
-          <div class="card-info-artist">Col Price</div>
-        </div>
-      </a>
-      <a class="gallery-card" href="artwork.html" data-title="Diablo" data-artist="Sergey Semenovykh">
-        <img src="assets/sergey-semenovykh-sergey-semenovykh-the-iron-dawn-1x1.webp" alt="Diablo" />
-        <div class="gallery-label label-diablo">DIABLO</div>
-        <div class="card-info">
-          <div class="card-info-title">Diablo</div>
-          <div class="card-info-artist">Sergey Semenovykh</div>
-        </div>
-      </a>
-      <a class="gallery-card" href="artwork.html" data-title="Angelic" data-artist="ZAQ">
-        <img src="assets/zaq-1-15.jpg" alt="Angelic" />
-        <div class="gallery-label label-angelic">ANGELIC</div>
-        <div class="card-info">
-          <div class="card-info-title">Angelic</div>
-          <div class="card-info-artist">ZAQ</div>
-        </div>
-      </a>
-      <a class="gallery-card" href="artwork.html" data-title="Village" data-artist="Julian Calle">
-        <img src="assets/julian-calle-city-master-class.jpg" alt="Village" />
-        <div class="card-info">
-          <div class="card-info-title">Village</div>
-          <div class="card-info-artist">Julian Calle</div>
-        </div>
-      </a>
-      <a class="gallery-card" href="artwork.html" data-title="Clouds" data-artist="Evgenij Kungur">
-        <img src="assets/evgenij-kungur-1920.jpg" alt="Clouds" />
-        <div class="card-info">
-          <div class="card-info-title">Clouds</div>
-          <div class="card-info-artist">Evgenij Kungur</div>
-        </div>
-      </a>
-      <a class="gallery-card" href="artwork.html" data-title="Spire" data-artist="Shura Zhao">
-        <img src="assets/shurazhao-1-02.jpg" alt="Spire" />
-        <div class="card-info">
-          <div class="card-info-title">Spire</div>
-          <div class="card-info-artist">Shura Zhao</div>
-        </div>
-      </a>
-      <a class="gallery-card" href="artwork.html" data-title="Highguard" data-artist="Anton Mikhalenko">
-        <img src="assets/anton-mikhalenko-anton-mikhalenko-prev.jpg" alt="Highguard" />
-        <div class="gallery-label label-highguard">HIGHGUARD</div>
-        <div class="card-info">
-          <div class="card-info-title">Highguard</div>
-          <div class="card-info-artist">Anton Mikhalenko</div>
-        </div>
-      </a>
-      <a class="gallery-card" href="artwork.html" data-title="Mech" data-artist="Olga Panfil">
-        <img src="assets/olga-panfil-olga-panfil.webp" alt="Mech" />
-        <div class="card-info">
-          <div class="card-info-title">Mech</div>
-          <div class="card-info-artist">Olga Panfil</div>
-        </div>
-      </a>
-      <a class="gallery-card" href="artwork.html" data-title="Mask" data-artist="Yucong Tang">
-        <img src="assets/yucong-tang-1.jpg" alt="Mask" />
-        <div class="card-info">
-          <div class="card-info-title">Mask</div>
-          <div class="card-info-artist">Yucong Tang</div>
-        </div>
-      </a>
-    </section>
-  </main>
-
-  <div class="float-dock">
-    <button class="dock-btn" data-sort="Community" type="button">Community</button>
-    <button class="dock-btn active" data-sort="Trending" type="button">Trending</button>
-    <button class="dock-btn" data-sort="Latest" type="button">Latest</button>
-  </div>
-
-  <div class="modal is-hidden" id="preview-modal" aria-hidden="true">
-    <div class="modal-backdrop" data-close="modal"></div>
-    <div class="modal-panel" role="dialog" aria-modal="true">
-      <button class="modal-close" type="button" data-close="modal" aria-label="Close">
-        <svg viewBox="0 0 24 24"><path d="M6.4 5l12.6 12.6-1.4 1.4L5 6.4 6.4 5Zm12.6 1.4L6.4 19l-1.4-1.4L17.6 5l1.4 1.4Z"/></svg>
-      </button>
-      <img class="modal-image" id="modal-image" src="" alt="Preview" />
-      <div class="modal-meta">
-        <div class="modal-title" id="modal-title">Artwork</div>
-        <div class="modal-artist" id="modal-artist">Artist</div>
-      </div>
-    </div>
-  </div>
-
-  <script src="js/main.js"></script>
-  <script src="js/gallery.js"></script>
-  <script src="js/preview.js"></script>
+<nav class="nav">
+<a class="active" data-page="explore" href="index.html">Explore</a>
+<a data-page="learn" href="channel.html">Learn</a>
+<a data-page="shop" href="favorites.html">Shop</a>
+<a data-page="jobs" href="channel.html">Find a Job</a>
+<a data-page="hire" href="artwork.html">Hire</a>
+</nav>
+</div>
+<div class="search">
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M10.5 3a7.5 7.5 0 1 0 4.73 13.31l4.73 4.73 1.54-1.54-4.73-4.73A7.5 7.5 0 0 0 10.5 3Zm0 2a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11Z"></path></svg>
+<input placeholder="Search" type="text"/>
+</div>
+<div class="actions">
+<button class="icon-btn" title="Cart" type="button">
+<svg viewbox="0 0 24 24"><path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm9 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM6.2 6H20l-1.2 7H7.2L6.2 6Zm-2.1-2h16.7c.9 0 1.6.8 1.5 1.7l-1.4 8.3c-.1.8-.8 1.3-1.5 1.3H6.5L5.7 5.3H3V3h2.9c.7 0 1.3.5 1.4 1.1l.8 4.9"></path></svg>
+</button>
+<button class="btn btn-outline" type="button">Sign up</button>
+<button class="btn btn-primary" type="button">Sign in</button>
+<button class="icon-btn" title="More" type="button">
+<svg viewbox="0 0 24 24"><path d="M12 5.5a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2Zm0 5.7a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2Zm0 5.7a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2Z"></path></svg>
+</button>
+</div>
+</div>
+</header>
+<main>
+<section aria-label="Highlights" class="hero-carousel">
+<button aria-label="Previous" class="hero-nav hero-prev" data-hero-prev="" type="button">
+<svg viewbox="0 0 24 24"><path d="M15.7 5.3 9.1 12l6.6 6.7-1.4 1.4-8-8 8-8 1.4 1.2Z"></path></svg>
+</button>
+<div class="hero-track" id="hero-track">
+<a aria-label="Fab New Year Sale" class="hero-card hero-card--wide" href="artwork.html">
+<img alt="Fab New Year Sale" src="assets/fab-2026-new-year-sale-artstation-top-row-890x500.jpg"/>
+<div class="hero-meta">
+<div class="hero-tag" style="background:#c21f51;border-color:#d35d7c;">Sale</div>
+<div class="hero-title">Fab New Year Sale now on!</div>
+<div class="hero-sub">Get up to 70% off thousands of assets until January 20</div>
+</div>
+</a>
+<a aria-label="AFEELA 1 Theme Design Challenge" class="hero-card hero-card--medium" href="artwork.html">
+<img alt="Afeela 1" src="assets/artstation-x-afeela-magazine-header-1280x640.jpg"/>
+<div class="hero-meta">
+<div class="hero-tag">Challenge</div>
+<div class="hero-title">AFEELA 1</div>
+<div class="hero-sub">Theme Design Challenge · Winners Announced</div>
+</div>
+</a>
+<a aria-label="Manticore Games Out of Time" class="hero-card hero-card--medium" href="artwork.html">
+<img alt="Art Blast" src="assets/artstation-artblast-edgeoffate-01destiny-eof-890x500-notext.jpg"/>
+<div class="hero-meta">
+<div class="hero-tag">Art Blast</div>
+<div class="hero-title">Manticore Games Out of Time</div>
+<div class="hero-sub">Discover the Art of Out of Time</div>
+</div>
+</a>
+<a aria-label="New on TmlStation" class="hero-card hero-blue hero-card--ad" href="artwork.html">
+<img alt="New on TmlStation" src="assets/image-71.png"/>
+<div class="hero-meta">
+<div class="hero-tag" style="background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.35);">Ad</div>
+<div class="hero-title">New on TmlStation</div>
+<div class="hero-sub">Faster Portfolios, Bigger Uploads &amp; Better Job Tools</div>
+</div>
+<div class="cards">
+<img alt="Cards" src="assets/890x500.png"/>
+</div>
+</a>
+<a aria-label="Your feed" class="hero-card hero-mini hero-card--peek" href="artwork.html">
+<img alt="Next card" src="assets/bloodlines2-artstation-toprow-890x500.jpg"/>
+<div class="hero-meta">
+<div class="hero-title">Your</div>
+<div class="hero-sub">See your feed</div>
+</div>
+</a>
+</div>
+<button aria-label="Next" class="hero-nav hero-next" data-hero-next="" type="button">
+<svg viewbox="0 0 24 24"><path d="M8.3 5.3 14.9 12l-6.6 6.7 1.4 1.4 8-8-8-8-1.4 1.2Z"></path></svg>
+</button>
+</section>
+<div class="channel-row">
+<button class="square-btn" title="Menu" type="button">
+<svg viewbox="0 0 24 24"><path d="M4 6h16v2H4V6Zm0 5h16v2H4v-2Zm0 5h16v2H4v-2Z"></path></svg>
+</button>
+<button class="square-btn" title="Channels" type="button">
+<svg viewbox="0 0 24 24"><path d="M3 3h8v8H3V3Zm10 0h8v8h-8V3ZM3 13h8v8H3v-8Zm10 0h8v8h-8v-8Z"></path></svg>
+</button>
+<button class="channel-pill active" data-channel="All Channels" type="button">All Channels</button>
+<button class="channel-pill" data-channel="Matte Painting" type="button"><img alt="Matte Painting" src="assets/thumb.jpg"/>Matte Painting</button>
+<button class="channel-pill" data-channel="Architectural Visualization" type="button"><img alt="Architectural Visualization" src="assets/thumb(1).jpg"/>Architectural Visualization</button>
+<button class="channel-pill" data-channel="Environmental Concept Art &amp; Design" type="button"><img alt="Environmental" src="assets/thumb(2).jpg"/>Environmental Concept Art &amp; Design</button>
+<button class="channel-pill" data-channel="Character Animation" type="button"><img alt="Character Animation" src="assets/thumb(3).jpg"/>Character Animation</button>
+<button class="channel-pill" data-channel="Visual Development" type="button"><img alt="Visual Development" src="assets/thumb(4).jpg"/>Visual Development</button>
+<button class="channel-pill" data-channel="Game Art" type="button"><img alt="Game Art" src="assets/thumb(5).jpg"/>Game Art</button>
+<button class="channel-pill" data-channel="Games &amp; Real-Time 3D Environment" type="button"><img alt="Games" src="assets/thumb(6).jpg"/>Games and Real-Time 3D Environment Art</button>
+<button class="channel-pill" data-channel="Sketches" type="button"><img alt="Sketches" src="assets/thumb(8).jpg"/>Sketches</button>
+<button class="channel-pill" data-channel="Tutorials" type="button"><img alt="Tutorials" src="assets/thumb(9).jpg"/>Tutorials</button>
+<button class="channel-pill" data-channel="Abstract" type="button"><img alt="Abstract" src="assets/thumb(10).jpg"/>Abstract</button>
+<button class="channel-pill" data-channel="Anatomy" type="button"><img alt="Anatomy" src="assets/thumb(11).jpg"/>Anatomy</button>
+<button class="channel-pill" data-channel="Animals &amp; Wildlife" type="button"><img alt="Animals" src="assets/thumb(12).jpg"/>Animals &amp; Wildlife</button>
+<button class="channel-pill" data-channel="Anime &amp; Manga" type="button"><img alt="Anime &amp; Manga" src="assets/thumb(13).jpg"/>Anime &amp; Manga</button>
+<button class="channel-pill" data-channel="Architectural Concepts" type="button"><img alt="Architectural Concepts" src="assets/thumb(14).jpg"/>Architectural Concepts</button>
+<button class="channel-pill" data-channel="Board &amp; Card Game Art" type="button"><img alt="Board &amp; Card Game Art" src="assets/thumb(15).jpg"/>Board &amp; Card Game Art</button>
+<button class="channel-pill" data-channel="Book Illustration" type="button"><img alt="Book Illustration" src="assets/thumb(16).jpg"/>Book Illustration</button>
+<button class="channel-pill" data-channel="Character Design" type="button"><img alt="Character Design" src="assets/thumb(17).jpg"/>Character Design</button>
+<button class="channel-pill" data-channel="Character Modeling" type="button"><img alt="Character Modeling" src="assets/thumb(18).jpg"/>Character Modeling</button>
+<button class="channel-pill" data-channel="Children's Art" type="button"><img alt="Children's Art" src="assets/thumb(19).jpg"/>Children's Art</button>
+<button class="channel-pill" data-channel="Comic Art" type="button"><img alt="Comic Art" src="assets/thumb(20).jpg"/>Comic Art</button>
+<button class="square-btn square-btn--scroll" title="Next" type="button" data-channel-next>
+<svg viewbox="0 0 24 24"><path d="M8.3 5.3 14.9 12l-6.6 6.7 1.4 1.4 8-8-8-8-1.4 1.2Z"></path></svg>
+</button>
+</div>
+<div class="section-header">
+<h2 class="section-title" id="channel-heading">All Channels</h2>
+<div class="section-badge" id="sort-badge">Trending</div>
+</div>
+<section class="gallery">
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="All Channels" data-title="Ainara Blanch 1 D" href="artwork.html">
+<img alt="Ainara Blanch 1 D" src="assets/ainara-blanch-1-d.jpg"/>
+<div class="gallery-label label-arcane">ARCANE</div>
+<div class="card-info">
+<div class="card-info-title">Ainara Blanch 1 D</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Matte Painting" data-title="Ainara Blanch Keyframe Def" href="artwork.html">
+<img alt="Ainara Blanch Keyframe Def" src="assets/ainara-blanch-keyframe-def.jpg"/>
+<div class="gallery-label label-magic">MAGIC</div>
+<div class="card-info">
+<div class="card-info-title">Ainara Blanch Keyframe Def</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Architectural Visualization" data-title="Alex Che End Result 02" href="artwork.html">
+<img alt="Alex Che End Result 02" src="assets/alex_che-end-result-02.jpg"/>
+<div class="card-info">
+<div class="card-info-title">Alex Che End Result 02</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Environmental Concept Art &amp; Design" data-title="Alireza Ravaei Alireza Ravaei The Cube 1 Cover" href="artwork.html">
+<img alt="Alireza Ravaei Alireza Ravaei The Cube 1 Cover" src="assets/alireza-ravaei-alireza-ravaei-the-cube-1-cover.webp"/>
+<div class="card-info">
+<div class="card-info-title">Alireza Ravaei Alireza Ravaei The Cube 1 Cover</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Character Animation" data-title="Alvin Seeber Day" href="artwork.html">
+<img alt="Alvin Seeber Day" src="assets/alvin-seeber-day.webp"/>
+<div class="gallery-label label-ritual">RITUAL<span>TIDES</span></div>
+<div class="card-info">
+<div class="card-info-title">Alvin Seeber Day</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Visual Development" data-title="Anton Mikhalenko Anton Mikhalenko Prev" href="artwork.html">
+<img alt="Anton Mikhalenko Anton Mikhalenko Prev" src="assets/anton-mikhalenko-anton-mikhalenko-prev.jpg"/>
+<div class="gallery-label label-wicked">NO REST<br/><span>FOR THE WICKED</span></div>
+<div class="card-info">
+<div class="card-info-title">Anton Mikhalenko Anton Mikhalenko Prev</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Game Art" data-title="Cg Astonish Blue With Effect" href="artwork.html">
+<img alt="Cg Astonish Blue With Effect" src="assets/cg-astonish-blue-with-effect.jpg"/>
+<div class="gallery-label label-rajeta">la Rajeta</div>
+<div class="card-info">
+<div class="card-info-title">Cg Astonish Blue With Effect</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Games and Real-Time 3D Environment Art" data-title="Clement Nahmias Clement Nahmias Still Frame 1" href="artwork.html">
+<img alt="Clement Nahmias Clement Nahmias Still Frame 1" src="assets/clement-nahmias-clement-nahmias-still-frame-1.webp"/>
+<div class="gallery-label label-outlaws">OUTLAWS</div>
+<div class="card-info">
+<div class="card-info-title">Clement Nahmias Clement Nahmias Still Frame 1</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="All Channels" data-title="Col Price Light The Beacon01" href="artwork.html">
+<img alt="Col Price Light The Beacon01" src="assets/col-price-light-the-beacon01.webp"/>
+<div class="gallery-label label-diablo">DIABLO</div>
+<div class="card-info">
+<div class="card-info-title">Col Price Light The Beacon01</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Matte Painting" data-title="Col Price Smugglersrun S" href="artwork.html">
+<img alt="Col Price Smugglersrun S" src="assets/col-price-smugglersrun-s.webp"/>
+<div class="gallery-label label-angelic">ANGELIC</div>
+<div class="card-info">
+<div class="card-info-title">Col Price Smugglersrun S</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Architectural Visualization" data-title="David Arno Schwaiger David Arno Schwaiger Ldr Spiderrose Cover 2" href="artwork.html">
+<img alt="David Arno Schwaiger David Arno Schwaiger Ldr Spiderrose Cover 2" src="assets/david-arno-schwaiger-david-arno-schwaiger-ldr-spiderrose-cover-2.webp"/>
+<div class="card-info">
+<div class="card-info-title">David Arno Schwaiger David Arno Schwaiger Ldr Spiderrose Cover 2</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Environmental Concept Art &amp; Design" data-title="David Arno Schwaiger David Arno Schwaiger Slv Warhammer Cover 1" href="artwork.html">
+<img alt="David Arno Schwaiger David Arno Schwaiger Slv Warhammer Cover 1" src="assets/david-arno-schwaiger-david-arno-schwaiger-slv-warhammer-cover-1.webp"/>
+<div class="card-info">
+<div class="card-info-title">David Arno Schwaiger David Arno Schwaiger Slv Warhammer Cover 1</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Character Animation" data-title="Denis Bodrov Dsc0764" href="artwork.html">
+<img alt="Denis Bodrov Dsc0764" src="assets/denis-bodrov-dsc0764.jpg"/>
+<div class="card-info">
+<div class="card-info-title">Denis Bodrov Dsc0764</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Visual Development" data-title="Denis Bodrov Dsc2378 2" href="artwork.html">
+<img alt="Denis Bodrov Dsc2378 2" src="assets/denis-bodrov-dsc2378-2.webp"/>
+<div class="gallery-label label-highguard">HIGHGUARD</div>
+<div class="card-info">
+<div class="card-info-title">Denis Bodrov Dsc2378 2</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Game Art" data-title="Eugenia Korolkova Final1" href="artwork.html">
+<img alt="Eugenia Korolkova Final1" src="assets/eugenia-korolkova-final1.webp"/>
+<div class="card-info">
+<div class="card-info-title">Eugenia Korolkova Final1</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Games and Real-Time 3D Environment Art" data-title="Evgenij Kungur 1920" href="artwork.html">
+<img alt="Evgenij Kungur 1920" src="assets/evgenij-kungur-1920.jpg"/>
+<div class="card-info">
+<div class="card-info-title">Evgenij Kungur 1920</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="All Channels" data-title="Evgeny Dvoretckiy 3" href="artwork.html">
+<img alt="Evgeny Dvoretckiy 3" src="assets/evgeny-dvoretckiy-3.webp"/>
+<div class="card-info">
+<div class="card-info-title">Evgeny Dvoretckiy 3</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Matte Painting" data-title="File(1)" href="artwork.html">
+<img alt="File(1)" src="assets/file(1).jpg"/>
+<div class="card-info">
+<div class="card-info-title">File(1)</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Architectural Visualization" data-title="File(10)" href="artwork.html">
+<img alt="File(10)" src="assets/file(10).jpg"/>
+<div class="card-info">
+<div class="card-info-title">File(10)</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Environmental Concept Art &amp; Design" data-title="File(11)" href="artwork.html">
+<img alt="File(11)" src="assets/file(11).jpg"/>
+<div class="card-info">
+<div class="card-info-title">File(11)</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Character Animation" data-title="File(2)" href="artwork.html">
+<img alt="File(2)" src="assets/file(2).jpg"/>
+<div class="card-info">
+<div class="card-info-title">File(2)</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Visual Development" data-title="File(3)" href="artwork.html">
+<img alt="File(3)" src="assets/file(3).jpg"/>
+<div class="card-info">
+<div class="card-info-title">File(3)</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Game Art" data-title="File(4)" href="artwork.html">
+<img alt="File(4)" src="assets/file(4).jpg"/>
+<div class="card-info">
+<div class="card-info-title">File(4)</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="Games and Real-Time 3D Environment Art" data-title="File(5)" href="artwork.html">
+<img alt="File(5)" src="assets/file(5).jpg"/>
+<div class="card-info">
+<div class="card-info-title">File(5)</div>
+<div class="card-info-artist">TmlStation Artist</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Jacek Pilarski" data-category="All Channels" data-title="Citadel" href="artwork.html">
+<img alt="Citadel" src="assets/jacek-pilarski-citadel.webp"/>
+<div class="card-info">
+<div class="card-info-title">Citadel</div>
+<div class="card-info-artist">Jacek Pilarski</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Adrien Gonzalez" data-category="Matte Painting" data-title="Environment Illustration" href="artwork.html">
+<img alt="Environment Illustration" src="assets/adrien-gonzalez-environment-illustration-final-small-02.webp"/>
+<div class="card-info">
+<div class="card-info-title">Environment Illustration</div>
+<div class="card-info-artist">Adrien Gonzalez</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Ainara Blanch" data-category="Architectural Visualization" data-title="Keyframe" href="artwork.html">
+<img alt="Keyframe" src="assets/ainara-blanch-keyframe-def.jpg"/>
+<div class="card-info">
+<div class="card-info-title">Keyframe</div>
+<div class="card-info-artist">Ainara Blanch</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Alex Che" data-category="Environmental Concept Art &amp; Design" data-title="End Result" href="artwork.html">
+<img alt="End Result" src="assets/alex_che-end-result-02.jpg"/>
+<div class="card-info">
+<div class="card-info-title">End Result</div>
+<div class="card-info-artist">Alex Che</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Alireza Ravaei" data-category="Character Animation" data-title="The Cube" href="artwork.html">
+<img alt="The Cube" src="assets/alireza-ravaei-alireza-ravaei-the-cube-1-cover.webp"/>
+<div class="card-info">
+<div class="card-info-title">The Cube</div>
+<div class="card-info-artist">Alireza Ravaei</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Clement Nahmias" data-category="Visual Development" data-title="Still Frame" href="artwork.html">
+<img alt="Still Frame" src="assets/clement-nahmias-clement-nahmias-still-frame-1.webp"/>
+<div class="card-info">
+<div class="card-info-title">Still Frame</div>
+<div class="card-info-artist">Clement Nahmias</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Col Price" data-category="Game Art" data-title="Light The Beacon" href="artwork.html">
+<img alt="Light The Beacon" src="assets/col-price-light-the-beacon01.webp"/>
+<div class="card-info">
+<div class="card-info-title">Light The Beacon</div>
+<div class="card-info-artist">Col Price</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Daniel Gonzalez Londono" data-category="Games and Real-Time 3D Environment Art" data-title="Concept Thumbnail" href="artwork.html">
+<img alt="Concept Thumbnail" src="assets/daniel-gonzalez-londono-daniel-gonzalez-londono-thumbnail.jpg"/>
+<div class="card-info">
+<div class="card-info-title">Concept Thumbnail</div>
+<div class="card-info-artist">Daniel Gonzalez Londono</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="David Arno Schwaiger" data-category="All Channels" data-title="Spider Rose" href="artwork.html">
+<img alt="Spider Rose" src="assets/david-arno-schwaiger-david-arno-schwaiger-ldr-spiderrose-cover-2.webp"/>
+<div class="card-info">
+<div class="card-info-title">Spider Rose</div>
+<div class="card-info-artist">David Arno Schwaiger</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="David Arno Schwaiger" data-category="Matte Painting" data-title="Warhammer Cover" href="artwork.html">
+<img alt="Warhammer Cover" src="assets/david-arno-schwaiger-david-arno-schwaiger-slv-warhammer-cover-1.webp"/>
+<div class="card-info">
+<div class="card-info-title">Warhammer Cover</div>
+<div class="card-info-artist">David Arno Schwaiger</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Denis Bodrov" data-category="Architectural Visualization" data-title="Denis Bodrov" href="artwork.html">
+<img alt="Denis Bodrov" src="assets/denis-bodrov-dsc0764.jpg"/>
+<div class="card-info">
+<div class="card-info-title">Denis Bodrov</div>
+<div class="card-info-artist">Denis Bodrov</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Denis Bodrov" data-category="Environmental Concept Art &amp; Design" data-title="Denis Bodrov 2" href="artwork.html">
+<img alt="Denis Bodrov 2" src="assets/denis-bodrov-dsc2378-2.webp"/>
+<div class="card-info">
+<div class="card-info-title">Denis Bodrov 2</div>
+<div class="card-info-artist">Denis Bodrov</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Eugenia Korolkova" data-category="Character Animation" data-title="Final Scene" href="artwork.html">
+<img alt="Final Scene" src="assets/eugenia-korolkova-final1.webp"/>
+<div class="card-info">
+<div class="card-info-title">Final Scene</div>
+<div class="card-info-artist">Eugenia Korolkova</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Evgeny Dvoretckiy" data-category="Visual Development" data-title="Dvoretckiy" href="artwork.html">
+<img alt="Dvoretckiy" src="assets/evgeny-dvoretckiy-3.webp"/>
+<div class="card-info">
+<div class="card-info-title">Dvoretckiy</div>
+<div class="card-info-artist">Evgeny Dvoretckiy</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Geoffroy Thoorens" data-category="Game Art" data-title="Sans Titre" href="artwork.html">
+<img alt="Sans Titre" src="assets/geoffroy-thoorens-geoffroy-thoorens-sans-titre.webp"/>
+<div class="card-info">
+<div class="card-info-title">Sans Titre</div>
+<div class="card-info-artist">Geoffroy Thoorens</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Jacek Pilarski" data-category="Games and Real-Time 3D Environment Art" data-title="U2" href="artwork.html">
+<img alt="U2" src="assets/jacek-pilarski-u2.jpg"/>
+<div class="card-info">
+<div class="card-info-title">U2</div>
+<div class="card-info-artist">Jacek Pilarski</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Jakub Cervenka" data-category="All Channels" data-title="Jakub Cervenka 01" href="artwork.html">
+<img alt="Jakub Cervenka 01" src="assets/jakub-cervenka-jakub-cervenka-thumb01.webp"/>
+<div class="card-info">
+<div class="card-info-title">Jakub Cervenka 01</div>
+<div class="card-info-artist">Jakub Cervenka</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Jakub Cervenka" data-category="Matte Painting" data-title="Jakub Cervenka 02" href="artwork.html">
+<img alt="Jakub Cervenka 02" src="assets/jakub-cervenka-jakub-cervenka-tumb02.webp"/>
+<div class="card-info">
+<div class="card-info-title">Jakub Cervenka 02</div>
+<div class="card-info-artist">Jakub Cervenka</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Jeremm01" data-category="Architectural Visualization" data-title="High Cliff" href="artwork.html">
+<img alt="High Cliff" src="assets/jeremm01-high-cliff-1000px-signature.jpg"/>
+<div class="card-info">
+<div class="card-info-title">High Cliff</div>
+<div class="card-info-artist">Jeremm01</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Julian Calle" data-category="Environmental Concept Art &amp; Design" data-title="Factory" href="artwork.html">
+<img alt="Factory" src="assets/julian-calle-factory.webp"/>
+<div class="card-info">
+<div class="card-info-title">Factory</div>
+<div class="card-info-artist">Julian Calle</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Killian Prevost" data-category="Character Animation" data-title="Caillou" href="artwork.html">
+<img alt="Caillou" src="assets/killian-prevost-caillou-final.jpg"/>
+<div class="card-info">
+<div class="card-info-title">Caillou</div>
+<div class="card-info-artist">Killian Prevost</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Killian Prevost" data-category="Visual Development" data-title="Bull" href="artwork.html">
+<img alt="Bull" src="assets/killian-prevost-bull.jpg"/>
+<div class="card-info">
+<div class="card-info-title">Bull</div>
+<div class="card-info-artist">Killian Prevost</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Killian Prevost" data-category="Game Art" data-title="Wanabe Matte" href="artwork.html">
+<img alt="Wanabe Matte" src="assets/killian-prevost-wanabematte.webp"/>
+<div class="card-info">
+<div class="card-info-title">Wanabe Matte</div>
+<div class="card-info-artist">Killian Prevost</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="Kobong J" data-category="Games and Real-Time 3D Environment Art" data-title="Castle Copy" href="artwork.html">
+<img alt="Castle Copy" src="assets/kobong-j-castle-copy.webp"/>
+<div class="card-info">
+<div class="card-info-title">Castle Copy</div>
+<div class="card-info-artist">Kobong J</div>
+</div>
+</a>
+<a class="gallery-card" data-artist="TmlStation Artist" data-category="All Channels" data-title="File(6)" href="artwork.html"><img alt="File(6)" src="assets/file(6).jpg"/><div class="card-info"><div class="card-info-title">File(6)</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Matte Painting" data-title="File(7)" href="artwork.html"><img alt="File(7)" src="assets/file(7).jpg"/><div class="card-info"><div class="card-info-title">File(7)</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Architectural Visualization" data-title="File(8)" href="artwork.html"><img alt="File(8)" src="assets/file(8).jpg"/><div class="card-info"><div class="card-info-title">File(8)</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Environmental Concept Art &amp; Design" data-title="File(9)" href="artwork.html"><img alt="File(9)" src="assets/file(9).jpg"/><div class="card-info"><div class="card-info-title">File(9)</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Character Animation" data-title="File" href="artwork.html"><img alt="File" src="assets/file.jpg"/><div class="card-info"><div class="card-info-title">File</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Visual Development" data-title="Gaurav Maxresdefault" href="artwork.html"><img alt="Gaurav Maxresdefault" src="assets/gaurav-maxresdefault.jpg"/><div class="card-info"><div class="card-info-title">Gaurav Maxresdefault</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Game Art" data-title="Ivan Pozdnyakov Ivan Pozdnyakov Wwf Post" href="artwork.html"><img alt="Ivan Pozdnyakov Ivan Pozdnyakov Wwf Post" src="assets/ivan-pozdnyakov-ivan-pozdnyakov-wwf-post.webp"/><div class="card-info"><div class="card-info-title">Ivan Pozdnyakov Ivan Pozdnyakov Wwf Post</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Games and Real-Time 3D Environment Art" data-title="Jerome Comentale Jerome Comentale 3" href="artwork.html"><img alt="Jerome Comentale Jerome Comentale 3" src="assets/jerome-comentale-jerome-comentale-3.webp"/><div class="card-info"><div class="card-info-title">Jerome Comentale Jerome Comentale 3</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="All Channels" data-title="Julian Calle City Master Class" href="artwork.html"><img alt="Julian Calle City Master Class" src="assets/julian-calle-city-master-class.jpg"/><div class="card-info"><div class="card-info-title">Julian Calle City Master Class</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Matte Painting" data-title="Julien Long Forestroot2Final" href="artwork.html"><img alt="Julien Long Forestroot2Final" src="assets/julien-long-forestroot2final.jpg"/><div class="card-info"><div class="card-info-title">Julien Long Forestroot2Final</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Architectural Visualization" data-title="Killian Prevost Tour" href="artwork.html"><img alt="Killian Prevost Tour" src="assets/killian-prevost-tour.jpg"/><div class="card-info"><div class="card-info-title">Killian Prevost Tour</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Environmental Concept Art &amp; Design" data-title="Kurama Kageya Final Jpg" href="artwork.html"><img alt="Kurama Kageya Final Jpg" src="assets/kurama-kageya-final-jpg.webp"/><div class="card-info"><div class="card-info-title">Kurama Kageya Final Jpg</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Character Animation" data-title="Marc Mons A1" href="artwork.html"><img alt="Marc Mons A1" src="assets/marc-mons-a1.jpg"/><div class="card-info"><div class="card-info-title">Marc Mons A1</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Visual Development" data-title="Max Horbatiuk 1 2" href="artwork.html"><img alt="Max Horbatiuk 1 2" src="assets/max-horbatiuk-1-2.webp"/><div class="card-info"><div class="card-info-title">Max Horbatiuk 1 2</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Game Art" data-title="Naouri Redouane Mushroom" href="artwork.html"><img alt="Naouri Redouane Mushroom" src="assets/naouri-redouane-mushroom.jpg"/><div class="card-info"><div class="card-info-title">Naouri Redouane Mushroom</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Games and Real-Time 3D Environment Art" data-title="Nemo Art 4C434Ebf F1B2 4A48 9D66 F92477857Dfa" href="artwork.html"><img alt="Nemo Art 4C434Ebf F1B2 4A48 9D66 F92477857Dfa" src="assets/nemo-art-4c434ebf-f1b2-4a48-9d66-f92477857dfa.webp"/><div class="card-info"><div class="card-info-title">Nemo Art 4C434Ebf F1B2 4A48 9D66 F92477857Dfa</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="All Channels" data-title="Nuyhus Nuyhus Got Crow S Nest Bsh Tn" href="artwork.html"><img alt="Nuyhus Nuyhus Got Crow S Nest Bsh Tn" src="assets/nuyhus-nuyhus-got-crow-s-nest-bsh-tn.webp"/><div class="card-info"><div class="card-info-title">Nuyhus Nuyhus Got Crow S Nest Bsh Tn</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Matte Painting" data-title="Nuyhus Nuyhus Got Winterfell Bsh Tn" href="artwork.html"><img alt="Nuyhus Nuyhus Got Winterfell Bsh Tn" src="assets/nuyhus-nuyhus-got-winterfell-bsh-tn.webp"/><div class="card-info"><div class="card-info-title">Nuyhus Nuyhus Got Winterfell Bsh Tn</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Architectural Visualization" data-title="Olga Panfil Olga Panfil" href="artwork.html"><img alt="Olga Panfil Olga Panfil" src="assets/olga-panfil-olga-panfil.webp"/><div class="card-info"><div class="card-info-title">Olga Panfil Olga Panfil</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Environmental Concept Art &amp; Design" data-title="Quentin Marsollier Quentin Marsollier Nest 102 0 021 00 Setext03" href="artwork.html"><img alt="Quentin Marsollier Quentin Marsollier Nest 102 0 021 00 Setext03" src="assets/quentin-marsollier-quentin-marsollier-nest-102-0-021-00-setext03.webp"/><div class="card-info"><div class="card-info-title">Quentin Marsollier Quentin Marsollier Nest 102 0 021 00 Setext03</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Character Animation" data-title="Saiga Saiga Env White Holm Crop1" href="artwork.html"><img alt="Saiga Saiga Env White Holm Crop1" src="assets/saiga-saiga-env-white-holm-crop1.jpg"/><div class="card-info"><div class="card-info-title">Saiga Saiga Env White Holm Crop1</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Visual Development" data-title="Screenshot 2025 08 26 At 13 44 56" href="artwork.html"><img alt="Screenshot 2025 08 26 At 13 44 56" src="assets/screenshot-2025-08-26-at-13-44-56.png"/><div class="card-info"><div class="card-info-title">Screenshot 2025 08 26 At 13 44 56</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Game Art" data-title="Screenshot 2025 11 12 At 10 47 58" href="artwork.html"><img alt="Screenshot 2025 11 12 At 10 47 58" src="assets/screenshot-2025-11-12-at-10-47-58.png"/><div class="card-info"><div class="card-info-title">Screenshot 2025 11 12 At 10 47 58</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Games and Real-Time 3D Environment Art" data-title="Sergey Semenovykh Sergey Semenovykh Bloodweaver 1X1" href="artwork.html"><img alt="Sergey Semenovykh Sergey Semenovykh Bloodweaver 1X1" src="assets/sergey-semenovykh-sergey-semenovykh-bloodweaver-1x1.webp"/><div class="card-info"><div class="card-info-title">Sergey Semenovykh Sergey Semenovykh Bloodweaver 1X1</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="All Channels" data-title="Sergey Semenovykh Sergey Semenovykh Chainsaw Man 1X1" href="artwork.html"><img alt="Sergey Semenovykh Sergey Semenovykh Chainsaw Man 1X1" src="assets/sergey-semenovykh-sergey-semenovykh-chainsaw-man-1x1.jpg"/><div class="card-info"><div class="card-info-title">Sergey Semenovykh Sergey Semenovykh Chainsaw Man 1X1</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Matte Painting" data-title="Sergey Semenovykh Sergey Semenovykh The Crimson Invasion 1X1" href="artwork.html"><img alt="Sergey Semenovykh Sergey Semenovykh The Crimson Invasion 1X1" src="assets/sergey-semenovykh-sergey-semenovykh-the-crimson-invasion-1x1.webp"/><div class="card-info"><div class="card-info-title">Sergey Semenovykh Sergey Semenovykh The Crimson Invasion 1X1</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Architectural Visualization" data-title="Sergey Semenovykh Sergey Semenovykh The Iron Dawn 1X1" href="artwork.html"><img alt="Sergey Semenovykh Sergey Semenovykh The Iron Dawn 1X1" src="assets/sergey-semenovykh-sergey-semenovykh-the-iron-dawn-1x1.webp"/><div class="card-info"><div class="card-info-title">Sergey Semenovykh Sergey Semenovykh The Iron Dawn 1X1</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Environmental Concept Art &amp; Design" data-title="Shurazhao 1 02" href="artwork.html"><img alt="Shurazhao 1 02" src="assets/shurazhao-1-02.jpg"/><div class="card-info"><div class="card-info-title">Shurazhao 1 02</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Character Animation" data-title="Shurazhao 1" href="artwork.html"><img alt="Shurazhao 1" src="assets/shurazhao-1.jpg"/><div class="card-info"><div class="card-info-title">Shurazhao 1</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Visual Development" data-title="Shurazhao Desert Skies And Rusty Leviathans 2" href="artwork.html"><img alt="Shurazhao Desert Skies And Rusty Leviathans 2" src="assets/shurazhao-desert-skies-and-rusty-leviathans-2.webp"/><div class="card-info"><div class="card-info-title">Shurazhao Desert Skies And Rusty Leviathans 2</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Game Art" data-title="Shurazhao Ncounter With The Ancient Leviathan 2" href="artwork.html"><img alt="Shurazhao Ncounter With The Ancient Leviathan 2" src="assets/shurazhao-ncounter-with-the-ancient-leviathan-2.webp"/><div class="card-info"><div class="card-info-title">Shurazhao Ncounter With The Ancient Leviathan 2</div><div class="card-info-artist">TmlStation Artist</div></div></a><a class="gallery-card" data-artist="TmlStation Artist" data-category="Games and Real-Time 3D Environment Art" data-title="Shurazhao Shurazhao Guardian Of The Forgotten City 3" href="artwork.html"><img alt="Shurazhao Shurazhao Guardian Of The Forgotten City 3" src="assets/shurazhao-shurazhao-guardian-of-the-forgotten-city-3.webp"/><div class="card-info"><div class="card-info-title">Shurazhao Shurazhao Guardian Of The Forgotten City 3</div><div class="card-info-artist">TmlStation Artist</div></div></a></section>
+</main>
+<div class="float-dock">
+<button class="dock-btn" data-sort="Community" type="button">Community</button>
+<button class="dock-btn active" data-sort="Trending" type="button">Trending</button>
+<button class="dock-btn" data-sort="Latest" type="button">Latest</button>
+</div>
+<div aria-hidden="true" class="modal is-hidden" id="preview-modal">
+<div class="modal-backdrop" data-close="modal"></div>
+<div aria-modal="true" class="modal-panel" role="dialog">
+<button aria-label="Close" class="modal-close" data-close="modal" type="button">
+<svg viewbox="0 0 24 24"><path d="M6.4 5l12.6 12.6-1.4 1.4L5 6.4 6.4 5Zm12.6 1.4L6.4 19l-1.4-1.4L17.6 5l1.4 1.4Z"></path></svg>
+</button>
+<img alt="Preview" class="modal-image" id="modal-image" src=""/>
+<div class="modal-meta">
+<div class="modal-title" id="modal-title">Artwork</div>
+<div class="modal-artist" id="modal-artist">Artist</div>
+</div>
+</div>
+</div>
+<script src="js/main.js"></script>
+<script src="js/gallery.js"></script>
+<script src="js/preview.js"></script>
 </body>
 </html>
