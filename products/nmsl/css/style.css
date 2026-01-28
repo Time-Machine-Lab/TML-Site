@@ -179,7 +179,7 @@ main {
   scroll-snap-align: start;
   transform: translateZ(0);
   box-shadow: var(--shadow-card);
-  border: 1px solid var(--border-light);
+  border: none;
   transition: filter 0.6s ease, transform 0.6s ease, box-shadow 0.6s ease;
 }
 
@@ -495,7 +495,7 @@ main {
   white-space: nowrap;
   cursor: pointer;
   font: inherit;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: none;
 }
 
@@ -524,12 +524,26 @@ main {
 }
 
 .channel-pill.active {
-  background: var(--bg-button-hover);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--text);
+  transform: scale(1.02);
+  box-shadow: none;
+}
+
+[data-theme="light"] .channel-pill.active {
+  background: rgba(0, 0, 0, 0.05);
+  box-shadow: none;
 }
 
 .channel-pill:hover {
-  background: var(--bg-button);
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--text);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+[data-theme="light"] .channel-pill:hover {
+  background: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
 .pill-label {
@@ -739,6 +753,7 @@ main {
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
   gap: 4px;
+  grid-auto-flow: dense;
 }
 
 .gallery-card {
@@ -749,6 +764,11 @@ main {
   background: var(--bg-surface);
   cursor: pointer;
   display: block;
+}
+
+.gallery-card.span-2x2 {
+  grid-column: span 2;
+  grid-row: span 2;
 }
 
 .gallery-card img {
