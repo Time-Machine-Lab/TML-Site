@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TmlStation - Saved</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@400;600;700&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .saved-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .saved-card {
+      background: #14161c;
+      border: 1px solid #2a2d36;
+      border-radius: 12px;
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .saved-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .saved-thumb {
+      width: 100%;
+      height: 160px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .saved-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .saved-title { font-weight: 700; }
+    .saved-artist { color: var(--muted); font-size: 12px; }
+  </style>
+</head>
+<body data-page="shop">
+  <header class="header">
+    <div class="header-inner">
+      <div class="left-group">
+        <div class="brand">
+          <img src="assets/logo-monochrome.svg" alt="TmlStation" />
+          TmlStation
+        </div>
+        <nav class="nav">
+          <a data-page="explore" href="index.html">Explore</a>
+          <a data-page="learn" href="channel.html">Learn</a>
+          <a class="active" data-page="shop" href="favorites.html">Shop</a>
+          <a data-page="jobs" href="channel.html">Find a Job</a>
+          <a data-page="hire" href="artwork.html">Hire</a>
+        </nav>
+      </div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 3a7.5 7.5 0 1 0 4.73 13.31l4.73 4.73 1.54-1.54-4.73-4.73A7.5 7.5 0 0 0 10.5 3Zm0 2a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11Z"/></svg>
+        <input type="text" placeholder="Search" />
+      </div>
+      <div class="actions">
+        <button class="icon-btn" type="button" title="Cart">
+          <svg viewBox="0 0 24 24"><path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm9 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM6.2 6H20l-1.2 7H7.2L6.2 6Zm-2.1-2h16.7c.9 0 1.6.8 1.5 1.7l-1.4 8.3c-.1.8-.8 1.3-1.5 1.3H6.5L5.7 5.3H3V3h2.9c.7 0 1.3.5 1.4 1.1l.8 4.9"/></svg>
+        </button>
+        <button class="btn btn-outline" type="button">Sign up</button>
+        <button class="btn btn-primary" type="button">Sign in</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div>
+        <h1>Saved Collections</h1>
+        <p>Quick access to your pinned channels and favorite artworks.</p>
+      </div>
+      <button class="btn btn-primary" type="button">Create Board</button>
+    </section>
+
+    <div class="saved-grid">
+      <div class="saved-card" role="button">
+        <div class="saved-thumb">
+          <img src="assets/olga-panfil-olga-panfil.webp" alt="Atmospheric Worlds" />
+        </div>
+        <div class="saved-meta">
+          <div class="saved-title">Atmospheric Worlds</div>
+          <div class="saved-artist">12 works · Updated 2h ago</div>
+        </div>
+      </div>
+      <div class="saved-card" role="button">
+        <div class="saved-thumb">
+          <img src="assets/julien-long-forestroot2final.jpg" alt="Forest Ruins" />
+        </div>
+        <div class="saved-meta">
+          <div class="saved-title">Forest Ruins</div>
+          <div class="saved-artist">28 works · Updated 1d ago</div>
+        </div>
+      </div>
+      <div class="saved-card" role="button">
+        <div class="saved-thumb">
+          <img src="assets/col-price-smugglersrun-s.webp" alt="Smugglers" />
+        </div>
+        <div class="saved-meta">
+          <div class="saved-title">Smugglers & Outposts</div>
+          <div class="saved-artist">9 works · Updated 3d ago</div>
+        </div>
+      </div>
+      <div class="saved-card" role="button">
+        <div class="saved-thumb">
+          <img src="assets/zaq-1-15.jpg" alt="Golden Hour" />
+        </div>
+        <div class="saved-meta">
+          <div class="saved-title">Golden Hour</div>
+          <div class="saved-artist">17 works · Updated 1w ago</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
