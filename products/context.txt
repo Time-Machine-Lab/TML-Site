@@ -1,1 +1,52 @@
-<div _ngcontent-ng-c3330381553="" class="channel-item-all-chanels ng-tns-c3330381553-0 ng-star-inserted"><button _ngcontent-ng-c3330381553="" class="btn btn-blank btn-toggle-settings ng-tns-c3330381553-0"><i _ngcontent-ng-c3330381553="" class="eds-icon icon-ellipsis-horizontal title-color ng-tns-c3330381553-0"></i></button><channel-item _ngcontent-ng-c3330381553="" class="channel-item channel-button d-none d-md-flex ng-tns-c3330381553-0 ng-star-inserted active" _nghost-ng-c2496468738=""><a _ngcontent-ng-c2496468738="" class="channel-button all-channels" href="/" title="All Channels"><div _ngcontent-ng-c2496468738="" class="channel-image hashtag-icon ng-star-inserted"><!----><!----><i _ngcontent-ng-c2496468738="" class="eds-icon icon-xl title-color icon-square-grid-2x2 ng-star-inserted"></i><!----></div><!----><div _ngcontent-ng-c2496468738="" class="channel-text"><!----><div _ngcontent-ng-c2496468738="" class="channel-title"> All Channels</div></div><!----></a></channel-item><!----><!----><!----><!----></div>
+<section aria-label="Highlights" class="hero-carousel">
+<button aria-label="Previous" class="hero-nav hero-prev" data-hero-prev="" type="button">
+<svg viewBox="0 0 24 24"><path d="M15.7 5.3 9.1 12l6.6 6.7-1.4 1.4-8-8 8-8 1.4 1.2Z"></path></svg>
+</button>
+<div class="hero-track" id="hero-track">
+<a aria-label="Fab New Year Sale" class="hero-card hero-card--wide" href="artwork.html">
+<img alt="Fab New Year Sale" src="assets/fab-2026-new-year-sale-artstation-top-row-890x500.jpg">
+<div class="hero-meta">
+<div class="hero-tag" style="background:#c21f51;border-color:#d35d7c;">Sale</div>
+<div class="hero-title">Fab New Year Sale now on!</div>
+<div class="hero-sub">Get up to 70% off thousands of assets until January 20</div>
+</div>
+</a>
+<a aria-label="AFEELA 1 Theme Design Challenge" class="hero-card hero-card--medium" href="artwork.html">
+<img alt="Afeela 1" src="assets/artstation-x-afeela-magazine-header-1280x640.jpg">
+<div class="hero-meta">
+<div class="hero-tag">Challenge</div>
+<div class="hero-title">AFEELA 1</div>
+<div class="hero-sub">Theme Design Challenge · Winners Announced</div>
+</div>
+</a>
+<a aria-label="Manticore Games Out of Time" class="hero-card hero-card--medium" href="artwork.html">
+<img alt="Art Blast" src="assets/artstation-artblast-edgeoffate-01destiny-eof-890x500-notext.jpg">
+<div class="hero-meta">
+<div class="hero-tag">Art Blast</div>
+<div class="hero-title">Manticore Games Out of Time</div>
+<div class="hero-sub">Discover the Art of Out of Time</div>
+</div>
+</a>
+<a aria-label="New on TmlStation" class="hero-card hero-blue hero-card--ad" href="artwork.html">
+<img alt="New on TmlStation" src="assets/image-71.png">
+<div class="hero-meta">
+<div class="hero-tag" style="background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.35);">Ad</div>
+<div class="hero-title">New on TmlStation</div>
+<div class="hero-sub">Faster Portfolios, Bigger Uploads &amp; Better Job Tools</div>
+</div>
+<div class="cards">
+<img alt="Cards" src="assets/890x500.png">
+</div>
+</a>
+<a aria-label="Your feed" class="hero-card hero-mini hero-card--peek" href="artwork.html">
+<img alt="Next card" src="assets/bloodlines2-artstation-toprow-890x500.jpg">
+<div class="hero-meta">
+<div class="hero-title">Your</div>
+<div class="hero-sub">See your feed</div>
+</div>
+</a>
+</div>
+<button aria-label="Next" class="hero-nav hero-next" data-hero-next="" type="button">
+<svg viewBox="0 0 24 24"><path d="M8.3 5.3 14.9 12l-6.6 6.7 1.4 1.4 8-8-8-8-1.4 1.2Z"></path></svg>
+</button>
+</section>
