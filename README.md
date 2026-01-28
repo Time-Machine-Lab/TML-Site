@@ -6,6 +6,7 @@
 
 - **多产品管理**: 每个产品独立目录，支持多版本
 - **子域名路由**: `product.tmlab.site` 自动路由到对应产品
+- **HTTPS 支持**: AllinSSL 泛域名证书自动管理
 - **增量部署**: 只部署有变更的产品，节省时间
 - **自动化**: 推送到 master 分支自动触发部署
 - **Docker 容器化**: nginx 运行在 Docker 容器中
@@ -18,11 +19,12 @@ tmlsite/
 │   └── deploy.yml          # GitHub Actions 部署工作流
 ├── docker/
 │   ├── docker-compose.yml  # Docker 编排配置
-│   └── nginx.conf          # Nginx 动态路由配置
+│   ├── nginx.conf          # Nginx 动态路由配置（含 SSL）
+│   └── init.sh             # 初始化脚本（证书 + 启动）
 ├── products/               # 产品静态文件目录
-│   └── demo/
-│       └── v1/
-│           └── index.html
+│   ├── morandi/            # 莫兰迪风格壁纸
+│   ├── paper/              # 手绘风格壁纸
+│   └── test/               # 测试产品
 ├── scripts/
 │   └── deploy.sh           # 本地部署脚本
 └── README.md
@@ -51,7 +53,7 @@ git push origin master
 
 ### 3. 访问
 
-部署完成后访问: `http://my-product.tmlab.site/v1/`
+部署完成后访问: `https://my-product.tmlab.site/`
 
 ## GitHub Secrets 配置
 
@@ -68,7 +70,7 @@ git push origin master
 ### 1. 安装依赖
 
 ```bash
-sudo apt-get install -y rsync docker.io docker-compose
+sudo apt-get install -y rsync docker.io docker-compose openssl
 ```
 
 ### 2. 创建目录
@@ -82,12 +84,15 @@ sudo mkdir -p /var/www/docker
 
 将 `docker/` 目录内容上传到服务器 `/var/www/docker/`
 
-### 4. 启动 nginx 容器
+### 4. 初始化并启动
 
 ```bash
 cd /var/www/docker
-docker-compose up -d
+chmod +x init.sh
+sudo ./init.sh
 ```
+
+脚本会自动生成自签名证书并启动容器。
 
 ## 本地部署
 
@@ -122,4 +127,27 @@ docker-compose up -d
 
 ```
 *.tmlab.site  A  <服务器IP>
+tmlab.site    A  <服务器IP>
 ```
+
+## SSL 证书配置（AllinSSL）
+
+使用 AllinSSL 管理泛域名证书，实现自动申请和续期。
+
+### 1. 在 AllinSSL 创建工作流
+
+- **域名**: `*.tmlab.site, tmlab.site`
+- **DNS 提供商**: 配置对应的 DNS API（阿里云/腾讯云等）
+- **CA**: Let's Encrypt 或 ZeroSSL
+
+### 2. 配置证书部署
+
+| 配置项 | 值 |
+|--------|-----|
+| 证书路径 | `/etc/ssl/certs/tmlab.site/fullchain.pem` |
+| 私钥路径 | `/etc/ssl/certs/tmlab.site/privkey.pem` |
+| 部署后命令 | `docker exec static-sites nginx -s reload` |
+
+### 3. 证书生效
+
+AllinSSL 部署证书后会自动覆盖初始的自签名证书，执行 reload 命令后 HTTPS 即可正常使用。
