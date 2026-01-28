@@ -1,7 +1,7 @@
 :root {
   /* Dark Theme (Default) */
   --bg: #000000;
-  --bg-header: rgba(0, 0, 0, 0.8);
+  --bg-header: rgba(0, 0, 0, 0.5);
   --bg-surface: #121212;
   --bg-surface-hover: #1e1e1e;
   --bg-input: #121212;
@@ -21,7 +21,7 @@
 [data-theme="light"] {
   /* Light Theme */
   --bg: #ffffff;
-  --bg-header: rgba(255, 255, 255, 0.85);
+  --bg-header: rgba(255, 255, 255, 0.65);
   --bg-surface: #f7f7f8;
   --bg-surface-hover: #eeeeef;
   --bg-input: #f0f2f5;

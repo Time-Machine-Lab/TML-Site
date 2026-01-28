@@ -14,6 +14,24 @@ const initNav = () => {
   });
 };
 
+// Add scroll listener for header transparency
+const initHeaderScroll = () => {
+  const header = document.querySelector(".header");
+  if (!header) return;
+
+  const handleScroll = () => {
+    if (window.scrollY > 50) {
+      header.classList.add("scrolled");
+    } else {
+      header.classList.remove("scrolled");
+    }
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  // Initial check
+  handleScroll();
+};
+
 const initHero = () => {
   const track = $("#hero-track");
   if (!track) return;
@@ -29,6 +47,108 @@ const initHero = () => {
   const nextBtn = $("[data-hero-next]");
   if (prevBtn) prevBtn.addEventListener("click", () => scrollByCard(-1));
   if (nextBtn) nextBtn.addEventListener("click", () => scrollByCard(1));
+};
+
+// New: Lumière Switcher Logic (Stack Effect)
+const initHeroSwitcher = () => {
+  const navItems = $$(".l-nav-item");
+  const cards = $$(".l-switcher-card");
+  const bgImage = $(".l-hero-img"); // Main background image
+  
+  if (!navItems.length || !cards.length) return;
+
+  let currentIndex = 0;
+  let interval;
+  const total = cards.length;
+
+  const updateStackClasses = () => {
+    cards.forEach((card, index) => {
+      // Calculate distance from current index in a loop
+      // We want:
+      // index == currentIndex -> active (0)
+      // index == (currentIndex + 1) % total -> next (1)
+      // index == (currentIndex + 2) % total -> next-2 (2)
+      // others -> hidden
+      
+      // Calculate visual position (0 = active, 1 = next, etc.)
+      // (index - currentIndex + total) % total
+      // But we need to handle the wrap around correctly for the "stack" logic.
+      // Actually, simple circular distance is enough if we only show 3 cards.
+      
+      let dist = (index - currentIndex + total) % total;
+      
+      card.className = "l-switcher-card"; // reset
+      
+      if (dist === 0) {
+        card.classList.add("active");
+      } else if (dist === 1) {
+        card.classList.add("next");
+      } else if (dist === 2) {
+        card.classList.add("next-2");
+      } else {
+        card.classList.add("hidden");
+      }
+    });
+  };
+
+  const switchImage = (index) => {
+    currentIndex = index;
+    
+    // Update Nav
+    navItems.forEach((item, i) => {
+      if (i === index) item.classList.add("active");
+      else item.classList.remove("active");
+    });
+
+    // Update Stack
+    updateStackClasses();
+
+    // Update Main Background
+    // Get image source from the active card's img
+    const activeCardImg = cards[index].querySelector("img");
+    if (bgImage && activeCardImg) {
+      bgImage.style.opacity = 0;
+      setTimeout(() => {
+        bgImage.src = activeCardImg.src;
+        bgImage.onload = () => {
+          bgImage.style.opacity = 1;
+        };
+      }, 200);
+    }
+  };
+
+  const startAutoPlay = () => {
+    interval = setInterval(() => {
+      let next = (currentIndex + 1) % total;
+      switchImage(next);
+    }, 5000); // 5s interval
+  };
+
+  const stopAutoPlay = () => clearInterval(interval);
+
+  // Event Listeners
+  navItems.forEach((item, index) => {
+    item.addEventListener("click", () => {
+      stopAutoPlay();
+      switchImage(index);
+      startAutoPlay();
+    });
+  });
+  
+  // Allow clicking on "next" cards to switch to them
+  cards.forEach((card, index) => {
+      card.addEventListener("click", () => {
+          if (index !== currentIndex) {
+             stopAutoPlay();
+             switchImage(index);
+             startAutoPlay();
+          }
+      });
+  });
+
+  // Start
+  updateStackClasses(); // Initial state
+  startAutoPlay();
 };
 
 const initChannels = () => {
@@ -98,96 +218,18 @@ const initChannels = () => {
 
 const initDock = () => {
   const dockBtns = $$(".dock-btn");
-  const badge = $("#sort-badge");
+  if (!dockBtns.length) return;
+  const masonry = document.body; // or main wrapper
+
   dockBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
       activate(dockBtns, btn);
-      if (badge) badge.textContent = btn.dataset.sort;
+      const sort = btn.dataset.sort;
+      // Just demo effect:
+      if (sort === "Trending") masonry.dataset.grid = "medium";
+      else if (sort === "Latest") masonry.dataset.grid = "small";
+      else masonry.dataset.grid = "large";
     });
-  });
-};
-
-const initFilters = () => {
-  const tabs = $$(".filter-tab");
-  const sizeBtns = $$(".size-btn");
-  const sortBadge = $("#sort-badge");
-
-  if (tabs.length) {
-    tabs.forEach((tab) => {
-      tab.addEventListener("click", () => {
-        activate(tabs, tab);
-        if (sortBadge && tab.dataset.sort) sortBadge.textContent = tab.dataset.sort;
-      });
-    });
-  }
-
-  if (sizeBtns.length) {
-    sizeBtns.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        activate(sizeBtns, btn);
-        const size = btn.dataset.size || "medium";
-        document.body.dataset.grid = size;
-      });
-    });
-  }
-};
-
-const initDrawer = () => {
-  const toggle = $("[data-menu-toggle]");
-  const drawer = $("#channel-drawer");
-  const list = $("#drawer-list");
-  
-  if (!toggle || !drawer) return;
-
-  const header = $("#drawer-channels-header");
-  const arrow = header?.querySelector(".arrow-icon");
-
-  if (header) {
-    header.addEventListener("click", () => {
-      list.classList.toggle("is-collapsed");
-      if (arrow) arrow.classList.toggle("is-collapsed");
-    });
-  }
-
-  // Populate drawer list from pills
-  if (list && list.children.length === 0) {
-    const pills = $$("[data-channel]");
-    pills.forEach(pill => {
-      const channel = pill.dataset.channel;
-      if (channel === "All Channels") return;
-      
-      const img = pill.querySelector("img");
-      const imgSrc = img ? img.src : "";
-      
-      const btn = document.createElement("button");
-      btn.className = "drawer-item has-bg";
-      btn.innerHTML = `
-        <img src="${imgSrc}" class="drawer-item-bg" alt="">
-        <span class="drawer-item-text">${channel}</span>
-      `;
-      
-      btn.addEventListener("click", () => {
-        // Trigger the original pill click
-        pill.click();
-        close();
-      });
-      
-      list.appendChild(btn);
-    });
-  }
-
-  const close = () => drawer.classList.add("is-hidden");
-  const open = () => drawer.classList.remove("is-hidden");
-
-  toggle.addEventListener("click", () => {
-    if (drawer.classList.contains("is-hidden")) open();
-    else close();
-  });
-
-  document.addEventListener("click", (event) => {
-    if (drawer.classList.contains("is-hidden")) return;
-    if (drawer.contains(event.target) || toggle.contains(event.target)) return;
-    close();
   });
 };
 
@@ -195,33 +237,95 @@ const initTheme = () => {
   const toggle = $("#theme-toggle");
   if (!toggle) return;
 
-  // Check saved theme
-  const savedTheme = localStorage.getItem("theme");
-  
-  // Default is dark. If saved is light, enable light mode.
-  if (savedTheme === "light") {
-    document.documentElement.setAttribute("data-theme", "light");
-    toggle.checked = true;
-  } else {
-    document.documentElement.removeAttribute("data-theme");
-    toggle.checked = false;
-  }
+  const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
+  toggle.checked = currentTheme === "light";
 
-  toggle.addEventListener("change", (e) => {
-    if (e.target.checked) {
-      document.documentElement.setAttribute("data-theme", "light");
-      localStorage.setItem("theme", "light");
-    } else {
-      document.documentElement.removeAttribute("data-theme");
-      localStorage.setItem("theme", "dark");
-    }
+  toggle.addEventListener("change", () => {
+    const theme = toggle.checked ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
   });
 };
 
-initNav();
-initHero();
-initChannels();
-initDock();
-initFilters();
-initDrawer();
-initTheme();
+const initDrawer = () => {
+  const btn = $("[data-menu-toggle]");
+  const drawer = $("#channel-drawer");
+  const drawerList = $("#drawer-list");
+  
+  if (!btn || !drawer) return;
+
+  // Toggle drawer visibility
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    drawer.classList.toggle("is-hidden");
+  });
+
+  // Close when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!drawer.contains(e.target) && !btn.contains(e.target)) {
+      drawer.classList.add("is-hidden");
+    }
+  });
+
+  // Populate drawer list from existing channel pills (source of truth)
+  // We'll clone the data but use drawer-item styling
+  if (drawerList) {
+    const sourcePills = $$(".channel-pill").filter(p => !p.classList.contains("channel-pill--all"));
+    // Clear initial
+    drawerList.innerHTML = "";
+    
+    sourcePills.forEach(pill => {
+      const channelName = pill.dataset.channel;
+      // Create button
+      const item = document.createElement("button");
+      item.className = "drawer-item has-bg";
+      item.type = "button";
+      
+      // Clone icon as background
+      const pillIconImg = pill.querySelector(".pill-icon img");
+      if (pillIconImg) {
+        const bgImg = document.createElement("img");
+        bgImg.className = "drawer-item-bg";
+        bgImg.src = pillIconImg.src;
+        bgImg.alt = channelName;
+        item.appendChild(bgImg);
+      }
+      
+      // Add text
+      const textSpan = document.createElement("span");
+      textSpan.className = "drawer-item-text";
+      textSpan.textContent = channelName;
+      item.appendChild(textSpan);
+      
+      // Add click handler to sync with main pills
+      item.addEventListener("click", () => {
+        // Trigger click on original pill
+        pill.click();
+        drawer.classList.add("is-hidden");
+      });
+      
+      drawerList.appendChild(item);
+    });
+  }
+
+  // Toggle channel list collapse
+  const channelsHeader = $("#drawer-channels-header");
+  if (channelsHeader && drawerList) {
+    channelsHeader.addEventListener("click", () => {
+      drawerList.classList.toggle("is-collapsed");
+      const arrow = channelsHeader.querySelector(".arrow-icon");
+      if (arrow) arrow.classList.toggle("is-collapsed");
+    });
+  }
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  initNav();
+  initHeaderScroll(); // Add this
+  initHero();
+  initHeroSwitcher(); // Add this
+  initChannels();
+  initDock();
+  initTheme();
+  initDrawer();
+});

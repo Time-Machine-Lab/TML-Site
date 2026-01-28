@@ -7,7 +7,7 @@
 <title>TmlStation - Matte Painting</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Cinzel:wght@400;600;700&amp;family=Inter:wght@400;500;600;700;800&amp;family=Playfair+Display:ital,wght@0,600;1,600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Cinzel:wght@400;600;700&amp;family=Inter:wght@400;500;600;700;800&amp;family=Playfair+Display:ital,wght@0,600;1,600&amp;family=Italiana&amp;family=Manrope:wght@200;300;400;500;600&amp;display=swap" rel="stylesheet"/>
 <link href="css/components.css" rel="stylesheet"/>
 <link href="css/style.css" rel="stylesheet"/>
 <script>
@@ -74,6 +74,88 @@
   </div>
 </header>
 <main>
+<section class="l-hero">
+  <div class="l-hero-bg">
+    <img src="assets/killian-prevost-caillou-final.jpg" alt="Hero Background" class="l-hero-img">
+    <div class="l-hero-grid"></div>
+    <div class="l-hero-orb orb-1"></div>
+    <div class="l-hero-orb orb-2"></div>
+  </div>
+
+  <div class="l-hero-content">
+    <div class="l-hero-inner">
+      <div class="l-hero-left">
+        <span class="l-hero-label">Volume 01 — Digital Universe</span>
+        <h1 class="t-l-hero">
+          <span class="l-hero-line">Creative</span>
+          <span class="l-hero-line" style="font-family:var(--l-font-ui); font-weight:300; font-style:italic; text-transform:none; color:var(--brand);">Alchemy</span>
+          <span class="l-hero-line">Archive</span>
+        </h1>
+        <p class="l-hero-subtitle">A curated collection of digital masterpieces, concept art, and immersive worlds. Discover the liquid light of imagination.</p>
+        <div class="l-hero-actions">
+          <button class="l-hero-btn primary">Explore Gallery</button>
+          <button class="l-hero-btn ghost">Join Community</button>
+        </div>
+      </div>
+
+      <div class="l-hero-right">
+        <div class="l-hero-panel">
+          <div class="l-switcher">
+            <!-- Cards will be stacked -->
+            <div class="l-switcher-card" data-index="0">
+              <img src="assets/killian-prevost-caillou-final.jpg" alt="Caillou" class="l-card-img">
+              <div class="l-card-info">
+                <span class="l-card-meta">Killian Prevost</span>
+                <h3 class="l-card-title">Caillou</h3>
+              </div>
+            </div>
+            <div class="l-switcher-card" data-index="1">
+              <img src="assets/jacek-pilarski-citadel.webp" alt="Citadel" class="l-card-img">
+              <div class="l-card-info">
+                <span class="l-card-meta">Jacek Pilarski</span>
+                <h3 class="l-card-title">Citadel</h3>
+              </div>
+            </div>
+            <div class="l-switcher-card" data-index="2">
+              <img src="assets/sergey-semenovykh-sergey-semenovykh-chainsaw-man-1x1.jpg" alt="Chainsaw Man 1X1" class="l-card-img">
+              <div class="l-card-info">
+                <span class="l-card-meta">TmlStation Artist</span>
+                <h3 class="l-card-title">Chainsaw Man 1X1</h3>
+              </div>
+            </div>
+            <div class="l-switcher-card" data-index="3">
+              <img src="assets/yucong-tang-yucong-tang-2e.webp" alt="Yucong Tang 2e" class="l-card-img">
+              <div class="l-card-info">
+                <span class="l-card-meta">Yucong Tang</span>
+                <h3 class="l-card-title">Yucong Tang 2e</h3>
+              </div>
+            </div>
+            <div class="l-switcher-card" data-index="4">
+              <img src="assets/david-arno-schwaiger-david-arno-schwaiger-ldr-spiderrose-cover-2.webp" alt="Spider Rose" class="l-card-img">
+              <div class="l-card-info">
+                <span class="l-card-meta">David Arno Schwaiger</span>
+                <h3 class="l-card-title">Spider Rose</h3>
+              </div>
+            </div>
+          </div>
+          
+          <div class="l-panel-meta">
+             <div class="l-switcher-nav">
+                <div class="l-nav-item active" data-target="0"></div>
+                <div class="l-nav-item" data-target="1"></div>
+                <div class="l-nav-item" data-target="2"></div>
+                <div class="l-nav-item" data-target="3"></div>
+                <div class="l-nav-item" data-target="4"></div>
+            </div>
+            <span class="l-meta-link">View Portfolio</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
 <section aria-label="Highlights" class="hero-carousel">
 <button aria-label="Previous" class="hero-nav hero-prev" data-hero-prev="" type="button">
 <svg viewbox="0 0 24 24"><path d="M15.7 5.3 9.1 12l6.6 6.7-1.4 1.4-8-8 8-8 1.4 1.2Z"></path></svg>
@@ -206,6 +288,7 @@
 <svg viewbox="0 0 24 24"><path d="M8.3 5.3 14.9 12l-6.6 6.7 1.4 1.4 8-8-8-8-1.4 1.2Z"></path></svg>
 </button>
 </section>
+
 <div class="channel-row-wrap">
 <button class="square-btn" data-menu-toggle="" title="Menu" type="button">
 <svg viewbox="0 0 24 24"><path d="M4 6h16v2H4V6Zm0 5h16v2H4v-2Zm0 5h16v2H4v-2Z"></path></svg>
