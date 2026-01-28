@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NEURAL | Infinite Latent Space v2.0</title>
+    <meta name="description" content="A physics-based, infinite canvas exploration of AI imagery.">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;700&family=Share+Tech+Mono&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================================================
+           1. CORE SYSTEM & VARIABLES
+           ========================================================================= */
+        :root {
+            /* Match test3 palette */
+            --c-void: #030303;
+            --c-panel: #0a0a0a;
+            --c-panel-glass: rgba(20, 20, 20, 0.7);
+
+            --c-neon-blue: #00F0FF;
+            --c-neon-pink: #FF0055;
+            --c-neon-yellow: #FAFF00;
+            --c-neon-green: #39FF14;
+
+            --c-text-main: #E0E0E0;
+            --c-text-muted: #555555;
+            --c-text-dim: #555555;
+
+            --border-solid: 1px solid rgba(255,255,255,0.1);
+            --border-glow: 1px solid rgba(0, 240, 255, 0.5);
+            --shadow-holo: 0 0 20px rgba(0, 240, 255, 0.2);
+
+            --c-accent: var(--c-neon-blue);
+            --c-accent-dim: rgba(0, 240, 255, 0.1);
+            --c-accent-glow: rgba(0, 240, 255, 0.6);
+
+            --f-head: 'Orbitron', sans-serif;
+            --f-ui: 'Rajdhani', sans-serif;
+            --f-mono: 'Share Tech Mono', monospace;
+
+            /* 层级 */
+            --z-bg: 0;
+            --z-canvas: 10;
+            --z-dom: 20;
+            --z-vignette: 50;
+            --z-hud: 100;
+            --z-cursor: 9999;
+            --z-boot: 10000;
+            --z-overview: 70;
+
+            /* Node sizing */
+            --node-w: 260px;
+
+            /* HUD accents */
+            --c-accent-2: var(--c-neon-green);
+            --c-accent-2-dim: rgba(57, 255, 20, 0.15);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box; margin: 0; padding: 0;
+            cursor: none; user-select: none;
+        }
+
+        body, html {
+            width: 100%; height: 100%; overflow: hidden;
+            background-color: var(--c-void);
+            font-family: var(--f-ui); color: var(--c-text-main);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* 扫描线纹理 */
+        body::after {
+            content: ""; position: fixed; inset: 0;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+            background-size: 100% 4px;
+            pointer-events: none; z-index: var(--z-vignette); opacity: 0.7;
+        }
+
+        /* 暗角效果 */
+        .vignette {
+            position: fixed; inset: 0; pointer-events: none; z-index: var(--z-vignette);
+            background: radial-gradient(circle, transparent 50%, #000 100%);
+        }
+
+        /* Overview overlay (satellite console) */
+        #overview-layer {
+            position: fixed; inset: 0; pointer-events: none; z-index: var(--z-overview);
+            opacity: 0; transition: opacity 0.3s ease;
+            background-image:
+                linear-gradient(90deg, rgba(0, 243, 255, 0.12) 1px, transparent 1px),
+                linear-gradient(rgba(0, 243, 255, 0.12) 1px, transparent 1px),
+                radial-gradient(circle at 50% 50%, rgba(0, 243, 255, 0.18), transparent 55%);
+            background-size: 80px 80px, 80px 80px, 100% 100%;
+            background-position: 0 0, 0 0, center;
+            mix-blend-mode: screen;
+        }
+        #overview-layer::after {
+            content: ""; position: absolute; inset: -20%;
+            background: linear-gradient(120deg, transparent 30%, rgba(124, 255, 107, 0.22) 45%, transparent 60%);
+            transform: translateX(-40%);
+            animation: sweep 6s linear infinite;
+        }
+        @keyframes sweep {
+            0% { transform: translateX(-40%); }
+            100% { transform: translateX(40%); }
+        }
+        body.is-overview #overview-layer { opacity: 1; }
+
+        /* =========================================================================
+           2. BOOT SEQUENCE (LOADER)
+           ========================================================================= */
+        #boot-screen {
+            position: fixed; inset: 0; background: #000; z-index: var(--z-boot);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            font-family: var(--f-mono); color: var(--c-accent);
+        }
+
+        .boot-log {
+            width: 300px; height: 150px; overflow: hidden;
+            font-size: 10px; line-height: 1.6; opacity: 0.7; margin-bottom: 20px;
+            border-left: 1px solid var(--c-accent-dim); padding-left: 10px;
+        }
+
+        .boot-bar-box {
+            width: 300px; height: 4px; background: #111; position: relative; overflow: hidden;
+        }
+        .boot-bar {
+            position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: var(--c-accent);
+            box-shadow: 0 0 10px var(--c-accent);
+        }
+
+        .boot-text {
+            margin-top: 10px; font-size: 12px; letter-spacing: 2px; animation: blink 1s infinite;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        /* =========================================================================
+           3. MAIN VIEWPORT & CANVASES
+           ========================================================================= */
+        #viewport {
+            position: fixed; inset: 0; overflow: hidden;
+        }
+
+        /* Background Graphics */
+        #bg-canvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: var(--z-canvas); pointer-events: none;
+        }
+
+        /* DOM Layer for Images */
+        #node-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: var(--z-dom); transform-origin: 0 0; will-change: transform;
+        }
+
+        /* =========================================================================
+           4. NODE COMPONENT (THE IMAGES)
+           ========================================================================= */
+        .node {
+            position: absolute; width: var(--node-w);
+            display: block; pointer-events: auto;
+            transition: opacity 0.3s ease;
+        }
+        .unit {
+            position: relative; width: 100%; aspect-ratio: 0.75;
+            background: #080808; border: 1px solid #222;
+            transform-style: preserve-3d; transition: transform 0.1s;
+        }
+        .unit-frame {
+            position: absolute; inset: 0; border: 1px solid rgba(255,255,255,0.1);
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+            background: radial-gradient(circle at 50% 0%, #1a1a1a, #000);
+            z-index: 1; transition: border-color 0.3s;
+        }
+        .unit-vis {
+            position: absolute; top: 10px; left: 10px; right: 10px; bottom: 60px;
+            overflow: hidden; border: 1px solid #333; background: #000;
+        }
+        .unit-img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: grayscale(100%) contrast(1.2); opacity: 0.7;
+            transform: scale(1.1); transition: all 0.5s ease;
+        }
+        .unit-holo {
+            position: absolute; inset: 0; pointer-events: none; z-index: 5;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.5) 3px);
+            opacity: 0.3;
+        }
+        .unit-ui-top {
+            position: absolute; top: 15px; left: 15px; right: 15px; z-index: 10;
+            display: flex; justify-content: space-between;
+        }
+        .ui-badge {
+            background: #000; border: 1px solid var(--c-neon-blue); color: var(--c-neon-blue);
+            font-family: var(--f-mono); font-size: 9px; padding: 2px 6px;
+        }
+        .ui-dot {
+            width: 8px; height: 8px; background: #333; border-radius: 50%;
+        }
+        .unit-ui-bot {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 60px;
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            font-family: var(--f-ui); z-index: 10;
+        }
+        .unit-name { color: #fff; font-weight: 700; font-size: 16px; letter-spacing: 1px; }
+        .unit-code { color: var(--c-text-dim); font-size: 10px; }
+        .node:hover .unit-frame { border-color: var(--c-neon-blue); box-shadow: 0 0 30px rgba(0,240,255,0.1); }
+        .node:hover .unit-img { filter: grayscale(0%) contrast(1.1); opacity: 1; transform: scale(1); }
+        .node:hover .ui-dot { background: var(--c-neon-green); box-shadow: 0 0 8px var(--c-neon-green); }
+        .node:hover .unit-name { color: var(--c-neon-blue); text-shadow: 0 0 10px var(--c-neon-blue); }
+
+        /* =========================================================================
+           5. HUD INTERFACE
+           ========================================================================= */
+        #hud {
+            position: fixed; inset: 0; z-index: var(--z-hud); pointer-events: none;
+        }
+
+        .hud-panel {
+            position: absolute; background: var(--c-panel-glass); border: var(--border-solid);
+            backdrop-filter: blur(5px); pointer-events: auto;
+        }
+
+        /* Top Bar (test3) */
+        .hud-top {
+            position: fixed; top: 0; left: 0; width: 100%; height: 80px;
+            z-index: var(--z-hud); display: flex; justify-content: space-between; align-items: center;
+            padding: 0 40px; border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            backdrop-filter: blur(5px); pointer-events: auto;
+        }
+        .brand {
+            font-family: var(--f-head); font-size: 24px; font-weight: 700; color: #fff;
+            letter-spacing: 2px; display: flex; align-items: center; gap: 15px;
+        }
+        .brand-icon {
+            width: 20px; height: 20px; background: var(--c-neon-blue);
+            transform: rotate(45deg); box-shadow: 0 0 15px var(--c-neon-blue);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .sys-stat {
+            font-family: var(--f-mono); font-size: 10px; color: var(--c-neon-blue);
+            display: flex; gap: 30px; letter-spacing: 1px;
+        }
+        .stat-val { color: #fff; text-shadow: 0 0 5px #fff; }
+        .nav-menu { display: flex; gap: 2px; }
+        .nav-btn {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 30px; color: var(--c-text-main); font-family: var(--f-ui);
+            font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+            position: relative; overflow: hidden; transition: all 0.3s;
+            clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px);
+        }
+        .nav-btn::before {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px;
+            background: var(--c-neon-pink); transform: scaleX(0); transition: transform 0.3s;
+        }
+        .nav-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; text-shadow: 0 0 8px #fff; }
+        .nav-btn:hover::before { transform: scaleX(1); }
+
+        .hud-btn {
+            padding: 8px 14px; border: var(--border-solid);
+            background: rgba(255,255,255,0.03); color: #cfcfcf;
+            font-family: var(--f-mono); font-size: 10px; letter-spacing: 1px;
+            text-transform: uppercase; cursor: pointer; transition: all 0.2s ease;
+        }
+        .hud-btn:hover { border-color: var(--c-accent); color: var(--c-accent); }
+        .hud-btn.active { border-color: var(--c-accent-2); color: var(--c-accent-2); box-shadow: 0 0 16px var(--c-accent-2-dim); }
+
+        .overview-toggle {
+            top: 90px; right: 20px;
+            padding: 6px;
+        }
+
+        .overview-badge {
+            position: fixed; top: 80px; right: 24px; z-index: var(--z-hud);
+            font-family: var(--f-mono); font-size: 10px; letter-spacing: 2px;
+            color: var(--c-accent-2); padding: 8px 12px;
+            border: 1px solid var(--c-accent-2-dim);
+            background: rgba(0,0,0,0.35); opacity: 0; transform: translateY(-8px);
+            transition: all 0.25s ease;
+        }
+        body.is-overview .overview-badge { opacity: 1; transform: translateY(0); }
+
+        /* Overview look */
+        body.is-overview .node { pointer-events: none; }
+        body.is-overview .unit-frame { border-color: rgba(255,255,255,0.08); box-shadow: none; }
+        body.is-overview .unit-img { opacity: 0.55; filter: grayscale(70%) contrast(1.2) brightness(1.05); }
+        body.is-overview #bg-canvas { filter: contrast(1.2) brightness(1.05); }
+        body.is-overview .hud-side { opacity: 0.6; }
+
+        body.is-overview .node::after {
+            content: ""; position: absolute; left: 50%; top: 45%;
+            width: 10px; height: 10px; border: 1px solid var(--c-accent-2);
+            border-radius: 50%; transform: translate(-50%, -50%);
+            opacity: 0; animation: node-pulse 2.8s ease-out infinite;
+        }
+        body.is-overview .node:nth-child(3n)::after { animation-delay: 0.6s; }
+        body.is-overview .node:nth-child(4n)::after { animation-delay: 1.2s; }
+        @keyframes node-pulse {
+            0% { opacity: 0.7; transform: translate(-50%, -50%) scale(0.6); }
+            70% { opacity: 0; transform: translate(-50%, -50%) scale(4); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(4.2); }
+        }
+
+        /* Side Filters (test3) */
+        .hud-side {
+            position: fixed; left: 40px; top: 50%; transform: translateY(-50%);
+            z-index: var(--z-hud); display: flex; flex-direction: column; gap: 20px;
+            pointer-events: auto;
+        }
+        .filter-group {
+            display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+        }
+        .filter-label {
+            font-family: var(--f-mono); font-size: 10px; color: var(--c-text-dim);
+            transform: rotate(-90deg) translateX(-10px); transform-origin: left bottom; margin-bottom: 20px;
+        }
+        .filter-tab {
+            width: 40px; height: 40px; border: 1px solid var(--c-text-dim);
+            display: flex; justify-content: center; align-items: center;
+            color: var(--c-text-dim); font-family: var(--f-ui); font-size: 14px; font-weight: 700;
+            transition: all 0.3s; position: relative;
+        }
+        .filter-tab.active, .filter-tab:hover {
+            border-color: var(--c-neon-blue); color: var(--c-neon-blue);
+            box-shadow: 0 0 15px rgba(0,240,255,0.2); background: rgba(0,240,255,0.05);
+        }
+        .filter-tab::after {
+            content: attr(data-tooltip); position: absolute; left: 50px;
+            background: var(--c-neon-blue); color: #000; padding: 4px 8px;
+            font-size: 10px; font-weight: 700; opacity: 0; transition: opacity 0.3s;
+            pointer-events: none; white-space: nowrap; clip-path: polygon(0 0, 100% 0, 100% 100%, 5px 100%, 0 calc(100% - 5px));
+        }
+        .filter-tab:hover::after { opacity: 1; }
+
+        /* Minimap */
+        .minimap-box {
+            bottom: 24px; left: 24px; width: 160px; height: 160px;
+            padding: 5px; border-top: 2px solid var(--c-accent);
+        }
+        .minimap-label { font-family: var(--f-mono); font-size: 9px; color: var(--c-accent); margin-bottom: 5px; display: block; }
+        #radar-canvas { width: 100%; height: calc(100% - 15px); background: rgba(0,0,0,0.5); opacity: 0.8; }
+
+        /* Bottom Info */
+        .coords-box {
+            bottom: 24px; right: 100px; height: 40px; display: flex; align-items: center; padding: 0 20px;
+            font-family: var(--f-mono); font-size: 11px;
+        }
+
+        /* Zoom Slider (Visual Only) */
+        .zoom-slider {
+            bottom: 24px; right: 24px; width: 40px; height: 160px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px;
+        }
+        .zoom-btn {
+            width: 30px; height: 30px; border: var(--border-solid); background: var(--c-panel-glass);
+            color: #fff; display: flex; justify-content: center; align-items: center; cursor: pointer;
+        }
+        .zoom-btn:hover { border-color: var(--c-neon-blue); color: var(--c-neon-blue); }
+
+        /* =========================================================================
+           6. CUSTOM CURSOR (test3)
+           ========================================================================= */
+        #cursor {
+            position: fixed; top: 0; left: 0; z-index: var(--z-cursor); pointer-events: none;
+            mix-blend-mode: difference;
+        }
+        .c-main {
+            width: 20px; height: 20px; border: 2px solid #fff;
+            transform: translate(-50%, -50%) rotate(45deg); transition: all 0.2s;
+        }
+        .c-point {
+            width: 4px; height: 4px; background: var(--c-neon-pink); position: absolute;
+            top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%;
+        }
+        .c-label {
+            position: absolute; left: 25px; top: 0; color: var(--c-neon-blue);
+            font-family: var(--f-mono); font-size: 10px; white-space: nowrap; opacity: 0;
+        }
+
+        body.hovering .c-main {
+            width: 50px; height: 50px; border-color: var(--c-neon-blue);
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+        body.hovering .c-label { opacity: 1; }
+
+        /* =========================================================================
+           7. MODAL (DETAIL VIEW)
+           ========================================================================= */
+        #modal {
+            position: fixed; inset: 0; background: rgba(5, 5, 5, 0.95); z-index: var(--z-modal);
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s;
+            backdrop-filter: blur(10px);
+        }
+        #modal.active { opacity: 1; pointer-events: auto; }
+
+        .modal-card {
+            width: 80vw; height: 80vh; display: grid; grid-template-columns: 2fr 1fr;
+            border: 1px solid rgba(255, 255, 255, 0.1); background: #000;
+            box-shadow: 0 0 100px rgba(0, 243, 255, 0.1);
+        }
+
+        .modal-visual {
+            position: relative; border-right: 1px solid rgba(255,255,255,0.1); overflow: hidden;
+        }
+        .modal-img {
+            width: 100%; height: 100%; object-fit: contain; padding: 40px;
+        }
+
+        .modal-data {
+            padding: 40px; display: flex; flex-direction: column; justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .m-label { font-size: 10px; color: #00F3FF; text-transform: uppercase; margin-bottom: 10px; }
+        .m-title { font-family: 'Rajdhani', sans-serif; font-size: 40px; line-height: 1; margin-bottom: 30px; text-transform: uppercase; }
+
+        .m-row {
+            display: flex; justify-content: space-between; border-bottom: 1px solid #222; padding: 15px 0;
+            font-size: 12px; color: #888;
+        }
+        .m-val { color: #fff; }
+
+        .m-btn {
+            margin-top: auto; padding: 20px; background: #00F3FF; color: #000;
+            text-align: center; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .m-btn:hover { background: #fff; }
+
+        .modal-close {
+            position: absolute; top: 16px; right: 16px; color: #fff; font-size: 20px;
+            cursor: pointer; z-index: 50; width: 48px; height: 48px;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid rgba(255,255,255,0.35); background: rgba(0,0,0,0.6);
+            box-shadow: 0 0 12px rgba(0,0,0,0.4);
+        }
+        .modal-close:hover { border-color: var(--c-neon-pink); color: var(--c-neon-pink); }
+
+    </style>
+</head>
+<body>
+
+<div id="boot-screen">
+    <div class="boot-log" id="boot-log"></div>
+    <div class="boot-bar-box"><div class="boot-bar" id="boot-bar"></div></div>
+    <div class="boot-text">ESTABLISHING NEURAL LINK...</div>
+</div>
+
+<div id="viewport">
+    <canvas id="bg-canvas"></canvas>
+    <div id="node-container">
+    </div>
+</div>
+
+<div id="overview-layer"></div>
+
+<div class="vignette"></div>
+
+<div id="hud">
+    <header class="hud-top">
+        <div class="brand">
+            <div class="brand-icon"></div>
+            NEURAL<span style="color:var(--c-neon-blue)">VAULT</span>
+        </div>
+        <div class="sys-stat">
+            <div>MEM: <span class="stat-val">64TB</span></div>
+            <div>NET: <span class="stat-val">SECURE</span></div>
+            <div>FPS: <span class="stat-val" id="fps-stat">60</span></div>
+        </div>
+        <div class="nav-menu">
+            <button class="nav-btn interact" id="overview-btn">Index</button>
+            <button class="nav-btn interact">Logs</button>
+            <button class="nav-btn interact" style="border-color:var(--c-neon-pink); color:var(--c-neon-pink)">Login</button>
+        </div>
+    </header>
+
+    <div class="hud-side">
+        <div class="filter-group">
+            <div class="filter-label">CLASSIFICATION</div>
+            <div class="filter-tab active interact" data-filter="all" data-tooltip="ALL ASSETS">A</div>
+            <div class="filter-tab interact" data-filter="Cyberpunk" data-tooltip="CYBERPUNK">C</div>
+            <div class="filter-tab interact" data-filter="Abstract" data-tooltip="ABSTRACT">X</div>
+            <div class="filter-tab interact" data-filter="Nature" data-tooltip="ORGANIC">O</div>
+            <div class="filter-tab interact" data-filter="Urban" data-tooltip="URBAN">U</div>
+        </div>
+    </div>
+
+    <div class="hud-panel minimap-box">
+        <span class="minimap-label">LATENT RADAR</span>
+        <canvas id="radar-canvas"></canvas>
+    </div>
+
+    <div class="hud-panel coords-box">
+        <span id="coords">POS: 0000, 0000</span>
+    </div>
+
+    <div class="hud-panel zoom-slider">
+        <div class="zoom-btn" id="zoom-in">+</div>
+        <div class="zoom-btn" id="zoom-out">-</div>
+    </div>
+</div>
+
+<div class="overview-badge">GLOBAL OVERVIEW</div>
+
+<div id="cursor">
+    <div class="c-main"></div>
+    <div class="c-point"></div>
+    <div class="c-label">ACCESS</div>
+</div>
+
+<div id="modal">
+    <div class="modal-close interact" aria-label="Close">✕</div>
+    <div class="modal-card">
+        <div class="modal-visual">
+            <img src="" class="modal-img" id="m-img">
+        </div>
+        <div class="modal-data">
+            <div class="m-label" id="m-id">ID: 8492-AF</div>
+            <div class="m-title" id="m-title">Neural Flux</div>
+            <div class="m-row"><span>Classification</span><span class="m-val" id="m-cat">Abstract</span></div>
+            <div class="m-row"><span>File Size</span><span class="m-val">24.5 MB</span></div>
+            <div class="m-row"><span>Dimensions</span><span class="m-val">8192 x 8192</span></div>
+            <div class="m-row"><span>Generation Seed</span><span class="m-val">88492102</span></div>
+            <div class="m-btn">Initialize Download</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /**
+     * ============================================================================
+     * NEURAL WEB ENGINE 2.0
+     * Architecture:
+     * 1. Data Store: Manages assets
+     * 2. Audio Engine: Procedural sound synthesis
+     * 3. Camera: Physics-based view controller
+     * 4. Renderer: Canvas & DOM synchronization
+     * 5. SpatialGrid: Optimization for connections
+     * ============================================================================
+     */
+
+        // --- CONFIG ---
+    const CFG = {
+            nodeCount: 50, // Total nodes to spawn
+            worldSize: 5000, // Pixels
+            connectDist: 400, // Connection threshold
+            friction: 0.92, // Physics drag
+            mouseSens: 1.2,
+            nodeW: 260,
+            nodeH: 347,
+            minNodeDist: 380,
+            zoomMin: 0.18,
+            zoomMax: 1.6,
+            zoomWheelSpeed: 0.9,
+            zoomSens: 0.001,
+            zoomStep: 0.2,
+            zoomDamping: 0.18,
+            panDamping: 0.12,
+            boundsPadding: 600
+        };
+
+    // --- 1. DATA SOURCE ---
+    // Enhanced structure with metadata mocks
+    const RESOURCES = [
+        { category: 'Abstract', tag: 'Holographic', url: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=600' },
+        { category: 'Abstract', tag: 'Dark Flow', url: 'https://images.unsplash.com/photo-1634152962476-4b8a00e1915c?q=80&w=600' },
+        { category: 'Abstract', tag: 'Liquid', url: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=600' },
+        { category: 'Abstract', tag: 'Chrome', url: 'https://images.unsplash.com/photo-1618172193622-ae2d025f4032?q=80&w=600' },
+        { category: 'Abstract', tag: 'Ink', url: 'https://images.unsplash.com/photo-1550684848-86a5d8727436?q=80&w=600' },
+        { category: 'Cyberpunk', tag: 'Neon Rain', url: 'https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=600' },
+        { category: 'Cyberpunk', tag: 'Cyber Tokyo', url: 'https://images.unsplash.com/photo-1542931287-023b922fa89b?q=80&w=600' },
+        { category: 'Cyberpunk', tag: 'Hardware', url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=600' },
+        { category: 'Cyberpunk', tag: 'Wet Neon', url: 'https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=600' },
+        { category: 'Cyberpunk', tag: 'Matrix', url: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=600' },
+        { category: 'Nature', tag: 'Space', url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600' },
+        { category: 'Nature', tag: 'Nebula', url: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=600' },
+        { category: 'Nature', tag: 'Iceland', url: 'https://images.unsplash.com/photo-1476610182048-b716b8518aae?q=80&w=600' },
+        { category: 'Urban', tag: 'Tokyo Night', url: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=600' },
+        { category: 'Minimal', tag: 'Oil Slick', url: 'https://images.unsplash.com/photo-1515462277126-2dd0c162007a?q=80&w=600' }
+    ];
+
+    // --- 2. AUDIO CORE (test3) ---
+    class AudioCore {
+        constructor() {
+            this.ctx = null;
+            this.gain = null;
+            this.compressor = null;
+            this.master = null;
+            this.noiseBuffer = null;
+            this.init = false;
+            this.lastHoverTime = 0;
+        }
+
+        enable() {
+            if (this.init) return;
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            if (this.ctx.state === 'suspended') this.ctx.resume();
+            this.master = this.ctx.createGain();
+            this.master.gain.value = 0.16;
+            this.compressor = this.ctx.createDynamicsCompressor();
+            this.compressor.threshold.value = -24;
+            this.compressor.knee.value = 20;
+            this.compressor.ratio.value = 6;
+            this.compressor.attack.value = 0.003;
+            this.compressor.release.value = 0.2;
+            this.master.connect(this.compressor);
+            this.compressor.connect(this.ctx.destination);
+            this.noiseBuffer = this.createNoiseBuffer();
+            this.init = true;
+            this.playAmbience();
+        }
+
+        createNoiseBuffer() {
+            const buffer = this.ctx.createBuffer(1, this.ctx.sampleRate * 1.5, this.ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < data.length; i++) {
+                data[i] = (Math.random() * 2 - 1) * 0.4;
+            }
+            return buffer;
+        }
+
+        playAmbience() {
+            const osc = this.ctx.createOscillator();
+            const osc2 = this.ctx.createOscillator();
+            const lp = this.ctx.createBiquadFilter();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = 46;
+            osc2.type = 'triangle';
+            osc2.frequency.value = 60;
+            lp.type = 'lowpass';
+            lp.frequency.value = 180;
+            gain.gain.value = 0.05;
+            osc.connect(lp);
+            osc2.connect(lp);
+            lp.connect(gain);
+            gain.connect(this.master);
+            const lfo = this.ctx.createOscillator();
+            const lfoGain = this.ctx.createGain();
+            lfo.type = 'sine';
+            lfo.frequency.value = 0.4;
+            lfoGain.gain.value = 25;
+            lfo.connect(lfoGain);
+            lfoGain.connect(lp.frequency);
+            lfo.start();
+            osc.start();
+            osc2.start();
+        }
+
+        sfxHover() {
+            if (!this.init) return;
+            const now = this.ctx.currentTime;
+            if (now - this.lastHoverTime < 0.06) return;
+            this.lastHoverTime = now;
+            const osc = this.ctx.createOscillator();
+            const g = this.ctx.createGain();
+            const bp = this.ctx.createBiquadFilter();
+            const noise = this.ctx.createBufferSource();
+            const ng = this.ctx.createGain();
+            const pan = this.ctx.createStereoPanner ? this.ctx.createStereoPanner() : null;
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(620 + Math.random() * 80, now);
+            osc.frequency.exponentialRampToValueAtTime(1100 + Math.random() * 120, now + 0.06);
+            g.gain.setValueAtTime(0.06, now);
+            g.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+            bp.type = 'bandpass';
+            bp.frequency.value = 1200;
+            bp.Q.value = 6;
+
+            noise.buffer = this.noiseBuffer;
+            ng.gain.setValueAtTime(0.03, now);
+            ng.gain.exponentialRampToValueAtTime(0.0005, now + 0.08);
+
+            osc.connect(g);
+            g.connect(bp);
+            noise.connect(ng);
+            ng.connect(bp);
+
+            if (pan) {
+                pan.pan.value = (Math.random() * 2 - 1) * 0.3;
+                bp.connect(pan);
+                pan.connect(this.master);
+            } else {
+                bp.connect(this.master);
+            }
+
+            osc.start(now);
+            noise.start(now);
+            osc.stop(now + 0.08);
+            noise.stop(now + 0.08);
+        }
+
+        sfxClick() {
+            if (!this.init) return;
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const g = this.ctx.createGain();
+            const hp = this.ctx.createBiquadFilter();
+            const noise = this.ctx.createBufferSource();
+            const ng = this.ctx.createGain();
+
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(180, now);
+            osc.frequency.exponentialRampToValueAtTime(60, now + 0.18);
+            g.gain.setValueAtTime(0.08, now);
+            g.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+
+            hp.type = 'highpass';
+            hp.frequency.value = 200;
+
+            noise.buffer = this.noiseBuffer;
+            ng.gain.setValueAtTime(0.025, now);
+            ng.gain.exponentialRampToValueAtTime(0.0005, now + 0.2);
+
+            osc.connect(g);
+            g.connect(hp);
+            noise.connect(ng);
+            ng.connect(hp);
+            hp.connect(this.master);
+
+            osc.start(now);
+            noise.start(now);
+            osc.stop(now + 0.2);
+            noise.stop(now + 0.2);
+        }
+    }
+
+    const AUDIO = new AudioCore();
+
+    // --- 3. MATH & UTILS ---
+    const rnd = (min, max) => Math.random() * (max - min) + min;
+    const dist = (x1, y1, x2, y2) => Math.hypot(x2 - x1, y2 - y1);
+    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+    const mapRange = (value, low1, high1, low2, high2) => {
+        const t = clamp((value - low1) / (high1 - low1), 0, 1);
+        return low2 + (high2 - low2) * t;
+    };
+
+    // --- 4. CAMERA SYSTEM ---
+    class Camera {
+        constructor() {
+            this.x = 0;
+            this.y = 0;
+            this.zoom = 0.6;
+            this.targetX = 0;
+            this.targetY = 0;
+            this.targetZoom = 0.6;
+            this.velX = 0;
+            this.velY = 0;
+            this.dragging = false;
+            this.lastMouse = { x:0, y:0 };
+        }
+
+        update() {
+            // Inertia Physics
+            if (!this.dragging) {
+                this.velX *= CFG.friction;
+                this.velY *= CFG.friction;
+                this.targetX += this.velX;
+                this.targetY += this.velY;
+            }
+            this.clampToBounds();
+
+            // Smooth follow
+            this.x += (this.targetX - this.x) * CFG.panDamping;
+            this.y += (this.targetY - this.y) * CFG.panDamping;
+            this.zoom += (this.targetZoom - this.zoom) * CFG.zoomDamping;
+        }
+
+        // Coordinate Transforms
+        worldToScreen(wx, wy) {
+            const cx = window.innerWidth / 2;
+            const cy = window.innerHeight / 2;
+            return {
+                x: (wx - this.x) * this.zoom + cx,
+                y: (wy - this.y) * this.zoom + cy
+            };
+        }
+
+        screenToWorld(sx, sy) {
+            const cx = window.innerWidth / 2;
+            const cy = window.innerHeight / 2;
+            return {
+                x: (sx - cx) / this.zoom + this.x,
+                y: (sy - cy) / this.zoom + this.y
+            };
+        }
+
+        clampToBounds() {
+            const half = CFG.worldSize / 2 + CFG.boundsPadding;
+            this.targetX = Math.max(-half, Math.min(half, this.targetX));
+            this.targetY = Math.max(-half, Math.min(half, this.targetY));
+        }
+    }
+
+    // --- 5. RENDERER & LOGIC ---
+    class Engine {
+        constructor() {
+            this.camera = new Camera();
+            this.nodes = [];
+            this.particles = [];
+            this.isOverview = false;
+            this.activeFilter = 'all';
+
+            // DOM Elements
+            this.canvas = document.getElementById('bg-canvas');
+            this.ctx = this.canvas.getContext('2d');
+            this.nodeContainer = document.getElementById('node-container');
+            this.radar = document.getElementById('radar-canvas');
+            this.radarCtx = this.radar.getContext('2d');
+
+            // Init
+            this.resize();
+            window.addEventListener('resize', () => this.resize());
+            this.generateWorld();
+            this.initEvents();
+            this.initCursor();
+
+            // Enable Audio on first interaction
+            document.addEventListener('pointerdown', () => AUDIO.enable(), { once: true });
+            document.addEventListener('keydown', () => AUDIO.enable(), { once: true });
+            this.nodeContainer.addEventListener('pointerdown', () => AUDIO.enable(), { once: true });
+
+            // Start Boot
+            this.bootSequence();
+        }
+
+        bootSequence() {
+            const logs = [
+                "INITIALIZING KERNEL...",
+                "LOADING LATENT SPACE MAP...",
+                "CONNECTING NODES...",
+                "GENERATING PROCEDURAL GEOMETRY...",
+                "SYSTEM ONLINE."
+            ];
+            const logEl = document.getElementById('boot-log');
+            const bar = document.getElementById('boot-bar');
+            const screen = document.getElementById('boot-screen');
+
+            let i = 0;
+            const interval = setInterval(() => {
+                logEl.innerHTML += `> ${logs[i]}<br>`;
+                bar.style.width = `${(i + 1) * 20}%`;
+                i++;
+
+                if (i >= logs.length) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        gsap.to(screen, { opacity: 0, duration: 0.5, onComplete: () => screen.remove() });
+                        this.loop(); // Start Render Loop
+                    }, 500);
+                }
+            }, 300);
+        }
+
+        generateWorld() {
+            // 1. Create Nodes
+            for (let i = 0; i < CFG.nodeCount; i++) {
+                const data = RESOURCES[i % RESOURCES.length];
+                const placed = this.findNodePosition(i);
+
+                const node = {
+                    id: i,
+                    x: placed.x,
+                    y: placed.y,
+                    data: data,
+                    el: null,
+                    visible: false,
+                    lastTransform: '',
+                    lastOpacity: ''
+                };
+
+                // Create DOM Element
+                const el = document.createElement('div');
+                el.className = 'node';
+                el.innerHTML = `
+                        <div class="unit interact">
+                            <div class="unit-frame">
+                                <div class="unit-vis">
+                                    <div class="unit-ui-top">
+                                        <span class="ui-badge">${data.category}</span>
+                                        <div class="ui-dot"></div>
+                                    </div>
+                                    <div class="unit-ui-bot">
+                                        <span class="unit-name">${data.tag}</span>
+                                        <span class="unit-code">#${1000 + i}</span>
+                                    </div>
+                                    <img src="${data.url}" class="unit-img" loading="lazy">
+                                    <div class="unit-holo"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                el.addEventListener('mouseenter', () => AUDIO.sfxHover());
+                el.addEventListener('pointerenter', () => AUDIO.sfxHover());
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    AUDIO.sfxClick();
+                    this.openModal(node);
+                });
+
+                const unit = el.querySelector('.unit');
+                unit.addEventListener('mouseenter', () => AUDIO.sfxHover());
+                unit.addEventListener('pointerenter', () => AUDIO.sfxHover());
+                el.addEventListener('mousemove', (e) => {
+                    const rect = el.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const cx = rect.width / 2;
+                    const cy = rect.height / 2;
+                    const rx = (y - cy) / cy * -10;
+                    const ry = (x - cx) / cx * 10;
+                    gsap.to(unit, { rotationX: rx, rotationY: ry, duration: 0.1 });
+                });
+                el.addEventListener('mouseleave', () => {
+                    gsap.to(unit, { rotationX: 0, rotationY: 0, duration: 0.5, ease: 'elastic.out(1, 0.5)' });
+                });
+
+                this.nodeContainer.appendChild(el);
+                node.el = el;
+                this.nodes.push(node);
+            }
+
+            // 2. Create Background Particles
+            for (let i = 0; i < 200; i++) {
+                this.particles.push({
+                    x: rnd(-CFG.worldSize/2, CFG.worldSize/2),
+                    y: rnd(-CFG.worldSize/2, CFG.worldSize/2),
+                    size: rnd(0.5, 2),
+                    alpha: rnd(0.1, 0.5)
+                });
+            }
+        }
+
+        findNodePosition(index) {
+            const maxTries = 80;
+            let minDist = CFG.minNodeDist;
+            let best = { x: 0, y: 0 };
+            let bestScore = -Infinity;
+
+            for (let t = 0; t < maxTries; t++) {
+                const angle = Math.random() * Math.PI * 2;
+                const radius = Math.sqrt(Math.random()) * (CFG.worldSize / 2); // Distribute in circle
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+
+                let closest = Infinity;
+                for (let i = 0; i < this.nodes.length; i++) {
+                    const n = this.nodes[i];
+                    const d = dist(x, y, n.x, n.y);
+                    if (d < closest) closest = d;
+                    if (d < minDist) break;
+                }
+
+                if (closest >= minDist) {
+                    return { x, y };
+                }
+
+                if (closest > bestScore) {
+                    bestScore = closest;
+                    best = { x, y };
+                }
+            }
+
+            // If space is tight, relax distance slightly for later nodes
+            const relax = Math.max(0.6, 1 - index / CFG.nodeCount * 0.3);
+            return { x: best.x * relax, y: best.y * relax };
+        }
+
+        initEvents() {
+            // Drag Pan
+            window.addEventListener('mousedown', e => {
+                this.camera.dragging = true;
+                this.camera.lastMouse = { x: e.clientX, y: e.clientY };
+            });
+            window.addEventListener('mousemove', e => {
+                // Camera Drag
+                if (this.camera.dragging) {
+                    const dx = e.clientX - this.camera.lastMouse.x;
+                    const dy = e.clientY - this.camera.lastMouse.y;
+
+                    // Physics kick
+                    this.camera.velX = -dx / this.camera.zoom;
+                    this.camera.velY = -dy / this.camera.zoom;
+
+                    this.camera.targetX -= dx / this.camera.zoom;
+                    this.camera.targetY -= dy / this.camera.zoom;
+
+                    this.camera.lastMouse = { x: e.clientX, y: e.clientY };
+                }
+            });
+            window.addEventListener('mouseup', () => {
+                this.camera.dragging = false;
+            });
+
+            // Zoom
+            window.addEventListener('wheel', e => {
+                e.preventDefault();
+                const delta = e.deltaY * CFG.zoomSens * CFG.zoomWheelSpeed;
+                const nextZoom = this.camera.targetZoom - delta;
+                this.camera.targetZoom = Math.max(CFG.zoomMin, Math.min(CFG.zoomMax, nextZoom));
+            }, { passive: false });
+
+            // UI Zoom Buttons
+            document.getElementById('zoom-in').onclick = () => {
+                this.camera.targetZoom = Math.min(CFG.zoomMax, this.camera.targetZoom + CFG.zoomStep);
+            };
+            document.getElementById('zoom-out').onclick = () => {
+                this.camera.targetZoom = Math.max(CFG.zoomMin, this.camera.targetZoom - CFG.zoomStep);
+            };
+
+            // Modal Close
+            const modal = document.getElementById('modal');
+            document.querySelector('.modal-close').onclick = () => {
+                modal.classList.remove('active');
+            };
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.classList.remove('active');
+            });
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') modal.classList.remove('active');
+            });
+
+            // Overview toggle
+            document.getElementById('overview-btn').onclick = () => {
+                AUDIO.sfxClick();
+                this.toggleOverview();
+            };
+            window.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    this.toggleOverview();
+                }
+            });
+
+            // Filters
+            document.querySelectorAll('.filter-tab').forEach(btn => {
+                btn.addEventListener('mouseenter', () => AUDIO.sfxHover());
+                btn.addEventListener('click', () => {
+                    AUDIO.sfxClick();
+                    document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    this.activeFilter = btn.dataset.filter || 'all';
+                });
+            });
+
+            // Nav buttons sound
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('mouseenter', () => AUDIO.sfxHover());
+                btn.addEventListener('click', () => {
+                    if (btn.id !== 'overview-btn') AUDIO.sfxClick();
+                });
+            });
+        }
+
+        initCursor() {
+            const c = document.getElementById('cursor');
+            const label = c.querySelector('.c-label');
+            window.addEventListener('mousemove', e => {
+                gsap.to(c, { x: e.clientX, y: e.clientY, duration: 0.1 });
+                const target = e.target.closest('.interact');
+                if (target) {
+                    document.body.classList.add('hovering');
+                    label.innerText = 'ACCESS';
+                } else {
+                    document.body.classList.remove('hovering');
+                }
+            });
+        }
+
+        resize() {
+            this.canvas.width = window.innerWidth;
+            this.canvas.height = window.innerHeight;
+            this.radar.width = 160;
+            this.radar.height = 160;
+            if (this.isOverview) this.fitWorldView();
+        }
+
+        openModal(node) {
+            const m = document.getElementById('modal');
+            document.getElementById('m-img').src = node.data.url.replace('w=600', 'w=1200');
+            document.getElementById('m-title').innerText = node.data.tag;
+            document.getElementById('m-cat').innerText = node.data.category;
+            document.getElementById('m-id').innerText = `ID: ${1000 + node.id}-HEX`;
+            m.classList.add('active');
+        }
+
+        toggleOverview() {
+            this.isOverview = !this.isOverview;
+            const btn = document.getElementById('overview-btn');
+            if (this.isOverview) {
+                this.fitWorldView();
+                document.body.classList.add('is-overview');
+                btn.classList.add('active');
+            } else {
+                document.body.classList.remove('is-overview');
+                btn.classList.remove('active');
+            }
+        }
+
+        fitWorldView() {
+            const pad = 120;
+            const w = window.innerWidth - pad * 2;
+            const h = window.innerHeight - pad * 2;
+            const size = CFG.worldSize + CFG.boundsPadding * 2;
+            const z = Math.min(w / size, h / size);
+            this.camera.targetX = 0;
+            this.camera.targetY = 0;
+            this.camera.targetZoom = Math.max(CFG.zoomMin, Math.min(CFG.zoomMax, z));
+        }
+
+        // MAIN RENDER LOOP
+        loop() {
+            this.camera.update();
+
+            // Clear
+            const w = this.canvas.width;
+            const h = this.canvas.height;
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            this.ctx.clearRect(0, 0, w, h);
+            this.radarCtx.fillStyle = 'rgba(0,0,0,0.5)';
+            this.radarCtx.fillRect(0, 0, 160, 160);
+
+            // Draw Particles (Stars)
+            this.ctx.fillStyle = '#fff';
+            for (let i = 0; i < this.particles.length; i++) {
+                const p = this.particles[i];
+                const pos = this.camera.worldToScreen(p.x, p.y);
+                // Parallax: Move stars slower than nodes
+                // Simple cull
+                if (pos.x > 0 && pos.x < vw && pos.y > 0 && pos.y < vh) {
+                    this.ctx.globalAlpha = p.alpha;
+                    this.ctx.beginPath();
+                    this.ctx.arc(pos.x, pos.y, p.size * this.camera.zoom, 0, Math.PI*2);
+                    this.ctx.fill();
+                }
+            }
+
+            // Update Nodes & Draw Connections
+            // Optimization: Only draw lines if close enough
+            this.ctx.strokeStyle = 'rgba(0, 243, 255, 0.15)';
+            this.ctx.lineWidth = 1;
+            this.ctx.globalAlpha = 1;
+
+            let visibleNodes = 0;
+
+            const halfWorld = CFG.worldSize / 2;
+            const radarScale = 80 / halfWorld;
+
+            for (let i = 0; i < this.nodes.length; i++) {
+                const node = this.nodes[i];
+                const screen = this.camera.worldToScreen(node.x, node.y);
+                const onScreen = screen.x > -200 && screen.x < vw + 200 &&
+                    screen.y > -200 && screen.y < vh + 200;
+                const matches = this.activeFilter === 'all' || node.data.category === this.activeFilter;
+
+                // 1. Draw Lines (Network) - Only simple neighbor check for performance
+                // Check against next 3 nodes just to create visual web
+                for (let j = 1; j <= 3; j++) {
+                    const neighbor = this.nodes[(i + j) % this.nodes.length];
+                    const d = dist(node.x, node.y, neighbor.x, neighbor.y);
+                    if (d < CFG.connectDist) {
+                        const nScreen = this.camera.worldToScreen(neighbor.x, neighbor.y);
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(screen.x, screen.y);
+                        this.ctx.lineTo(nScreen.x, nScreen.y);
+                        this.ctx.stroke();
+                    }
+                }
+
+                // 2. Update DOM
+                if (onScreen && matches) {
+                    visibleNodes++;
+                    if (!node.visible) {
+                        node.visible = true;
+                        node.el.style.display = 'flex';
+                    }
+                    const t = `translate3d(${screen.x - CFG.nodeW / 2}px, ${screen.y - CFG.nodeH / 2}px, 0) scale(${this.camera.zoom})`;
+                    if (t !== node.lastTransform) {
+                        node.el.style.transform = t;
+                        node.lastTransform = t;
+                    }
+                    const op = mapRange(this.camera.zoom, 0.2, 0.4, 0, 1); // Match test2 fade range
+                    if (op !== node.lastOpacity) {
+                        node.el.style.opacity = op;
+                        node.lastOpacity = op;
+                    }
+                } else {
+                    if (node.visible) {
+                        node.visible = false;
+                        node.el.style.display = 'none';
+                    }
+                }
+
+                // 3. Draw Radar Dot
+                if (matches) {
+                    const radarX = node.x * radarScale + 80;
+                    const radarY = node.y * radarScale + 80;
+                    this.radarCtx.fillStyle = onScreen ? '#fff' : '#444';
+                    this.radarCtx.fillRect(radarX, radarY, 2, 2);
+                }
+            }
+
+            // Draw Radar Viewport
+            const rCamX = this.camera.x * radarScale + 80;
+            const rCamY = this.camera.y * radarScale + 80;
+            this.radarCtx.strokeStyle = '#00F3FF';
+            this.radarCtx.strokeRect(rCamX - 10, rCamY - 5, 20, 10); // Simplified viewport box
+
+            // Update HUD
+            document.getElementById('coords').innerText = `POS: ${Math.round(this.camera.x)}, ${Math.round(this.camera.y)}`;
+            const nodeCountEl = document.getElementById('node-count');
+            if (nodeCountEl) nodeCountEl.innerText = visibleNodes;
+
+            requestAnimationFrame(() => this.loop());
+        }
+    }
+
+    // Start
+    window.onload = () => new Engine();
+
+</script>
+</body>
+</html>

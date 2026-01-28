@@ -1,0 +1,155 @@
+:root {
+  --bg: #0c0d10;
+  --bg-elevated: #14151a;
+  --bg-card: #1b1d23;
+  --text: #f2f3f5;
+  --muted: #a7acb5;
+  --line: #24262d;
+  --blue: #2aa9ff;
+  --shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+a { color: inherit; text-decoration: none; }
+
+button {
+  background: transparent;
+  border: none;
+  color: inherit;
+}
+
+.container {
+  max-width: 1780px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.btn {
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-weight: 600;
+  font-size: 13px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.btn-outline {
+  background: transparent;
+  color: #d9dbe0;
+  border-color: #2a2d36;
+}
+
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.btn-primary {
+  background: #2aa9ff;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #2398e6;
+}
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  color: #c1c5cd;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.icon-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+.modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 100;
+}
+
+.modal.is-hidden { display: none; }
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 11, 15, 0.8);
+  backdrop-filter: blur(6px);
+}
+
+.modal-panel {
+  position: relative;
+  width: min(980px, 92vw);
+  background: #0f1116;
+  border-radius: 16px;
+  border: 1px solid #2a2d36;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  z-index: 1;
+}
+
+.modal-image {
+  width: 100%;
+  height: min(60vh, 520px);
+  object-fit: cover;
+  display: block;
+}
+
+.modal-meta {
+  padding: 16px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.modal-artist {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(15, 16, 21, 0.8);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.modal-close svg { width: 16px; height: 16px; fill: currentColor; }
+
+.no-scroll { overflow: hidden; }
