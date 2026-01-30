@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高级壁纸资源池 - 筛选器版</title>
+    <style>
+        body {
+            background-color: #050505;
+            color: #fff;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 20px;
+            padding-bottom: 100px; /* 为底部栏留空 */
+        }
+
+        /* 头部样式 */
+        header { text-align: center; margin-bottom: 30px; }
+        h1 { margin: 0; letter-spacing: 2px; color: #fff; font-size: 24px; }
+        .subtitle { color: #666; font-size: 12px; margin-top: 5px; }
+
+        /* 筛选器样式 */
+        .filters {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        .filter-btn {
+            background: #111;
+            border: 1px solid #333;
+            color: #888;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        .filter-btn:hover { border-color: #666; color: #fff; }
+        .filter-btn.active {
+            background: #ccff00;
+            color: #000;
+            border-color: #ccff00;
+            font-weight: bold;
+        }
+
+        /* 网格布局 */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: #111;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid transparent; /* 预留边框位置 */
+            transition: all 0.2s ease;
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* 悬停效果 */
+        .card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+
+        /* 选中状态 */
+        .card.selected {
+            border-color: #ccff00;
+            background: #1a1a1a;
+        }
+        .card.selected::after {
+            content: '✔';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ccff00;
+            color: #000;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .img-box {
+            width: 100%;
+            height: 180px; /* 稍微调小一点方便浏览 */
+            background: #0a0a0a;
+            position: relative;
+            overflow: hidden;
+        }
+        .img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .img-box img.loaded { opacity: 1; }
+
+        .info { padding: 10px; }
+        .tag-label {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .url-preview {
+            font-size: 10px;
+            color: #444;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 底部操作栏 */
+        .action-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid #333;
+            padding: 15px 30px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            z-index: 100;
+            transition: transform 0.3s;
+        }
+        .action-bar.hidden { transform: translate(-50%, 150%); }
+
+        .count-info { font-size: 14px; color: #fff; font-weight: bold; }
+        .btn-copy {
+            background: #ccff00;
+            color: #000;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn-copy:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(204, 255, 0, 0.3); }
+        .btn-clear {
+            background: transparent;
+            color: #888;
+            border: 1px solid #444;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+        .btn-clear:hover { border-color: #fff; color: #fff; }
+
+        /* 分类标题 */
+        .category-header {
+            grid-column: 1 / -1;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #ccff00;
+            border-bottom: 1px solid #222;
+            padding-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>WALLPAPER POOL MANAGER</h1>
+    <p class="subtitle">Select images to generate JSON code</p>
+</header>
+
+<div class="filters" id="filters">
+    <button class="filter-btn active" data-filter="all">ALL</button>
+    <button class="filter-btn" data-filter="Abstract">Abstract & 3D</button>
+    <button class="filter-btn" data-filter="Cyberpunk">Cyberpunk & Tech</button>
+    <button class="filter-btn" data-filter="Nature">Nature & Atmosphere</button>
+    <button class="filter-btn" data-filter="Urban">Urban & City</button>
+    <button class="filter-btn" data-filter="Minimal">Minimal & Texture</button>
+</div>
+
+<div class="grid" id="gallery"></div>
+
+<div class="action-bar hidden" id="actionBar">
+    <span class="count-info">Selected: <span id="selectedCount">0</span></span>
+    <button class="btn-copy" onclick="copySelected()">COPY JS OBJECTS</button>
+    <button class="btn-clear" onclick="clearSelection()">CLEAR</button>
+</div>
+
+<script>
+    // ==============================
+    // 资源数据 (已为您分类整理)
+    // ==============================
+    const resources = [
+        // --- GROUP: Abstract & 3D ---
+        { category: 'Abstract', tag: 'Abstract', url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Abstract', url: 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Abstract', url: 'https://images.unsplash.com/photo-1617791160505-6f00504e3519?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Glass', url: 'https://images.unsplash.com/photo-1615715757401-f30e7b27b912?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Holographic', url: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: '3D Shapes', url: 'https://images.unsplash.com/photo-1633078654544-61b3455b9161?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Chrome', url: 'https://images.unsplash.com/photo-1618172193622-ae2d025f4032?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Purple Haze', url: 'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Dark Flow', url: 'https://images.unsplash.com/photo-1634152962476-4b8a00e1915c?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Iridescent', url: 'https://images.unsplash.com/photo-1550684847-75bdda21cc95?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Dark Fluid', url: 'https://images.unsplash.com/photo-1618172193763-c511deb635ca?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Purple Mesh', url: 'https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Ink Water', url: 'https://images.unsplash.com/photo-1550684848-86a5d8727436?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Pink Smoke', url: 'https://images.unsplash.com/photo-1516663713099-37eb6d60c825?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Blue Smoke', url: 'https://images.unsplash.com/photo-1522441815192-d9f04eb0615c?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Oil Macro', url: 'https://images.unsplash.com/photo-1550684847-75bdda21cc95?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Liquid', url: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Gradient', url: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Gradient 2', url: 'https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Mesh', url: 'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Prism', url: 'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Ink Flow', url: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Abstract', tag: 'Red Smoke', url: 'https://images.unsplash.com/photo-1534353473418-4cfa6c56fd38?q=80&w=800&auto=format&fit=crop' },
+
+        // --- GROUP: Cyberpunk & Tech ---
+        { category: 'Cyberpunk', tag: 'Sci-Fi City', url: 'https://images.unsplash.com/photo-1515630278258-407f66498911?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Neon Rain', url: 'https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Future City', url: 'https://images.unsplash.com/photo-1535905557558-afc4877a26fc?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Red Neon', url: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Matrix', url: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Laser Beam', url: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Cyber Tokyo', url: 'https://images.unsplash.com/photo-1542931287-023b922fa89b?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Hardware', url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Retrowave', url: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'VR Headset', url: 'https://images.unsplash.com/photo-1624397640148-949b1732bb0a?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'SciFi Corridor', url: 'https://images.unsplash.com/photo-1496564203457-11bb12075d90?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Wet Neon', url: 'https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Source Code', url: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Neon Signage', url: 'https://images.unsplash.com/photo-1574169208507-84376144848b?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Arcade Glow', url: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Digital Face', url: 'https://images.unsplash.com/photo-1504639725590-34d0984388bd?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Green Matrix', url: 'https://images.unsplash.com/photo-1526666923127-b2970f64b422?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'TV Static', url: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Cyber Portrait', url: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Code', url: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Gaming', url: 'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Processor', url: 'https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Drone', url: 'https://images.unsplash.com/photo-1506947411487-a56738267384?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Setup', url: 'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Motherboard', url: 'https://images.unsplash.com/photo-1592659762303-90081d34b277?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Red Laser', url: 'https://images.unsplash.com/photo-1541364983171-a8ba01e95cfc?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Circuit', url: 'https://images.unsplash.com/photo-1592659762303-90081d34b277?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Blue Grid', url: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Neon Tunnel', url: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Hacking', url: 'https://images.unsplash.com/photo-1556075798-4825dfaaf498?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Cyberpunk', tag: 'Laser Grid', url: 'https://images.unsplash.com/photo-1496065187959-7f07b8353c55?q=80&w=800&auto=format&fit=crop' },
+
+        // --- GROUP: Nature & Atmosphere ---
+        { category: 'Nature', tag: 'Space', url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Nebula', url: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Galaxy', url: 'https://images.unsplash.com/photo-1538370965046-79c0d6907d47?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Deep Star', url: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Deep Void', url: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Aurora', url: 'https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Black Hole', url: 'https://images.unsplash.com/photo-1465101162946-4377e57745c3?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Fog', url: 'https://images.unsplash.com/photo-1485236715568-ddc5ee6ca227?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Iceland', url: 'https://images.unsplash.com/photo-1476610182048-b716b8518aae?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Dark Waves', url: 'https://images.unsplash.com/photo-1551009175-8a68da93d5f9?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Volcano', url: 'https://images.unsplash.com/photo-1462332420958-a05d1e002413?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Desert', url: 'https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Rainy Night', url: 'https://images.unsplash.com/photo-1516912481808-3406841bd33c?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Forest', url: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Fern', url: 'https://images.unsplash.com/photo-1533038590840-1cde6e668a91?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Misty Pine', url: 'https://images.unsplash.com/photo-1473448912268-2022ce9509d8?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Storm', url: 'https://images.unsplash.com/photo-1429554429301-1c7d5ae2d42e?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Black Sand', url: 'https://images.unsplash.com/photo-1502933691298-84fc14542831?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Moody Peak', url: 'https://images.unsplash.com/photo-1465056836041-7f43ac27dcb5?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Deep Blue', url: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Dark Plant', url: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Nature', tag: 'Deep Forest', url: 'https://images.unsplash.com/photo-1508138221679-760a23a2285b?q=80&w=800&auto=format&fit=crop' },
+
+        // --- GROUP: Urban & City ---
+        { category: 'Urban', tag: 'Tokyo Night', url: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Urban', tag: 'Urban Night', url: 'https://images.unsplash.com/photo-1480796927426-f609979314bd?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Urban', tag: 'Corp Building', url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Urban', tag: 'Facade', url: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Urban', tag: 'Brutalism', url: 'https://images.unsplash.com/photo-1477238134895-98438ad85c30?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Urban', tag: 'Traffic', url: 'https://images.unsplash.com/photo-1465447142348-e9952c393450?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Urban', tag: 'Glow', url: 'https://images.unsplash.com/photo-1481819613568-3701cbc70156?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Urban', tag: 'Rainy Glass', url: 'https://images.unsplash.com/photo-1496450681664-3df85efbd29f?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Urban', tag: 'Tokyo Rain', url: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Urban', tag: 'Dark Car', url: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Urban', tag: 'Speed', url: 'https://images.unsplash.com/photo-1542282088-fe8426682b8f?q=80&w=800&auto=format&fit=crop' },
+
+        // --- GROUP: Minimal & Texture ---
+        { category: 'Minimal', tag: 'Minimal', url: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Minimal', tag: 'Black', url: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Minimal', tag: 'Void Black', url: 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Minimal', tag: 'Dark Texture', url: 'https://images.unsplash.com/photo-1507090960745-b32f65d3113a?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Minimal', tag: 'Silk', url: 'https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Minimal', tag: 'Oil Slick', url: 'https://images.unsplash.com/photo-1515462277126-2dd0c162007a?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Minimal', tag: 'Dark Leaf', url: 'https://images.unsplash.com/photo-1533038590840-1cde6e668a91?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Minimal', tag: 'Patterns', url: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Minimal', tag: 'Minimal Arch', url: 'https://images.unsplash.com/photo-1464938050520-ef2270bb8ce8?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Minimal', tag: 'Midnight', url: 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Minimal', tag: 'Lens', url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Minimal', tag: 'Workspace', url: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Minimal', tag: 'Dark Crystal', url: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Minimal', tag: 'Black Wave', url: 'https://images.unsplash.com/photo-1549490349-8643362247b5?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Minimal', tag: 'Carbon', url: 'https://images.unsplash.com/photo-1533134486753-c833f0ed4866?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Minimal', tag: 'Dark Geo', url: 'https://images.unsplash.com/photo-1436891620584-47fd0e565afb?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Minimal', tag: 'Concrete', url: 'https://images.unsplash.com/photo-1487700160041-babef9c3cb55?q=80&w=800&auto=format&fit=crop' },
+        { category: 'Minimal', tag: 'Audio', url: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=800&auto=format&fit=crop' }
+    ];
+
+    const gallery = document.getElementById('gallery');
+    const selectedCountSpan = document.getElementById('selectedCount');
+    const actionBar = document.getElementById('actionBar');
+    let selectedItems = new Set(); // 存储选中的 URL
+
+    // 初始化渲染
+    function renderGallery(filter = 'all') {
+        gallery.innerHTML = '';
+
+        resources.forEach((item, index) => {
+            // 筛选逻辑
+            if (filter !== 'all' && item.category !== filter) return;
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            // 如果已经在选中集合里，渲染时加上 selected 类
+            if (selectedItems.has(item.url)) {
+                card.classList.add('selected');
+            }
+
+            card.innerHTML = `
+                <div class="img-box">
+                    <img src="${item.url}" alt="${item.tag}" loading="lazy" onload="this.classList.add('loaded')">
+                </div>
+                <div class="info">
+                    <span class="tag-label">${item.category} / ${item.tag}</span>
+                    <div class="url-preview">${item.url}</div>
+                </div>
+            `;
+
+            // 点击切换选中状态
+            card.addEventListener('click', () => {
+                card.classList.toggle('selected');
+                if (card.classList.contains('selected')) {
+                    selectedItems.add(item); // 存入整个对象
+                } else {
+                    // 从 Set 中移除 (需要遍历找到对应对象，因为对象引用不同)
+                    for (let s of selectedItems) {
+                        if (s.url === item.url) selectedItems.delete(s);
+                    }
+                }
+                updateActionBar();
+            });
+
+            gallery.appendChild(card);
+        });
+    }
+
+    // 更新底部栏状态
+    function updateActionBar() {
+        const count = selectedItems.size;
+        selectedCountSpan.innerText = count;
+
+        if (count > 0) {
+            actionBar.classList.remove('hidden');
+        } else {
+            actionBar.classList.add('hidden');
+        }
+    }
+
+    // 复制功能
+    function copySelected() {
+        const itemsArray = Array.from(selectedItems);
+        // 生成 JS 对象格式字符串
+        const textToCopy = itemsArray.map(item =>
+            `{ tag: '${item.tag}', url: '${item.url}' }`
+        ).join(',\n');
+
+        const tempInput = document.createElement('textarea');
+        tempInput.value = textToCopy;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+
+        const btn = document.querySelector('.btn-copy');
+        const originalText = btn.innerText;
+        btn.innerText = "COPIED!";
+        btn.style.background = "#fff";
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.style.background = "#ccff00";
+        }, 1500);
+    }
+
+    // 清除选择
+    function clearSelection() {
+        selectedItems.clear();
+        document.querySelectorAll('.card.selected').forEach(card => card.classList.remove('selected'));
+        updateActionBar();
+    }
+
+    // 绑定筛选按钮事件
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            // 移除其他按钮激活状态
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            // 激活当前按钮
+            e.target.classList.add('active');
+            // 重新渲染
+            renderGallery(e.target.dataset.filter);
+        });
+    });
+
+    // 启动
+    renderGallery();
+
+</script>
+</body>
+</html>
