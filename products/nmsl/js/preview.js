@@ -1,6 +1,13 @@
+/*
+ * LEGACY PREVIEW LOGIC DISABLED
+ * The new wallpaper-preview.html is now handled via iframe in index.html
+ * This file is kept only for reference or partial utility if needed.
+ */
 
 // --- Data Configuration ---
 const SCENES = [
+// ... (保留数据配置，如果其他地方用到)
+
     {
         id: 's1', name: 'iPhone Handheld',
         src: 'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=1200',
@@ -280,36 +287,16 @@ function renderOS() {
 function solveHomography(w,h,p){const s=[0,0,w,0,w,h,0,h],d=[p[0].x,p[0].y,p[1].x,p[1].y,p[2].x,p[2].y,p[3].x,p[3].y],A=[],b=[];for(let i=0;i<4;i++){let sx=s[i*2],sy=s[i*2+1],dx=d[i*2],dy=d[i*2+1];A.push([sx,sy,1,0,0,0,-sx*dx,-sy*dx]);b.push(dx);A.push([0,0,0,sx,sy,1,-sx*dy,-sy*dy]);b.push(dy);}let n=8;for(let i=0;i<n;i++){let m=i;for(let j=i+1;j<n;j++)if(Math.abs(A[j][i])>Math.abs(A[m][i]))m=j;[A[i],A[m]]=[A[m],A[i]];[b[i],b[m]]=[b[m],b[i]];for(let j=i+1;j<n;j++){let c=-A[j][i]/A[i][i];for(let k=i;k<n;k++)A[j][k]+=c*A[i][k];b[j]+=c*b[i];}}let x=[];for(let i=n-1;i>=0;i--){let t=0;for(let j=i+1;j<n;j++)t+=A[i][j]*x[j];x[i]=(b[i]-t)/A[i][i];}return [x[0],x[3],0,x[6],x[1],x[4],0,x[7],0,0,1,0,x[2],x[5],0,1].join(',');}
 
 const initPreview = () => {
+  // DISABLED: Old preview logic interferes with new iframe modal
+  console.log("Legacy preview.js init skipped to avoid conflicts.");
+  return;
+
+  /* 
   // Re-bind elements in case DOM loaded late
   els.modal = document.getElementById("preview-modal");
-  els.base = document.getElementById('baseImg');
-  els.warp = document.getElementById('warpLayer');
-  els.screen = document.getElementById('screen');
-  els.wp = document.getElementById('wallpaper');
-  els.rail = document.getElementById('thumbsRail');
-  els.bg = document.getElementById('ambientBg');
-  els.switchBg = document.getElementById('switchBg');
-  els.os = document.getElementById('osUI');
-
-  const cards = document.querySelectorAll(".gallery-card");
-  cards.forEach((card) => {
-    card.addEventListener("click", (event) => {
-      event.preventDefault();
-      const img = card.querySelector("img");
-      const title = card.dataset.title || img?.alt;
-      const artist = card.dataset.artist;
-      openModal(img?.src || "", title, artist);
-    });
-  });
-
-  document.querySelectorAll("[data-close='modal']").forEach((btn) => {
-    btn.addEventListener("click", closeModal);
-  });
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") closeModal();
-  });
+  // ... (rest of the code)
+  */
 };
 
 // Init on load
-document.addEventListener('DOMContentLoaded', initPreview);
+// document.addEventListener('DOMContentLoaded', initPreview);

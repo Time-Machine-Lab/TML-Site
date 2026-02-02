@@ -7,26 +7,27 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         /* =========================================
-           1. Design Tokens & Variables
+           1. Design Tokens & Variables (Luxury Redefined)
            ========================================= */
         :root {
             /* 空间与颜色 */
-            --bg-deep: #050505;
-            --glass-panel: rgba(20, 20, 20, 0.4);
-            --border-dim: rgba(255, 255, 255, 0.08);
-            --border-highlight: rgba(255, 255, 255, 0.8);
-            --accent-glow: rgba(255, 255, 255, 0.15);
-
-            /* 动画曲线 (Apple Style) */
-            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-            --ease-smooth: cubic-bezier(0.33, 1, 0.68, 1);
-            --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
-
-            /* 尺寸定义 */
-            --sidebar-width-left: 280px;
-            --sidebar-width-right: 180px;
-            --card-scene-h: 150px;
-            --card-wall-h: 220px;
+            --bg-deep: #000000;
+            --glass-panel: rgba(255, 255, 255, 0.03);
+            --border-dim: rgba(255, 255, 255, 0.06);
+            --border-highlight: rgba(255, 255, 255, 0.2);
+            --text-main: rgba(255, 255, 255, 0.95);
+            --text-sub: rgba(255, 255, 255, 0.5);
+            
+            /* 布局尺寸 - 响应式网格系统 */
+            --sidebar-width-left: 20vw;  /* 左侧严格 20% */
+            --sidebar-width-right: 20vw; /* 右侧严格 20% */
+            --stage-width: 60vw;         /* 中间 60% */
+            
+            --card-radius: 12px;
+            
+            /* 动画曲线 (Apple Spring) */
+            --ease-spring: cubic-bezier(0.25, 0.8, 0.25, 1);
+            --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         /* =========================================
@@ -36,250 +37,340 @@
 
         body {
             background: var(--bg-deep);
-            color: #fff;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
             height: 100vh;
             overflow: hidden;
             display: flex;
             justify-content: center;
-            opacity: 0; /* 初始隐藏，JS加载完后渐显 */
-            animation: appFadeIn 1s var(--ease-out-expo) forwards;
+            opacity: 0; 
+            animation: appFadeIn 1.2s var(--ease-expo) forwards;
+            letter-spacing: -0.01em; /* 紧凑一点更现代 */
         }
 
         @keyframes appFadeIn { to { opacity: 1; } }
 
         /* =========================================
-           3. Ambient Environment (环境光)
+           3. Ambient Environment (更深邃但更有氛围)
            ========================================= */
         .ambient-canvas {
             position: absolute; inset: -20%; width: 140%; height: 140%;
             z-index: 0; pointer-events: none;
-            background: radial-gradient(circle at 50% 50%, rgba(20,20,20,1) 0%, var(--bg-deep) 70%);
+            /* 使用更通透的渐变，让背景色透出来 */
+            background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.2) 0%, #000000 70%);
         }
 
-        /* 双缓冲背景层，用于平滑切换壁纸色调 */
         .bg-layer {
             position: absolute; inset: 0;
             background-size: cover; background-position: center;
-            opacity: 0; transition: opacity 1.5s ease;
-            filter: blur(80px) saturate(1.5) brightness(0.4);
+            opacity: 0; transition: opacity 2s ease;
+            /* 提升亮度与饱和度，增强沉浸感 */
+            filter: blur(80px) saturate(1.8) brightness(0.7) contrast(1.1); 
+            transform: scale(1.1);
         }
-        .bg-layer.active { opacity: 0.6; }
+        .bg-layer.active { opacity: 0.8; } /* 提升不透明度，让颜色更明显 */
 
         /* =========================================
-           4. The Stage (中央舞台)
+           4. The Stage (中央舞台 - 60%)
            ========================================= */
         .stage-area {
-            position: absolute; inset: 0;
+            position: absolute; 
+            top: 0; bottom: 0;
+            left: var(--sidebar-width-left); 
+            width: var(--stage-width);
             display: flex; align-items: center; justify-content: center;
             z-index: 10;
-            pointer-events: none; /* 关键：让鼠标事件穿透给侧边栏 */
-            perspective: 2000px;
+            pointer-events: none; 
+            perspective: 2500px; /* 增加透视深度 */
         }
 
-        /* 3D 旋转轴心 */
         .scene-pivot {
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.1s linear; /* 实时跟随鼠标，无延迟 */
+            transition: transform 0.1s linear; 
             will-change: transform;
+            /* 确保在小屏幕下不会溢出 */
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        /* 场景容器 */
         .scene-container {
             position: relative;
-            /* 留出两侧空间，避免遮挡侧边栏 */
-            max-width: calc(100vw - var(--sidebar-width-left) - var(--sidebar-width-right) - 40px);
-            max-height: 85vh;
+            /* 严格限制在舞台宽度内，留出安全边距 */
+            width: 100%;
+            max-width: calc(var(--stage-width) - 40px); 
+            max-height: 82vh;
             transform-style: preserve-3d;
-
-            /* 入场动画 */
-            opacity: 0; transform: scale(0.9) translateY(30px) rotateX(5deg);
-            transition: transform 0.8s var(--ease-out-expo), opacity 0.8s ease;
+            opacity: 0; transform: scale(0.95) translateY(20px);
+            transition: transform 1s var(--ease-expo), opacity 1s ease;
+            
+            display: flex; align-items: center; justify-content: center;
         }
-        .scene-container.loaded { opacity: 1; transform: scale(1) translateY(0) rotateX(0); }
+        .scene-container.loaded { opacity: 1; transform: scale(1) translateY(0); }
 
         .base-img {
             display: block; width: auto; height: auto;
-            max-width: 100%; max-height: 85vh;
-            border-radius: 6px;
-            /* 优雅的投影 */
-            box-shadow:
-                    0 50px 100px -20px rgba(0,0,0,0.7),
-                    0 0 0 1px rgba(255,255,255,0.05);
+            max-width: 100%; max-height: 82vh;
+            /* 确保图片不超出容器 */
+            object-fit: contain;
+            border-radius: 8px;
+            /* 极简投影 */
+            box-shadow: 0 40px 80px -20px rgba(0,0,0,0.8);
         }
 
-        /* 渲染层 (Matrix Transform) */
         .warp-layer {
             position: absolute; top: 0; left: 0;
             transform-origin: 0 0;
             pointer-events: none; z-index: 20;
         }
 
-        /* 屏幕容器 */
         .screen {
             background: #000;
             position: relative;
             overflow: hidden;
             backface-visibility: hidden;
             will-change: transform;
-            /* 硬件加速抗锯齿 */
             transform: translateZ(0);
         }
 
-        /* 壁纸本体 */
         .wallpaper {
             width: 100%; height: 100%;
             background-size: cover; background-position: center;
-            transform: scale(1.02); /* 防止边缘抗锯齿白边 */
-            transition: background-image 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform: scale(1.01); 
+            transition: background-image 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
-        /* 屏幕表面质感 */
+        /* 屏幕质感优化 */
         .fx-layer { position: absolute; inset: 0; pointer-events: none; z-index: 30; }
         .fx-glare {
             position: absolute; inset: 0; mix-blend-mode: screen;
-            background: linear-gradient(115deg, rgba(255,255,255,0.08) 0%, transparent 45%, rgba(255,255,255,0.02) 100%);
+            background: linear-gradient(120deg, rgba(255,255,255,0.05) 0%, transparent 40%, rgba(255,255,255,0.02) 100%);
         }
         .fx-inner-shadow {
             position: absolute; inset: 0;
-            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.9), inset 0 0 20px rgba(0,0,0,0.5);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05); /* 极细边框 */
             z-index: 31; border-radius: inherit;
         }
 
         /* =========================================
-           5. Gallery Sidebars (侧边栏核心)
+           5. Gallery Sidebars (极致极简)
            ========================================= */
         .sidebar {
             position: absolute; top: 0; bottom: 0;
             z-index: 100;
             display: flex; flex-direction: column; justify-content: center;
-            pointer-events: none; /* 容器穿透 */
-
-            /* 关键：顶部底部的渐变遮罩，制造“无限延伸”的高级感 */
-            mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+            pointer-events: none; 
         }
 
-        .sidebar.left { left: 0; width: var(--sidebar-width-left); align-items: center; }
-        .sidebar.right { right: 0; width: var(--sidebar-width-right); align-items: center; }
+        .sidebar.left { 
+            left: 0; 
+            width: var(--sidebar-width-left); 
+            /* 使用Flex布局让卡片居中或适配宽度 */
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .sidebar.right { 
+            right: 0; 
+            width: var(--sidebar-width-right); 
+            display: flex; flex-direction: column; align-items: center;
+            /* 增加右侧内边距，将内容向左挤压，使其靠近中间舞台 */
+            padding-right: 60px; 
+        }
 
         /* 滚动轨道 */
         .scroll-track {
             height: 100%; width: 100%;
             overflow-y: auto;
             scroll-behavior: smooth;
-            pointer-events: auto; /* 内容可交互 */
-
-            /* 巨大的 Padding 确保首尾元素能居中 */
-            padding: 50vh 0;
-            display: flex; flex-direction: column; align-items: center; gap: 32px;
-
+            pointer-events: auto; 
+            padding: 50vh 0; /* 保持居中逻辑 */
+            display: flex; flex-direction: column; 
+            align-items: center; /* 强制所有卡片居中对齐 */
+            gap: 80px; /* 加大间距至80px，确保文字完全不被遮挡，增加呼吸感 */
+            
+            /* CSS Scroll Snap: 核心丝滑吸附逻辑 */
+            scroll-snap-type: y mandatory;
+            
             /* 隐藏滚动条 */
             -ms-overflow-style: none; scrollbar-width: none;
         }
         .scroll-track::-webkit-scrollbar { display: none; }
 
+        /* 左右对齐方式不同 - 统一改为居中，因为现在是独立的侧边栏区域 */
+        /* .sidebar.left .scroll-track { align-items: flex-start; } */
+        /* .sidebar.right .scroll-track { align-items: flex-end; } */
+
         /* =========================================
-           6. Cards (卡片样式)
+           6. Cards (Refined Luxury Style - Structure Optimized)
            ========================================= */
         .card {
             position: relative; flex-shrink: 0;
-            background-size: cover; background-position: center;
-            border-radius: 12px;
+            /* 移除背景图设置，改到 inner */
+            border-radius: 8px; 
             cursor: pointer;
+            
+            /* 确保无边框 */
+            border: none;
+            outline: none;
+            box-shadow: none;
+            
+            /* Scroll Snap 对齐点：始终居中 */
+            scroll-snap-align: center;
+            /* 强制停靠 */
+            scroll-snap-stop: always;
 
-            /* 默认状态 (未选中)：虚化、变暗 */
-            transition: all 0.5s var(--ease-out-expo);
-            filter: grayscale(1) brightness(0.4) blur(4px);
-            opacity: 0.5;
+            /* .card 本身不再进行 transform 动画，只负责占据位置，
+               从而避免干扰 Scroll Snap 的计算 */
+            z-index: 1;
+        }
+
+        /* 新增内部容器，专门负责动画和渲染 */
+        .card-inner {
+            width: 100%; height: 100%;
+            border-radius: inherit;
+            background-size: cover; background-position: center;
+            
+            /* 性能优化关键：独立图层 */
+            will-change: transform, opacity, filter;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            
+            /* 默认状态 */
+            opacity: 0.3; 
             transform: scale(0.85);
-            border: 1px solid rgba(255,255,255,0);
+            filter: grayscale(100%) brightness(0.6); /* 移除 blur，因为它极耗性能 */
         }
 
-        /* 左侧卡片 (场景) */
+        /* 左侧场景卡片 */
         .card.scene {
-            width: 200px; height: 120px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            width: 90%; 
+            max-width: 280px;
+            aspect-ratio: 16/10;
+            height: auto; 
         }
 
-        /* 右侧卡片 (壁纸) */
+        /* 右侧壁纸卡片 */
         .card.wall {
-            width: 100px; height: 180px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            width: 85%; /* 增大占比 (70% -> 85%) */
+            max-width: 180px; /* 增大最大宽度 (140px -> 180px) */
+            aspect-ratio: 9/16;
+            height: auto; 
         }
 
-        /* 激活状态 (JS控制) */
-        .card.active {
-            filter: grayscale(0) brightness(1.1) blur(0);
+        /* 悬停状态 (作用于 inner) */
+        .card:hover .card-inner {
+            opacity: 0.6;
+            filter: grayscale(50%) brightness(0.9);
+            transform: scale(0.92);
+        }
+
+        /* 激活状态 (作用于 inner) */
+        .card.active { z-index: 10; } /* 提升层级 */
+        
+        .card.active .card-inner {
             opacity: 1;
-            transform: scale(1.1); /* 微微放大 */
-            border-color: var(--border-highlight);
-            box-shadow:
-                    0 20px 50px rgba(0,0,0,0.6),
-                    0 0 0 4px rgba(255,255,255,0.05); /* 光晕环 */
-            z-index: 10;
+            filter: grayscale(0%) brightness(1.1);
+            transform: scale(1.05);
+            box-shadow: 0 40px 100px -20px rgba(0,0,0,0.9);
         }
 
-        /* 悬停微交互 */
-        .card:hover:not(.active) {
-            filter: grayscale(0.5) brightness(0.7) blur(2px);
-            opacity: 0.8;
-            transform: scale(0.9);
+        /* 移除之前的 after/before，改为在 inner 上处理 */
+        /* 彻底移除任何可能的描边，包括 inset shadow */
+        .card.active .card-inner::after {
+            display: none;
         }
 
-        /* 卡片标签 */
+        /* 卡片信息：更好的排版 */
         .card-info {
-            position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
-            text-align: center; opacity: 0; transition: 0.3s; pointer-events: none;
-            width: 200px;
+            position: absolute; 
+            top: 100%; left: 0; width: 100%;
+            padding-top: 20px; /* 增加文字与图片的距离，更透气 */
+            opacity: 0; transform: translateY(-8px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
         }
-        .card.active .card-info { opacity: 1; bottom: -35px; }
+        
+        /* 只有激活时才显示文字 */
+        .card.active .card-info { opacity: 1; transform: translateY(0); }
 
-        .card-title { font-size: 11px; font-weight: 500; color: #fff; letter-spacing: 0.5px; margin-bottom: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-        .card-sub { font-size: 9px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; }
+        .sidebar.right .card-info { text-align: center; }
+
+        .card-title { 
+            font-family: "SF Pro Display", "Inter", sans-serif;
+            font-size: 14px; font-weight: 600; color: #fff;
+            letter-spacing: 0.03em; margin-bottom: 8px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.6); /* 增加文字阴影深度 */
+        }
+        
+        .card-sub { 
+            font-family: "SF Mono", "Roboto Mono", monospace; /* 使用等宽字体增加科技/艺术感 */
+            font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.5);
+            text-transform: uppercase; letter-spacing: 0.12em;
+        }
 
         /* =========================================
-           7. Header & UI Elements (保持原样)
+           7. Header & UI (悬浮极简)
            ========================================= */
         .header {
-            position: fixed; top: 0; left: 0; right: 0; height: 100px;
-            display: flex; justify-content: space-between; align-items: flex-start;
-            padding: 40px 50px; z-index: 200;
-            pointer-events: none; /* UI层穿透 */
+            position: fixed; top: 0; left: 0; right: 0; height: 80px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 50px; z-index: 200;
+            pointer-events: none; 
         }
 
         .brand {
-            font-size: 14px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
-            color: rgba(255,255,255,0.9); pointer-events: auto; opacity: 0.8;
-            display: flex; align-items: center; gap: 10px;
+            font-family: 'Cinzel', serif; /* 更换为衬线体更有格调，需引入或回退 */
+            font-size: 16px; font-weight: 400; letter-spacing: 0.2em;
+            color: #fff; pointer-events: auto; opacity: 0.9;
+            text-transform: uppercase;
         }
-        .brand::before { content: ''; width: 6px; height: 6px; background: #fff; border-radius: 50%; display: block; box-shadow: 0 0 10px #fff; }
 
-        .actions { pointer-events: auto; display: flex; gap: 16px; }
+        .actions { pointer-events: auto; display: flex; gap: 12px; }
 
         .icon-btn {
-            width: 44px; height: 44px; border-radius: 50%;
-            background: rgba(255,255,255,0.05); backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.08);
+            width: 44px; height: 44px; /* 加大尺寸 */
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1); /* 增加底色可见度 */
+            backdrop-filter: blur(10px); /* 增加磨砂感 */
+            border: 1px solid rgba(255,255,255,0.1);
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.3s var(--ease-out-expo);
-            color: #fff; position: relative; overflow: hidden;
+            cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            color: rgba(255,255,255,0.9);
+            
+            /* 阴影增加立体感 */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
-        .icon-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.05); border-color: rgba(255,255,255,0.3); }
-        .icon-btn:active { transform: scale(0.95); }
-        .icon-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; }
+        .icon-btn:hover { 
+            background: rgba(255,255,255,0.25); 
+            color: #fff; 
+            border-color: rgba(255,255,255,0.4); 
+            transform: scale(1.1); /* 悬停放大 */
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+        .icon-btn:active {
+            transform: scale(0.95);
+        }
+        .icon-btn svg { 
+            width: 20px; height: 20px; 
+            fill: none; /* 确保无填充 */
+            stroke: currentColor; /* 使用文字颜色 */
+            stroke-width: 2; 
+            stroke-linecap: round; 
+            stroke-linejoin: round;
+        }
 
-        /* Loading Indicator */
+        /* Loading */
         .loader {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 40px; height: 40px; border: 2px solid rgba(255,255,255,0.1);
-            border-top-color: #fff; border-radius: 50%;
-            animation: spin 1s linear infinite; z-index: 5;
-            opacity: 0; transition: opacity 0.3s; pointer-events: none;
+            width: 1px; height: 40px; background: rgba(255,255,255,0.2);
+            overflow: hidden; opacity: 0; transition: opacity 0.3s;
+        }
+        .loader::after {
+            content:''; position: absolute; inset: 0;
+            background: #fff; animation: loadScan 1s infinite ease-in-out;
+            transform: translateY(100%);
         }
         .loader.show { opacity: 1; }
-        @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+        @keyframes loadScan { 0% {transform:translateY(100%)} 50% {transform:translateY(0)} 100% {transform:translateY(-100%)} }
 
     </style>
 </head>
@@ -505,13 +596,14 @@
         SCENES.forEach((s, i) => {
             const card = document.createElement('div');
             card.className = 'card scene';
-            card.style.backgroundImage = `url(${s.src})`;
+            // 结构分离：外层布局，内层动画
             card.innerHTML = `
-                    <div class="card-info">
-                        <div class="card-title">${s.title}</div>
-                        <div class="card-sub">${s.device}</div>
-                    </div>
-                `;
+                <div class="card-inner" style="background-image: url('${s.src}')"></div>
+                <div class="card-info">
+                    <div class="card-title">${s.title}</div>
+                    <div class="card-sub">${s.device}</div>
+                </div>
+            `;
             // 点击直接滚动到该项
             card.onclick = () => scrollToCard(els.sceneTrack, i);
             els.sceneTrack.appendChild(card);
@@ -521,21 +613,20 @@
         WALLPAPERS.forEach((url, i) => {
             const card = document.createElement('div');
             card.className = 'card wall';
-            card.style.backgroundImage = `url(${url})`;
             
             // 简单处理标题
             let title = `Wallpaper #${i + 1}`;
-            // 如果是刚才添加的第一张且有参数标题
             if (i === 0 && params.src && params.title) {
                 title = params.title;
             }
 
             card.innerHTML = `
-                    <div class="card-info">
-                        <div class="card-title">${title}</div>
-                        <div class="card-sub">4K UHD</div>
-                    </div>
-                `;
+                <div class="card-inner" style="background-image: url('${url}')"></div>
+                <div class="card-info">
+                    <div class="card-title">${title}</div>
+                    <div class="card-sub">4K UHD</div>
+                </div>
+            `;
             card.onclick = () => scrollToCard(els.wallTrack, i);
             els.wallTrack.appendChild(card);
         });
@@ -576,43 +667,54 @@
 
         for (let i = 0; i < cards.length; i++) {
             const card = cards[i];
-            const cardCenterY = card.offsetTop + card.offsetHeight / 2;
+            // 性能优化：如果不在视口附近的，直接跳过计算 (减少 Reflow)
+            // 假设卡片高度最大 200，视口高度 800，上下各缓冲 400
+            const cardTop = card.offsetTop; // 读取 offsetTop 仍有开销，但比后续样式操作好
+            if (Math.abs(cardTop - centerY) > 600) {
+                continue; 
+            }
+
+            const cardCenterY = cardTop + card.offsetHeight / 2;
             const dist = Math.abs(centerY - cardCenterY);
 
-            // --- 视觉算法 ---
-            // 距离越近，scale越大，blur越小，opacity越高
+            // --- 视觉算法 (只操作 inner) ---
+            const inner = card.querySelector('.card-inner');
+            if (!inner) continue;
 
-            // 衰减半径 (Sensitivity)
-            const radius = 400;
+            // 衰减半径 (Sensitivity) - 配合加大后的间距调整
+            const radius = 500;
 
             let scale = 0.85;
-            let opacity = 0.4;
-            let blur = 4;
+            let opacity = 0.3;
+            // let blur = 5; // REMOVED: Blur is performance killer
             let grayscale = 1;
 
             if (dist < radius) {
                 const ratio = 1 - (dist / radius); // 0 to 1
-                scale = 0.85 + (0.25 * ratio); // 0.85 -> 1.1
-                opacity = 0.4 + (0.6 * ratio); // 0.4 -> 1.0
-                blur = 4 * (1 - ratio);        // 4 -> 0
+                scale = 0.85 + (0.2 * ratio);  // 0.85 -> 1.05
+                opacity = 0.3 + (0.7 * ratio); // 0.3 -> 1.0
+                // blur = 5 * (1 - ratio);     
                 grayscale = 1 - ratio;         // 1 -> 0
             }
 
-            // 样式应用
-            card.style.transform = `scale(${scale})`;
-            card.style.opacity = opacity;
+            // 样式应用 - 使用 inner，避免影响 Scroll Snap 的 layout
+            inner.style.transform = `scale(${scale})`;
+            inner.style.opacity = opacity;
+            // inner.style.filter = `blur(${blur}px) ...`; // REMOVED
 
             // 只有最中心的卡片是全彩清晰的
             if (dist < 80) {
                 card.classList.add('active');
-                card.style.filter = `grayscale(0) brightness(1.1) blur(0)`;
+                // inner.style.filter = `grayscale(0) brightness(1.1) blur(0)`;
+                inner.style.filter = `grayscale(0) brightness(1.1)`;
                 if (dist < minDist) {
                     minDist = dist;
                     centerIndex = i;
                 }
             } else {
                 card.classList.remove('active');
-                card.style.filter = `grayscale(${grayscale}) brightness(${0.5 + opacity*0.3}) blur(${blur}px)`;
+                // inner.style.filter = `grayscale(${grayscale}) brightness(${0.5 + opacity*0.3}) blur(${blur}px)`;
+                inner.style.filter = `grayscale(${grayscale}) brightness(${0.6 + opacity*0.4})`;
             }
         }
 
