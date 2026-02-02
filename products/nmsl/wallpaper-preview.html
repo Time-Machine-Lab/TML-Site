@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Immersive Preview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #000000;
+            --glass: rgba(20, 20, 20, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #FFFFFF;
+            --text-sub: rgba(255, 255, 255, 0.5);
+            --accent: #FFFFFF;
+
+            /* 苹果风格的缓动曲线 */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; outline: none; }
+
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            cursor: default;
+        }
+
+        /* --- 1. 动态环境光背景 (Ambient Light) --- */
+        .ambient-canvas {
+            position: absolute; inset: -20%; width: 140%; height: 140%;
+            z-index: 0; opacity: 0.5;
+            background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1), transparent 60%);
+            transition: opacity 1s ease;
+            pointer-events: none;
+            filter: blur(80px) contrast(1.2);
+        }
+        .ambient-layer {
+            position: absolute; inset: 0; background-size: cover; background-position: center;
+            opacity: 0; transition: opacity 1.5s ease;
+        }
+        .ambient-layer.active { opacity: 1; }
+
+        /* --- 2. 顶部导航 (Minimal Header) --- */
+        .header {
+            position: fixed; top: 0; left: 0; right: 0; height: 100px;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 40px 60px; z-index: 100;
+            pointer-events: none;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent);
+        }
+
+        .brand {
+            font-size: 14px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+            color: rgba(255,255,255,0.9); pointer-events: auto; opacity: 0.8;
+        }
+
+        .actions { pointer-events: auto; display: flex; gap: 20px; }
+        .icon-btn {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.4s var(--ease-out-expo);
+            color: #fff;
+        }
+        .icon-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.05); }
+        .icon-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+        /* --- 3. 核心舞台 (The Stage) --- */
+        .stage-wrapper {
+            flex: 1; position: relative; z-index: 10;
+            display: flex; justify-content: center; align-items: center;
+            perspective: 1200px; /* 3D 透视深度 */
+        }
+
+        .scene-pivot {
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s linear; /* 实时视差响应 */
+        }
+
+        .scene-container {
+            position: relative;
+            max-width: 80vw; max-height: 70vh;
+            opacity: 0; transform: scale(0.9) translateY(40px) rotateX(10deg);
+            animation: heroEnter 1.2s var(--ease-out-expo) forwards 0.3s;
+            box-shadow: 0 50px 120px -20px rgba(0,0,0,0.6); /* 深邃投影 */
+            border-radius: 4px;
+        }
+
+        @keyframes heroEnter {
+            to { opacity: 1; transform: scale(1) translateY(0) rotateX(0); }
+        }
+
+        .base-img {
+            display: block; max-width: 100%; max-height: 70vh; height: auto;
+            pointer-events: none; border-radius: 2px;
+        }
+
+        /* 渲染层 */
+        .warp-layer { position: absolute; top: 0; left: 0; transform-origin: 0 0; pointer-events: none; z-index: 20; }
+        .screen { background: #000; position: relative; overflow: hidden; backface-visibility: hidden; will-change: transform; }
+        .wallpaper {
+            width: 100%; height: 100%;
+            background-size: cover; background-position: center;
+            transform: scale(1.01);
+            transition: background-image 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 质感光效 */
+        .fx-layer div { position: absolute; inset: 0; pointer-events: none; }
+        .fx-reflection {
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 40%, rgba(255,255,255,0.05) 100%);
+            mix-blend-mode: overlay; z-index: 30; pointer-events: none;
+        }
+        .fx-grain {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+            opacity: 0.3; mix-blend-mode: overlay; z-index: 32;
+        }
+
+        /* --- 4. 底部悬浮控制台 (Floating Dock) --- */
+        .dock-container {
+            position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%);
+            z-index: 200; width: auto;
+            display: flex; flex-direction: column; align-items: center; gap: 24px;
+        }
+
+        /* 场景标题 */
+        .scene-info {
+            text-align: center; opacity: 0; transform: translateY(20px);
+            animation: fadeUp 1s var(--ease-out-expo) forwards 0.8s;
+        }
+        .scene-title { font-size: 18px; font-weight: 500; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .scene-device { font-size: 12px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; }
+
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* 玻璃控制栏 */
+        .dock-bar {
+            height: 80px; padding: 10px;
+            background: rgba(40, 40, 40, 0.4); backdrop-filter: blur(40px) saturate(150%);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 40px;
+            display: flex; align-items: center; gap: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            transition: all 0.4s var(--ease-out-expo);
+        }
+
+        .dock-bar:hover {
+            background: rgba(50, 50, 50, 0.5);
+            transform: scale(1.02);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+        }
+
+        .dock-btn {
+            padding: 0 24px; height: 100%; border-radius: 30px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 500; color: #fff;
+            cursor: pointer; transition: 0.3s; position: relative;
+        }
+        .dock-btn.active { background: rgba(255,255,255,0.15); }
+        .dock-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
+
+        .divider { width: 1px; height: 24px; background: rgba(255,255,255,0.15); }
+
+        /* 壁纸/场景选择器 (弹出式) */
+        .selector-popover {
+            position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%) scale(0.95);
+            background: rgba(30, 30, 30, 0.7); backdrop-filter: blur(50px);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 24px;
+            padding: 16px; width: max-content; max-width: 90vw;
+            opacity: 0; pointer-events: none;
+            transition: all 0.4s var(--ease-spring);
+            box-shadow: 0 20px 80px rgba(0,0,0,0.6);
+            display: flex; gap: 12px;
+        }
+        .selector-popover.show {
+            opacity: 1; pointer-events: auto; transform: translateX(-50%) scale(1); bottom: 110px;
+        }
+
+        .thumb {
+            width: 64px; height: 64px; border-radius: 14px;
+            background-size: cover; background-position: center;
+            cursor: pointer; border: 2px solid transparent;
+            opacity: 0.6; transition: 0.3s var(--ease-out-expo);
+            position: relative;
+        }
+        .thumb:hover { opacity: 1; transform: scale(1.1) translateY(-4px); }
+        .thumb.active { opacity: 1; border-color: #fff; transform: scale(1.1); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+
+    </style>
+</head>
+<body>
+
+<div class="ambient-canvas">
+    <div class="ambient-layer active" id="bg1"></div>
+    <div class="ambient-layer" id="bg2"></div>
+</div>
+
+<header class="header">
+    <div class="brand">NMSL <span>/ SPACE</span></div>
+    <div class="actions">
+        <div class="icon-btn" title="Download" onclick="alert('Downloading...')">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="icon-btn" title="Close" onclick="window.close()">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </div>
+    </div>
+</header>
+
+<div class="stage-wrapper" id="stageArea">
+    <div class="scene-pivot" id="scenePivot">
+        <div class="scene-container" id="sceneBox">
+            <img id="baseImg" class="base-img" src="" crossorigin="anonymous">
+
+            <div class="warp-layer" id="warpLayer">
+                <div class="screen" id="screen">
+                    <div class="wallpaper" id="wallpaper"></div>
+                    <div class="fx-layer">
+                        <div class="fx-reflection"></div>
+                        <div class="fx-grain"></div>
+                        <div style="box-shadow: inset 0 0 0 1px rgba(0,0,0,1); z-index:40; border-radius:inherit"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="dock-container">
+    <div class="scene-info">
+        <div class="scene-title" id="sceneTitle">Loading Scene...</div>
+        <div class="scene-device" id="sceneDevice">...</div>
+    </div>
+
+    <div class="dock-bar">
+        <div class="dock-btn active" id="btnWall" onclick="toggleSelector('wallpaper')">Wallpapers</div>
+        <div class="divider"></div>
+        <div class="dock-btn" id="btnScene" onclick="toggleSelector('scene')">Scenes</div>
+    </div>
+
+    <div class="selector-popover" id="selector">
+    </div>
+</div>
+
+<script>
+    // ==========================================
+    // CONFIG DATA (从构建工具导出的数据)
+    // ==========================================
+    const SCENES = [
+        {
+            id: 'desk-setup',
+            title: 'Minimalist Desk Setup',
+            device: 'Desktop',
+            src: 'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=1600',
+            // 示例锚点数据 (0-1百分比)
+            anchors: [ {x:0.366, y:0.225}, {x:0.686, y:0.354}, {x:0.563, y:0.785}, {x:0.212, y:0.623} ],
+            // 示例配置
+            config: { w: 1179, h: 2556, r: 120 }
+        },
+        {
+            id: 'mac-dark',
+            title: 'MacBook Pro Space Black',
+            device: 'Laptop',
+            src: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca4?q=80&w=1600',
+            anchors: [ {x:0.182, y:0.175}, {x:0.818, y:0.175}, {x:0.818, y:0.845}, {x:0.182, y:0.845} ],
+            config: { w: 1600, h: 1000, r: 12 }
+        },
+        {
+            id: 'ipad-pro',
+            title: 'iPad Pro Handheld',
+            device: 'Tablet',
+            src: 'https://images.unsplash.com/photo-1544256718-3bcf237f3974?q=80&w=1600',
+            anchors: [ {x:0.12, y:0.15}, {x:0.88, y:0.15}, {x:0.88, y:0.85}, {x:0.12, y:0.85} ],
+            config: { w: 2048, h: 2732, r: 35 }
+        }
+    ];
+
+    const WALLPAPERS = [
+        'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800',
+        'https://images.unsplash.com/photo-1634152962476-4b8a00e1915c?w=800',
+        'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=800',
+        'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?w=800',
+        'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=800'
+    ];
+
+    // ==========================================
+    // CORE LOGIC
+    // ==========================================
+    const state = {
+        sIdx: 0,
+        wIdx: 0,
+        activeSelector: null, // 'wallpaper' | 'scene' | null
+        bgFlip: false
+    };
+
+    const els = {
+        base: document.getElementById('baseImg'),
+        warp: document.getElementById('warpLayer'),
+        screen: document.getElementById('screen'),
+        wp: document.getElementById('wallpaper'),
+        pivot: document.getElementById('scenePivot'),
+        title: document.getElementById('sceneTitle'),
+        device: document.getElementById('sceneDevice'),
+        selector: document.getElementById('selector'),
+        bg1: document.getElementById('bg1'),
+        bg2: document.getElementById('bg2')
+    };
+
+    window.onload = () => {
+        loadScene(0);
+
+        // 启动视差交互
+        document.addEventListener('mousemove', handleParallax);
+    };
+
+    // --- 1. 场景加载 ---
+    function loadScene(idx) {
+        const s = SCENES[idx];
+        els.base.style.opacity = 0; // 淡出旧图
+
+        const img = new Image();
+        img.src = s.src;
+        img.onload = () => {
+            els.base.src = s.src;
+            els.base.style.opacity = 1; // 淡入新图
+
+            // 更新文字信息
+            els.title.innerText = s.title;
+            els.device.innerText = s.device;
+
+            // 设置屏幕参数
+            els.screen.style.width = s.config.w + 'px';
+            els.screen.style.height = s.config.h + 'px';
+            els.screen.style.borderRadius = s.config.r + 'px';
+
+            // 计算 Matrix
+            const imgW = els.base.offsetWidth;
+            const imgH = els.base.offsetHeight;
+
+            // 将百分比锚点转为像素
+            const points = s.anchors.map(p => ({ x: p.x * imgW, y: p.y * imgH }));
+
+            // 如果没有锚点数据，提供一个默认的居中
+            if(!points.length || points.length < 4) {
+                // Fallback logic here if needed
+            } else {
+                const m = solveHomography(s.config.w, s.config.h, points);
+                els.warp.style.transform = `matrix3d(${m})`;
+            }
+
+            updateWallpaper();
+        };
+    }
+
+    // --- 2. 壁纸更新 & 环境光 ---
+    function updateWallpaper() {
+        const url = WALLPAPERS[state.wIdx];
+        els.wp.style.backgroundImage = `url(${url})`;
+
+        // 环境光双缓冲切换
+        state.bgFlip = !state.bgFlip;
+        const active = state.bgFlip ? els.bg2 : els.bg1;
+        const inactive = state.bgFlip ? els.bg1 : els.bg2;
+
+        active.style.backgroundImage = `url(${url})`;
+        active.classList.add('active');
+        inactive.classList.remove('active');
+    }
+
+    // --- 3. 悬浮选择器逻辑 ---
+    function toggleSelector(type) {
+        // 如果点击已激活的，则关闭
+        if(state.activeSelector === type) {
+            state.activeSelector = null;
+            els.selector.classList.remove('show');
+            document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
+            return;
+        }
+
+        state.activeSelector = type;
+        els.selector.classList.add('show');
+
+        // 按钮高亮
+        document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(type === 'wallpaper' ? 'btnWall' : 'btnScene').classList.add('active');
+
+        // 渲染内容
+        renderThumbs(type);
+    }
+
+    function renderThumbs(type) {
+        els.selector.innerHTML = '';
+        const list = type === 'wallpaper' ? WALLPAPERS : SCENES;
+        const curIdx = type === 'wallpaper' ? state.wIdx : state.sIdx;
+
+        list.forEach((item, i) => {
+            const url = type === 'wallpaper' ? item : item.src;
+            const div = document.createElement('div');
+            div.className = `thumb ${i === curIdx ? 'active' : ''}`;
+            div.style.backgroundImage = `url(${url})`;
+            div.onclick = () => {
+                if(type === 'wallpaper') { state.wIdx = i; updateWallpaper(); }
+                else { state.sIdx = i; loadScene(i); }
+                renderThumbs(type); // 刷新高亮
+            };
+            els.selector.appendChild(div);
+        });
+    }
+
+    // --- 4. 3D 视差交互 (Parallax) ---
+    function handleParallax(e) {
+        const x = (e.clientX / window.innerWidth - 0.5) * 2; // -1 to 1
+        const y = (e.clientY / window.innerHeight - 0.5) * 2;
+
+        // 极其细微的移动，制造高级感
+        const rotateX = -y * 3; // Max 3deg tilt
+        const rotateY = x * 3;
+        const translateX = x * 10;
+
+        requestAnimationFrame(() => {
+            els.pivot.style.transform = `
+                    rotateX(${rotateX}deg)
+                    rotateY(${rotateY}deg)
+                    translateX(${translateX}px)
+                `;
+        });
+    }
+
+    // --- 5. Matrix Math (Core) ---
+    function solveHomography(w,h,p){const s=[0,0,w,0,w,h,0,h],d=[p[0].x,p[0].y,p[1].x,p[1].y,p[2].x,p[2].y,p[3].x,p[3].y],A=[],b=[];for(let i=0;i<4;i++){let sx=s[i*2],sy=s[i*2+1],dx=d[i*2],dy=d[i*2+1];A.push([sx,sy,1,0,0,0,-sx*dx,-sy*dx]);b.push(dx);A.push([0,0,0,sx,sy,1,-sx*dy,-sy*dy]);b.push(dy);}let n=8;for(let i=0;i<n;i++){let m=i;for(let j=i+1;j<n;j++)if(Math.abs(A[j][i])>Math.abs(A[m][i]))m=j;[A[i],A[m]]=[A[m],A[i]];[b[i],b[m]]=[b[m],b[i]];for(let j=i+1;j<n;j++){let c=-A[j][i]/A[i][i];for(let k=i;k<n;k++)A[j][k]+=c*A[i][k];b[j]+=c*b[i];}}let x=[];for(let i=n-1;i>=0;i--){let t=0;for(let j=i+1;j<n;j++)t+=A[i][j]*x[j];x[i]=(b[i]-t)/A[i][i];}return [x[0],x[3],0,x[6],x[1],x[4],0,x[7],0,0,1,0,x[2],x[5],0,1].join(',');}
+
+</script>
+</body>
+</html>

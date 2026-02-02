@@ -2,825 +2,445 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>Mockup Studio Ultimate</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wallpaper Preview Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #050505;
-            --panel: rgba(28, 28, 30, 0.75);
-            --border: rgba(255, 255, 255, 0.1);
-            --accent: #0A84FF;
-            --text-main: #fff;
-            --text-sub: #86868b;
-            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+            /* Apple Dark Mode Palette */
+            --bg-color: #000000;
+            --glass-material: rgba(28, 28, 30, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --glass-highlight: rgba(255, 255, 255, 0.05);
+            --accent-color: #0A84FF;
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(235, 235, 245, 0.6);
+            
+            /* Animation Curves */
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.1); /* 弹性 */
+            --ease-smooth: cubic-bezier(0.33, 1, 0.68, 1);       /* 丝滑 */
         }
 
-        * { box-sizing: border-box; outline: none; user-select: none; }
+        * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; outline: none; }
 
         body {
-            margin: 0; background: var(--bg); color: var(--text-main); height: 100vh;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-            overflow: hidden; display: flex;
+            margin: 0;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* --- 1. 核心舞台区 --- */
-        .workspace {
-            flex: 1 1 70%; position: relative; display: flex; justify-content: center; align-items: center;
-            background-image: radial-gradient(#1a1a1a 1px, transparent 1px); background-size: 40px 40px;
-            overflow: hidden; cursor: default;
+        /* --- 1. 沉浸式环境背景 (Ambient Light) --- */
+        .ambient-layer {
+            position: absolute; inset: -10%;
+            width: 120%; height: 120%;
+            background-size: cover; background-position: center;
+            filter: blur(80px) saturate(1.5) brightness(0.6);
+            z-index: 0;
+            opacity: 0; transition: opacity 1.2s ease;
+            transform: translate3d(0,0,0); /* 开启硬件加速 */
+        }
+        .ambient-layer.active { opacity: 1; }
+
+        /* --- 2. 顶部导航栏 (Minimal Header) --- */
+        .header {
+            position: fixed; top: 0; left: 0; right: 0; height: 80px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 40px; z-index: 100;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent);
+            pointer-events: none; /* 让鼠标穿透，不阻挡操作 */
+        }
+        
+        .brand {
+            font-size: 14px; font-weight: 600; letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.9); text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            pointer-events: auto; display: flex; align-items: center; gap: 8px;
+        }
+        .brand span { opacity: 0.5; font-weight: 400; }
+
+        .close-btn {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #fff; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; pointer-events: auto;
+            transition: all 0.3s var(--ease-smooth);
+        }
+        .close-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.08); }
+        .close-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+        /* --- 3. 核心舞台 (The Stage) --- */
+        .stage {
+            flex: 1; position: relative; z-index: 10;
+            display: flex; justify-content: center; align-items: center;
+            perspective: 2000px; /* 增强3D透视感 */
+            padding-bottom: 120px; /* 为底部 Dock 留空 */
         }
 
-        /* 场景容器 (支持平移缩放) */
         .scene-container {
-            position: relative; line-height: 0;
-            box-shadow: 0 100px 200px -50px rgba(0,0,0,0.8);
-            transition: transform 0.6s var(--ease-out), opacity 0.4s;
+            position: relative;
+            max-width: 85vw; max-height: 75vh;
+            /* 初始进场动画 */
+            opacity: 0; transform: scale(0.95) translateY(20px);
+            animation: sceneEnter 1s var(--ease-smooth) forwards 0.2s;
+            transition: transform 0.6s var(--ease-smooth);
+            filter: drop-shadow(0 50px 100px rgba(0,0,0,0.6)); /* 高级投影 */
         }
+
+        @keyframes sceneEnter { to { opacity: 1; transform: scale(1) translateY(0); } }
 
         .base-img {
-            display: block; max-width: 85vw; max-height: 85vh;
-            pointer-events: none; border-radius: 4px;
-            will-change: transform;
+            display: block; max-width: 100%; max-height: 75vh; height: auto;
+            border-radius: 4px; pointer-events: none;
+            user-select: none; -webkit-user-drag: none;
         }
 
-        /* --- 2. 3D 渲染引擎层 --- */
-        .warp-layer {
-            position: absolute; top: 0; left: 0;
-            transform-origin: 0 0; pointer-events: none; z-index: 10;
+        /* 渲染层结构 (保持原有逻辑，优化样式) */
+        .warp-layer { position: absolute; top: 0; left: 0; transform-origin: 0 0; pointer-events: none; z-index: 20; }
+        .screen { background: #000; position: relative; overflow: hidden; backface-visibility: hidden; will-change: transform; }
+        .wallpaper { 
+            width: 100%; height: 100%; 
+            background-size: cover; background-position: center; 
+            transform: scale(1.02); /* 防止白边 */
+            transition: background-image 0.5s ease-in-out; 
         }
 
-        /* 屏幕本体 */
-        .screen {
-            background: #000; position: relative; overflow: hidden;
-            /* 硬件加速抗锯齿 */
-            will-change: transform; backface-visibility: hidden;
-            z-index: 10;
+        /* 质感滤镜 */
+        .fx-layer div { position: absolute; inset: 0; pointer-events: none; }
+        .fx-glare { 
+            mix-blend-mode: screen; 
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.15) 40%, rgba(255,255,255,0) 60%); 
+            z-index: 30; opacity: 0.6; 
+        }
+        .fx-border { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.8), inset 0 0 0 2px rgba(255,255,255,0.1); z-index: 31; }
+
+        /* --- 4. 底部控制 Dock (Floating Island) --- */
+        .dock-wrapper {
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+            z-index: 200; width: auto; display: flex; flex-direction: column; align-items: center; gap: 20px;
         }
 
-        /* 壁纸层 */
-        .wallpaper {
-            width: 100%; height: 100%;
+        /* 模式切换器 (Segmented Control) */
+        .mode-switch {
+            position: relative;
+            background: rgba(10, 10, 10, 0.6); backdrop-filter: blur(40px) saturate(180%);
+            border: 0.5px solid rgba(255,255,255,0.1);
+            padding: 4px; border-radius: 100px;
+            display: flex; gap: 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .mode-btn {
+            position: relative; z-index: 2;
+            padding: 8px 24px;
+            font-size: 13px; font-weight: 500; color: var(--text-secondary);
+            cursor: pointer; transition: color 0.3s;
+        }
+        .mode-btn.active { color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+
+        .mode-indicator {
+            position: absolute; top: 4px; left: 4px; bottom: 4px; width: 100px; /* 动态计算 */
+            background: rgba(255,255,255,0.12); border: 0.5px solid rgba(255,255,255,0.1);
+            border-radius: 100px; z-index: 1;
+            transition: transform 0.4s var(--ease-spring), width 0.3s ease;
+        }
+
+        /* 缩略图栏 */
+        .thumbs-container {
+            height: 96px; padding: 0 16px;
+            background: rgba(30, 30, 30, 0.5); backdrop-filter: blur(50px) saturate(200%);
+            border: 1px solid rgba(255,255,255,0.08); border-top: 1px solid rgba(255,255,255,0.15);
+            border-radius: 28px;
+            display: flex; align-items: center; gap: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            opacity: 0; transform: translateY(20px);
+            animation: dockUp 0.8s var(--ease-spring) forwards 0.5s;
+            overflow: hidden; /* 防止滚动溢出 */
+            max-width: 90vw;
+        }
+        
+        @keyframes dockUp { to { opacity: 1; transform: translateY(0); } }
+
+        .thumbs-scroll {
+            display: flex; gap: 12px; overflow-x: auto; padding: 16px 4px;
+            scroll-behavior: smooth;
+            -ms-overflow-style: none; scrollbar-width: none; /* 隐藏滚动条 */
+        }
+        .thumbs-scroll::-webkit-scrollbar { display: none; }
+
+        .thumb-item {
+            flex: 0 0 60px; height: 60px;
+            border-radius: 14px;
             background-size: cover; background-position: center;
-            transition: filter 0.2s; transform: scale(1.01); /* 防止白边 */
-        }
-
-        .edge-blend {
-            position: absolute;
-            inset: 0;
-            z-index: 9;
-            pointer-events: none;
-            background: rgba(0,0,0,0.5);
-            border-radius: var(--edge-radius, 0px);
-            mix-blend-mode: soft-light;
-            box-shadow:
-                0 0 var(--edge-blur, 0px) var(--edge-spread, 0px) rgba(0,0,0,var(--edge-opacity, 0.6)),
-                0 0 calc(var(--edge-blur, 0px) * 1.8) calc(var(--edge-spread, 0px) * 1.6) rgba(0,0,0,0.18);
-        }
-
-        /* --- 3. 真实感滤镜组 --- */
-        .fx-layer { position: absolute; inset: 0; pointer-events: none; z-index: 30; }
-
-        /* 物理黑边 */
-        .fx-border { position: absolute; inset: 0; box-shadow: inset 0 0 0 1px #000; z-index: 31; }
-        /* 外扩黑边 */
-        .fx-outer {
-            position: absolute; inset: 0; z-index: 29; pointer-events: none;
-            box-shadow: none;
-        }
-        /* 内阴影 (增加厚度感) */
-        .fx-shadow { position: absolute; inset: 0; z-index: 32; }
-        /* 表面反光 */
-        .fx-glare {
-            position: absolute; inset: 0; z-index: 33; mix-blend-mode: screen; opacity: 0;
-            background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.1) 45%, rgba(255,255,255,0.02) 55%, transparent 65%);
-        }
-        /* 胶片噪点 (关键: 消除CG感) */
-        .fx-noise {
-            position: absolute; inset: 0; z-index: 34; mix-blend-mode: overlay; opacity: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-        }
-
-        /* --- 4. OS UI 模拟 --- */
-        .os-ui {
-            position: absolute; inset: 0; z-index: 20; color: #fff;
-            display: flex; flex-direction: column; transition: color 0.3s;
-        }
-        .os-ui .ui-scale {
-            width: calc(100% / var(--ui-scale, 1));
-            height: calc(100% / var(--ui-scale, 1));
-            transform: scale(var(--ui-scale, 1));
-            transform-origin: top left;
-        }
-        .os-ui.dark { color: #000; }
-        .text-shadow { text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-        .os-ui.dark .text-shadow { text-shadow: none; }
-
-        /* iPhone 16 Pro Layout (High-Res 1179px width) */
-        .iphone-ui { height: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 60px; position: relative; }
-        
-        /* 灵动岛: 370px 宽 */
-        .island { width: 366px; height: 106px; background: #000; border-radius: 53px; transition: 0.3s; margin-bottom: 130px; z-index: 2; }
-        
-        /* 状态栏: 分左右 */
-        .iphone-status-left {
-            position: absolute; top: 86px; left: 80px; height: 60px;
-            display: flex; align-items: center; color: #fff; gap: 12px;
-            font-size: 42px; font-weight: 600; letter-spacing: 1px;
-        }
-        .iphone-status-right {
-            position: absolute; top: 92px; right: 80px; height: 60px;
-            display: flex; align-items: center; gap: 18px; color: #fff; font-size: 42px; font-weight: 600;
-        }
-        .os-ui.dark .iphone-status-left, .os-ui.dark .iphone-status-right { color: #000; }
-        
-        .iphone-date { font-size: 64px; font-weight: 600; opacity: 0.9; margin-top: 0; margin-bottom: 48px; letter-spacing: 1px; text-shadow: 0 4px 16px rgba(0,0,0,0.2); }
-        
-        .iphone-time { 
-            font-size: 300px; line-height: 1; letter-spacing: -4px; 
-            font-family: 'Saira Stencil One', 'SF Pro Rounded', system-ui, sans-serif;
-            text-shadow: 0 10px 40px rgba(0,0,0,0.16); margin-bottom: 70px; margin-top: 0;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s var(--ease-spring);
+            opacity: 0.6; filter: grayscale(0.4);
+            position: relative; overflow: hidden;
         }
         
-        .iphone-widgets {
-            display: flex; gap: 72px; justify-content: center; align-items: center;
-            width: 100%; padding: 0 40px;
-        }
-        .iphone-widget-circle {
-            width: 172px; height: 172px; border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(40px);
-            display: flex; align-items: center; justify-content: center;
-            color: #fff;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        .iphone-widget-circle svg { width: 88px; height: 88px; fill: currentColor; }
-
-        
-        .iphone-bottom { 
-            position: absolute; inset: 0; pointer-events: none; z-index: 5;
+        .thumb-item:hover { opacity: 1; filter: grayscale(0); transform: scale(1.1) translateY(-2px); }
+        .thumb-item.active { 
+            opacity: 1; filter: grayscale(0); 
+            border-color: #fff; 
+            transform: scale(1.15) translateY(-4px); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
         }
         
-        .icon-btn { 
-            position: absolute; bottom: 140px;
-            width: 150px; height: 150px; background: rgba(30,30,30,0.45); border-radius: 50%; 
-            backdrop-filter: blur(40px); display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15); transition: 0.2s;
-            pointer-events: auto;
-        }
-        .iphone-bottom .icon-btn:first-child { left: 140px; }
-        .iphone-bottom .icon-btn:last-child { right: 140px; }
-
-        .icon-btn svg { width: 68px; height: 68px; fill: #fff; display: block; }
-        
-        .home-bar { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); width: 520px; height: 18px; background: #fff; border-radius: 100px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); z-index: 6; }
-
-        /* macOS Layout */
-        .mac-ui { height: 100%; display: flex; flex-direction: column; }
-        .mac-bar { height: 30px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; font-weight: 600; font-size: 13px; background: rgba(0,0,0,0.2); backdrop-filter: blur(20px); }
-        .os-ui.dark .mac-bar { background: rgba(255,255,255,0.4); color: #000; }
-        .mac-dock-wrap { margin-top: auto; margin-bottom: 20px; display: flex; justify-content: center; }
-        .mac-dock { height: 62px; padding: 6px; background: rgba(255,255,255,0.15); backdrop-filter: blur(20px); border-radius: 16px; display: flex; gap: 10px; box-shadow: 0 15px 40px rgba(0,0,0,0.3); }
-        .app-icon { width: 48px; height: 48px; background: linear-gradient(to bottom, #f5f5f5, #d4d4d4); border-radius: 11px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
-
-        /* iPad Layout */
-        .ipad-ui { height: 100%; display: flex; flex-direction: column; padding: 22px 30px 26px 30px; gap: 18px; }
-        .ipad-bar { height: 28px; display: flex; align-items: center; justify-content: space-between; font-weight: 600; font-size: 13px; opacity: 0.9; }
-        .ipad-widgets { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-        .ipad-widget { height: 120px; border-radius: 18px; background: rgba(255,255,255,0.15); backdrop-filter: blur(16px); }
-        .ipad-icons { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-top: 6px; }
-        .ipad-icon { height: 58px; border-radius: 14px; background: rgba(255,255,255,0.2); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-        .ipad-dock { margin-top: auto; height: 68px; padding: 6px 10px; border-radius: 18px; background: rgba(255,255,255,0.16); display: flex; gap: 12px; justify-content: center; align-items: center; }
-        .ipad-dock .ipad-icon { height: 52px; width: 52px; }
-
-        /* --- 5. 交互控制层 --- */
-        .controls-layer { position: absolute; inset: 0; z-index: 100; pointer-events: none; }
-        .guide-svg { width: 100%; height: 100%; position: absolute; top:0; left:0; }
-
-        /* 智能热区：也是整体移动的手柄 */
-        .guide-path {
-            fill: rgba(10, 132, 255, 0.05); stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 6;
-            vector-effect: non-scaling-stroke; pointer-events: auto; cursor: move; transition: fill 0.2s;
-        }
-        .guide-path:hover { fill: rgba(10, 132, 255, 0.15); }
-
-        .handle {
-            position: absolute; width: 14px; height: 14px; background: #fff;
-            border: 2px solid var(--accent); border-radius: 50%;
-            transform: translate3d(var(--x, 0px), var(--y, 0px), 0) translate(-50%, -50%);
-            cursor: crosshair; z-index: 101; pointer-events: auto;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.5); transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .handle:hover {
-            transform: translate3d(var(--x, 0px), var(--y, 0px), 0) translate(-50%, -50%) scale(1.8);
-            z-index: 102; background: var(--accent); border-color: #fff;
-        }
-
-        /* --- 6. 悬浮控制面板 (Glassmorphism) --- */
-        .panel {
-            position: relative; order: -1; flex: 0 0 30%; width: 30vw; min-width: 300px; max-width: 420px; height: 100vh;
-            background: var(--panel); backdrop-filter: blur(30px) saturate(180%);
-            border: 1px solid var(--border); border-radius: 0 24px 24px 0;
-            padding: 24px; display: flex; flex-direction: column; gap: 24px; z-index: 200;
-            box-shadow: 20px 0 60px rgba(0,0,0,0.5);
-            transition: transform 0.5s var(--ease-out), opacity 0.4s;
-            overflow-y: auto;
-        }
-
-        .panel-header { display: flex; justify-content: space-between; align-items: center; }
-        .brand { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
-        .preview-btn {
-            background: rgba(255,255,255,0.1); border: none; color: #fff;
-            padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600;
-            cursor: pointer; transition: 0.2s;
-        }
-        .preview-btn:hover { background: #fff; color: #000; box-shadow: 0 0 15px rgba(255,255,255,0.3); }
-
-        .label { font-size: 11px; color: var(--text-sub); font-weight: 600; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px; }
-
-        /* 按钮组 */
-        .btn-group { display: flex; gap: 8px; }
-        .btn {
-            flex: 1; background: rgba(255,255,255,0.05); border: 1px solid transparent; color: var(--text-sub);
-            padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 500; cursor: pointer; transition: 0.2s;
-        }
-        .btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
-        .btn.active { background: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3); }
-
-        /* 滑块 */
-        .slider-wrap { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
-        .slider-head { display: flex; justify-content: space-between; font-size: 12px; color: #ccc; }
-        input[type="range"] {
-            width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; -webkit-appearance: none;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 16px; height: 16px; background: #fff; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.5); transition: 0.1s;
-        }
-        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
-
-        /* 壁纸网格 */
-        .wp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .wp-item {
-            aspect-ratio: 1; border-radius: 8px; background-size: cover; cursor: pointer;
-            border: 2px solid transparent; opacity: 0.6; transition: 0.2s;
-        }
-        .wp-item:hover, .wp-item.active { opacity: 1; border-color: var(--accent); }
-
-        /* --- 7. 预览 Dock 栏 --- */
-        .dock-bar {
-            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(120px);
-            background: rgba(30, 30, 30, 0.85); backdrop-filter: blur(30px);
-            border: 1px solid rgba(255,255,255,0.15); padding: 12px 24px; border-radius: 40px;
-            display: flex; gap: 16px; align-items: center; z-index: 300;
-            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-        }
-        .dock-thumbs { display: flex; gap: 10px; }
-        .dock-thumb {
-            width: 44px; height: 44px; border-radius: 10px; background-size: cover;
-            cursor: pointer; opacity: 0.6; transition: 0.2s; border: 2px solid transparent;
-        }
-        .dock-thumb:hover, .dock-thumb.active { transform: translateY(-6px) scale(1.1); opacity: 1; border-color: #fff; }
-        .dock-sep { width: 1px; height: 24px; background: rgba(255,255,255,0.2); }
-        .dock-exit {
-            background: none; border: 1px solid rgba(255,255,255,0.2); color: #fff;
-            padding: 8px 16px; border-radius: 20px; font-size: 12px; cursor: pointer; transition: 0.2s;
-        }
-        .dock-exit:hover { background: rgba(255,255,255,0.1); }
-
-        /* 预览模式状态 */
-        body.preview .panel { transform: translateX(-20px); opacity: 0; pointer-events: none; width: 0; min-width: 0; padding: 0; border: 0; flex: 0 0 0; }
-        body.preview .controls-layer { opacity: 0; pointer-events: none; }
-        body.preview .scene-container { transform: scale(1.02); }
-        body.preview .dock-bar { transform: translateX(-50%) translateY(0); opacity: 1; }
-        body.preview .workspace { flex: 1 1 100%; }
-
-        /* 放大镜 8x */
-        .loupe {
-            position: fixed; width: 220px; height: 220px; border: 3px solid #fff; border-radius: 50%;
-            background: #000; overflow: hidden; pointer-events: none; z-index: 999; display: none;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-        }
-        .loupe img { position: absolute; transform-origin: 0 0; will-change: transform; }
-        .loupe .cross {
-            position: absolute; top: 50%; left: 50%; width: 8px; height: 8px;
-            background: #ff3b30; border-radius: 50%; transform: translate(-50%, -50%);
-            box-shadow: 0 0 0 2px rgba(0,0,0,0.6), 0 0 8px rgba(255,59,48,0.7);
+        /* 选中光效 */
+        .thumb-item.active::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.2), transparent);
         }
 
     </style>
 </head>
 <body>
 
-<div class="workspace">
-    <div class="scene-container" id="sceneBox">
-        <img id="baseImg" class="base-img" src="https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=2000" crossorigin="anonymous" decoding="async">
+    <div class="ambient-layer active" id="bgLayer1"></div>
+    <div class="ambient-layer" id="bgLayer2"></div>
 
-        <div class="warp-layer" id="warpLayer">
-            <div class="screen" id="screen">
-                <div class="wallpaper" id="wallpaper"></div>
+    <div class="header">
+        <div class="brand">
+            Mockup<span>Viewer</span>
+        </div>
+        <div class="close-btn" onclick="/* window.close() 或 返回逻辑 */ alert('Close Preview')">
+            <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+    </div>
 
-                <div class="fx-layer">
-                    <div class="fx-noise" id="fxNoise"></div>
-                    <div class="fx-glare" id="fxGlare"></div>
-                    <div class="fx-inner-shadow" id="fxShadow"></div>
-                    <div class="fx-border" id="fxBorder"></div>
+    <div class="stage">
+        <div class="scene-container" id="sceneBox">
+            <img id="baseImg" class="base-img" src="" crossorigin="anonymous">
+            
+            <div class="warp-layer" id="warpLayer">
+                <div class="screen" id="screen">
+                    <div class="wallpaper" id="wallpaper"></div>
+                    <div class="fx-layer">
+                        <div class="fx-border" id="fxBorder"></div>
+                        <div class="fx-glare"></div>
+                    </div>
                 </div>
-
-                <div class="os-ui text-shadow" id="osUI"></div>
             </div>
-            <div class="edge-blend" id="edgeBlend"></div>
-            <div class="fx-outer" id="fxOuter"></div>
-        </div>
-
-        <div class="controls-layer" id="controls">
-            <svg class="guide-svg"><path class="guide-path" id="guidePath" d=""></path></svg>
-            <div class="handle" data-i="0"></div>
-            <div class="handle" data-i="1"></div>
-            <div class="handle" data-i="2"></div>
-            <div class="handle" data-i="3"></div>
-        </div>
-    </div>
-</div>
-
-<div class="panel">
-    <div class="panel-header">
-        <div class="brand">Mockup Studio Pro</div>
-        <button class="preview-btn" onclick="togglePreview()">🚀 预览 (Esc)</button>
-    </div>
-
-    <div>
-        <div class="label">Device & Scene</div>
-        <div style="margin-bottom:10px">
-            <button class="btn" style="width:100%; border:1px dashed rgba(255,255,255,0.2)" onclick="document.getElementById('fileIn').click()">📂 上传本地场景...</button>
-            <input type="file" id="fileIn" hidden accept="image/*" onchange="handleFile(this)">
-        </div>
-
-        <div class="btn-group" style="margin-bottom:10px">
-            <button class="btn" onclick="setDevice('mac', this)">MacBook</button>
-            <button class="btn active" onclick="setDevice('iphone', this)">iPhone 16</button>
-            <button class="btn" onclick="setDevice('ipad', this)">iPad</button>
-        </div>
-        <div class="btn-group">
-            <button class="btn" onclick="toggleUI(this)">UI: 显示</button>
-            <button class="btn" onclick="toggleColor(this)">反色模式</button>
         </div>
     </div>
 
-    <div>
-        <div class="label">Test Wallpapers</div>
-        <div class="wp-grid" id="wpGrid"></div>
-    </div>
+    <div class="dock-wrapper">
+        <div class="mode-switch">
+            <div class="mode-indicator" id="switchIndicator"></div>
+            <div class="mode-btn active" onclick="switchMode('wallpaper', this)">Wallpaper</div>
+            <div class="mode-btn" onclick="switchMode('scene', this)">Scene</div>
+        </div>
 
-    <div>
-        <div class="label">Realism Engine (画质增强)</div>
-
-        <div class="slider-wrap">
-            <div class="slider-head"><span>Radius (圆角)</span> <span id="v-rad">12</span></div>
-            <input type="range" min="0" max="200" value="12" oninput="updateFx('radius', this.value)">
-        </div>
-        <div class="slider-wrap">
-            <div class="slider-head"><span>Bezel (黑边)</span> <span id="v-bez">50%</span></div>
-            <input type="range" min="0" max="100" value="50" oninput="updateFx('bezel', this.value)">
-        </div>
-        <div class="slider-wrap">
-            <div class="slider-head"><span>Brightness (屏幕亮度)</span> <span id="v-br">100%</span></div>
-            <input type="range" min="50" max="150" value="100" oninput="updateFx('bright', this.value)">
-        </div>
-        <div class="slider-wrap">
-            <div class="slider-head"><span>Glare (表面反光)</span> <span id="v-gl">20%</span></div>
-            <input type="range" min="0" max="100" value="20" oninput="updateFx('glare', this.value)">
-        </div>
-        <div class="slider-wrap">
-            <div class="slider-head"><span>Grain (胶片噪点)</span> <span id="v-no">0%</span></div>
-            <input type="range" min="0" max="50" value="0" oninput="updateFx('noise', this.value)">
-        </div>
-        <div class="slider-wrap">
-            <div class="slider-head"><span>Edge Blend (边缘融合)</span> <span id="v-ed">0</span></div>
-            <input type="range" min="0" max="80" value="0" oninput="updateFx('edge', this.value)">
-        </div>
-        <div class="slider-wrap">
-            <div class="slider-head"><span>Opacity (辅助对齐)</span> <span id="v-op">0.1</span></div>
-            <input type="range" min="0" max="1" step="0.1" value="0.1" oninput="updateFx('opacity', this.value)">
+        <div class="thumbs-container">
+            <div class="thumbs-scroll" id="thumbsList">
+                </div>
         </div>
     </div>
 
-    <div style="margin-top:auto">
-        <div class="label">Export</div>
-        <textarea id="jsonOut" style="width:100%; height:50px; background:#111; color:#0f0; border:1px solid #333; border-radius:8px; resize:none; font-size:10px; padding:8px; margin-bottom:8px" readonly></textarea>
-        <button class="btn" style="width:100%; background:var(--accent); color:#fff" onclick="copyJson()">复制 JSON 配置</button>
-    </div>
-</div>
-
-<div class="dock-bar">
-    <div style="font-size:12px; font-weight:700; color:#fff; margin-right:8px">SWITCHER</div>
-    <div class="dock-sep"></div>
-    <div class="dock-thumbs" id="dockThumbs"></div>
-    <div class="dock-sep"></div>
-    <button class="dock-exit" onclick="togglePreview()">退出预览</button>
-</div>
-
-<div class="loupe" id="loupe"><img id="loupeImg" src="" crossorigin="anonymous"><div class="cross"></div></div>
-
-<script>
-    // --- 1. 数据配置 ---
-    const PRESETS = {
-        mac:    { w: 1600, h: 1000, r: 12, b: 10 },
-        iphone: { w: 1179, h: 2556, r: 170, b: 15 },
-        ipad:   { w: 2048, h: 2732, r: 35, b: 20 }
-    };
-
-    const WALLPAPERS = [
-        'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600',
-        'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=600',
-        'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=600',
-        'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=600',
-        'https://images.unsplash.com/photo-1604871000636-074fa5117945?w=600',
-        'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600',
-        'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?w=600',
-        'https://images.unsplash.com/photo-1634152962476-4b8a00e1915c?w=600',
-        'https://c-ssl.duitang.com/uploads/blog/202512/12/xDSJe8DYH2Vldln.jpeg',
-        'https://c-ssl.duitang.com/uploads/blog/202512/12/73Svneb8Se73ynn.jpeg',
-        'https://i0.hdslb.com/bfs/album/82f4df869376a7b06384b477829b904f27ddb538.jpg',
-        'https://c-ssl.duitang.com/uploads/blog/202512/12/9WSp3OY5S85DMZB.jpeg'
-    ];
-
-    const state = {
-        device: 'iphone', points: [], imgW: 0, imgH: 0,
-        dragging: null, dragStart: {x:0, y:0}, pointsStart: [],
-        bezelBase: 10,
-        sceneSrc: '',
-        sceneExport: '',
-        sceneObjectUrl: '',
-        pointer: { x: 0, y: 0 },
-        style: { radius: 12, bezel: 50, opacity: 0.1, bright: 100, glare: 20, noise: 0, edge: 0 }
-    };
-
-    const PERF = { jsonDebounce: 160, loupeMax: 1600, loupeZoom: 6 };
-    let renderQueued = false;
-    let jsonTimer = null;
-
-    const els = {
-        base: document.getElementById('baseImg'), warp: document.getElementById('warpLayer'),
-        screen: document.getElementById('screen'), wp: document.getElementById('wallpaper'),
-        edgeBlend: document.getElementById('edgeBlend'),
-        os: document.getElementById('osUI'), handles: document.querySelectorAll('.handle'),
-        guide: document.getElementById('guidePath'), loupe: document.getElementById('loupe'), loupeImg: document.getElementById('loupeImg'),
-        fxOuter: document.getElementById('fxOuter')
-    };
-
-    // --- 2. 初始化 ---
-    window.onload = () => {
-        initWallpapers();
-        if(els.base.complete) initStage(); else els.base.onload = initStage;
-        setInterval(updateTime, 1000);
-        window.addEventListener('keydown', e => {
-            if(e.key === 'Escape') togglePreview();
-        });
-    };
-
-    function initStage() {
-        state.imgW = els.base.offsetWidth; state.imgH = els.base.offsetHeight;
-        state.sceneSrc = els.base.src;
-        state.sceneExport = els.base.src;
-        updateLoupeSource();
-        setDevice('iphone'); // 默认设备
-    }
-
-    function initWallpapers() {
-        const grid = document.getElementById('wpGrid');
-        const dock = document.getElementById('dockThumbs');
-        WALLPAPERS.forEach((url, i) => {
-            // Sidebar Grid
-            const t1 = document.createElement('div');
-            t1.className = `wp-item ${i===0?'active':''}`;
-            t1.style.backgroundImage = `url(${url})`;
-            t1.onclick = () => loadWp(url, t1);
-            grid.appendChild(t1);
-            // Preview Dock
-            const t2 = document.createElement('div');
-            t2.className = 'dock-thumb';
-            t2.style.backgroundImage = `url(${url})`;
-            t2.onclick = () => loadWp(url, null);
-            dock.appendChild(t2);
-        });
-        loadWp(WALLPAPERS[0], grid.children[0]);
-    }
-
-    function loadWp(url, el) {
-        els.wp.style.backgroundImage = `url(${url})`;
-        if(el) {
-            document.querySelectorAll('.wp-item').forEach(e=>e.classList.remove('active'));
-            el.classList.add('active');
-        }
-    }
-
-    function setDevice(type, btn) {
-        state.device = type;
-        if(btn) {
-            document.querySelectorAll('.btn-group .btn').forEach(b=>b.classList.remove('active'));
-            btn.classList.add('active');
-        }
-
-        const d = PRESETS[type];
-        els.screen.style.width = d.w + 'px'; els.screen.style.height = d.h + 'px';
-
-        // 重置锚点 (自适应大小)
-        const cx = state.imgW/2, cy = state.imgH/2;
-        let w = state.imgW * 0.45, h = w * (d.h/d.w);
-        if(h > state.imgH * 0.85) { h = state.imgH * 0.85; w = h * (d.w/d.h); }
-        state.points = [
-            {x:cx-w/2, y:cy-h/2}, {x:cx+w/2, y:cy-h/2},
-            {x:cx+w/2, y:cy+h/2}, {x:cx-w/2, y:cy+h/2}
+    <script>
+        // --- 1. Mock Data (模拟数据) ---
+        // 实际开发中，这些 anchor 数据应由构建工具生成的 JSON 提供
+        const SCENES = [
+            {
+                id: 'iphone-hand',
+                title: 'iPhone 15 Pro Max',
+                device: 'iphone',
+                src: 'https://images.unsplash.com/photo-1512054502232-120feb11f720?q=80&w=1500', // 手持 iPhone
+                // 预估锚点 (百分比) - 仅做演示，实际需精准数据
+                anchors: [ {x:0.365, y:0.22}, {x:0.685, y:0.35}, {x:0.56, y:0.78}, {x:0.21, y:0.62} ],
+                config: { radius: 120, bright: 100 }
+            },
+            {
+                id: 'macbook-dark',
+                title: 'MacBook Pro',
+                device: 'mac',
+                src: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca4?q=80&w=1500', // MacBook
+                anchors: [ {x:0.18, y:0.18}, {x:0.82, y:0.18}, {x:0.82, y:0.85}, {x:0.18, y:0.85} ],
+                config: { radius: 10, bright: 95 }
+            },
+            {
+                id: 'ipad-table',
+                title: 'iPad Air',
+                device: 'ipad',
+                src: 'https://images.unsplash.com/photo-1544256718-3bcf237f3974?q=80&w=1500', // iPad
+                anchors: [ {x:0.15, y:0.15}, {x:0.85, y:0.15}, {x:0.85, y:0.85}, {x:0.15, y:0.85} ],
+                config: { radius: 30, bright: 100 }
+            }
         ];
 
-        // 重置 UI 参数
-        state.bezelBase = d.b;
-        updateFx('radius', d.r); document.querySelector('[oninput*="radius"]').value = d.r;
-        updateFx('bezel', 50); document.querySelector('[oninput*="bezel"]').value = 50;
-        
-        // 强制应用当前状态的视觉参数 (修复初始化不生效的问题)
-        ['opacity', 'bright', 'glare', 'noise', 'edge'].forEach(k => updateFx(k, state.style[k]));
+        const WALLPAPERS = [
+            'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800', // Abstract
+            'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=800',     // Neon
+            'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=800',   // Mountain
+            'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=800',   // Fluid
+            'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?w=800',   // Purple
+            'https://images.unsplash.com/photo-1634152962476-4b8a00e1915c?w=800'    // Dark Flow
+        ];
 
-        renderOS(); requestRender(); scheduleJsonUpdate();
-    }
+        const DEVICE_PRESETS = {
+            iphone: { w: 1179, h: 2556 },
+            mac:    { w: 1600, h: 1000 },
+            ipad:   { w: 2048, h: 2732 }
+        };
 
-    // --- 3. 核心交互系统 (Smart Drag) ---
-    const controls = document.getElementById('controls');
+        // --- 2. State & Elements ---
+        const state = {
+            mode: 'wallpaper', // 'wallpaper' | 'scene'
+            sIdx: 0,
+            wIdx: 0,
+            bgToggle: false // 用于背景双缓冲切换
+        };
 
-    controls.addEventListener('mousedown', e => {
-        if(document.body.classList.contains('preview')) return;
-        state.dragStart = { x: e.clientX, y: e.clientY };
-        state.pointsStart = JSON.parse(JSON.stringify(state.points));
+        const els = {
+            base: document.getElementById('baseImg'),
+            warp: document.getElementById('warpLayer'),
+            screen: document.getElementById('screen'),
+            wp: document.getElementById('wallpaper'),
+            border: document.getElementById('fxBorder'),
+            thumbs: document.getElementById('thumbsList'),
+            bg1: document.getElementById('bgLayer1'),
+            bg2: document.getElementById('bgLayer2'),
+            indicator: document.getElementById('switchIndicator')
+        };
 
-        if(e.target.classList.contains('handle')) {
-            state.dragging = parseInt(e.target.dataset.i);
-            els.loupe.style.display = 'block';
-            const z = PERF.loupeZoom;
-            els.loupeImg.style.width = (state.imgW*z) + 'px';
-            els.loupeImg.style.height = (state.imgH*z) + 'px';
-        } else if (e.target.classList.contains('guide-path')) {
-            state.dragging = 'move'; // 整体移动
-            controls.style.cursor = 'grabbing';
+        // --- 3. Initialization ---
+        window.onload = () => {
+            initScene(0);
+            renderThumbs();
+            updateIndicator(document.querySelector('.mode-btn.active'));
+        };
+
+        // --- 4. Logic Functions ---
+
+        // 切换模式 (Wallpaper / Scene)
+        function switchMode(mode, btn) {
+            if(state.mode === mode) return;
+            state.mode = mode;
+            
+            // UI 更新
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            updateIndicator(btn);
+
+            // 重新渲染缩略图
+            const container = document.querySelector('.thumbs-container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                renderThumbs();
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            }, 200);
         }
-    });
 
-    window.addEventListener('mousemove', e => {
-        if(!state.dragging && state.dragging !== 0) return;
-        const dx = e.clientX - state.dragStart.x;
-        const dy = e.clientY - state.dragStart.y;
-        state.pointer = { x: e.clientX, y: e.clientY };
-
-        if(state.dragging === 'move') {
-            state.points = state.pointsStart.map(p => ({ x: p.x+dx, y: p.y+dy }));
-        } else {
-            // 单点变形
-            const p = state.points[state.dragging];
-            p.x = state.pointsStart[state.dragging].x + dx;
-            p.y = state.pointsStart[state.dragging].y + dy;
-
+        // 移动指示器动画
+        function updateIndicator(btn) {
+            const rect = btn.getBoundingClientRect();
+            const parentRect = btn.parentElement.getBoundingClientRect();
+            els.indicator.style.width = rect.width + 'px';
+            els.indicator.style.transform = `translateX(${rect.left - parentRect.left}px)`;
         }
-        requestRender();
-    });
 
-    window.addEventListener('mouseup', () => {
-        state.dragging = null;
-        els.loupe.style.display = 'none';
-        controls.style.cursor = 'default';
-        updateJson();
-    });
+        // 渲染缩略图列表
+        function renderThumbs() {
+            els.thumbs.innerHTML = '';
+            const list = state.mode === 'wallpaper' ? WALLPAPERS : SCENES;
+            const currentIdx = state.mode === 'wallpaper' ? state.wIdx : state.sIdx;
 
-    function requestRender() {
-        if(renderQueued) return;
-        renderQueued = true;
-        requestAnimationFrame(() => {
-            renderQueued = false;
-            render();
-        });
-    }
-
-    function render() {
-        // 更新手柄位置
-        state.points.forEach((p, i) => {
-            els.handles[i].style.setProperty('--x', `${p.x}px`);
-            els.handles[i].style.setProperty('--y', `${p.y}px`);
-        });
-        // 更新 SVG 热区
-        const p = state.points;
-        els.guide.setAttribute('d', `M${p[0].x},${p[0].y} L${p[1].x},${p[1].y} L${p[2].x},${p[2].y} L${p[3].x},${p[3].y} Z`);
-        // 计算 3D 矩阵
-        const d = PRESETS[state.device];
-        const m = solveHomography(d.w, d.h, state.points);
-        els.warp.style.transform = `matrix3d(${m})`;
-
-        // 更新放大镜
-        if(state.dragging !== null && state.dragging !== 'move') {
-            const z = PERF.loupeZoom;
-            const size = 220;
-            const half = size / 2;
-            const lp = state.pointer;
-            const cp = state.points[state.dragging];
-            els.loupe.style.left = (lp.x+20)+'px'; els.loupe.style.top = (lp.y-110)+'px';
-            els.loupeImg.style.transform = `translate(${-cp.x*z+half}px, ${-cp.y*z+half}px)`;
+            list.forEach((item, i) => {
+                const url = state.mode === 'wallpaper' ? item : item.src;
+                const div = document.createElement('div');
+                div.className = `thumb-item ${i === currentIdx ? 'active' : ''}`;
+                div.style.backgroundImage = `url(${url})`;
+                div.onclick = () => handleSelect(i, div);
+                els.thumbs.appendChild(div);
+            });
         }
-    }
 
-    // --- 4. OS & 视觉系统 ---
-    function renderOS() {
-        let html = '';
-        if(state.device === 'iphone') {
-            const icons = {
-                // SF Symbol: flashlight.fill
-                flash: `<svg viewBox="0 0 24 24"><path d="M12 2C11.17 2 10.5 2.67 10.5 3.5V10H9.5C8.12 10 7 11.12 7 12.5V20.5C7 21.33 7.67 22 8.5 22H15.5C16.33 22 17 21.33 17 20.5V12.5C17 11.12 15.88 10 14.5 10H13.5V3.5C13.5 2.67 12.83 2 12 2ZM12 4C12.28 4 12.5 4.22 12.5 4.5V9H11.5V4.5C11.5 4.22 11.72 4 12 4Z" fill="currentColor"/></svg>`,
-                // SF Symbol: camera.fill
-                cam: `<svg viewBox="0 0 24 24"><path d="M12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 9.24 14.76 7 12 7ZM12 15.5C10.07 15.5 8.5 13.93 8.5 12C8.5 10.07 10.07 8.5 12 8.5C13.93 8.5 15.5 10.07 15.5 12C15.5 13.93 13.93 15.5 12 15.5ZM20 6H16.83L15.41 4.59C15.03 4.21 14.52 4 14 4H10C9.48 4 8.97 4.21 8.59 4.59L7.17 6H4C2.9 6 2 6.9 2 8V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V8C22 6.9 21.1 6 20 6ZM20 18H4V8H7.59L9 6.59H15L16.41 8H20V18Z" fill="currentColor"/></svg>`,
-                // SF Symbol: cellularbars (Wider Gap)
-                sig: `<svg viewBox="0 0 26 16" width="58" height="38"><path d="M3 11.5C3 11.22 3.22 11 3.5 11H5.5C5.78 11 6 11.22 6 11.5V15.5C6 15.78 5.78 16 5.5 16H3.5C3.22 16 3 15.78 3 15.5V11.5ZM9 7.5C9 7.22 9.22 7 9.5 7H11.5C11.78 7 12 7.22 12 7.5V15.5C12 15.78 11.78 16 11.5 16H9.5C9.22 16 9 15.78 9 15.5V7.5ZM15 3.5C15 3.22 15.22 3 15.5 3H17.5C17.78 3 18 3.22 18 3.5V15.5C18 15.78 17.78 16 17.5 16H15.5C15.22 16 15 15.78 15 15.5V3.5ZM21 0.5C21 0.22 21.22 0 21.5 0H23.5C23.78 0 24 0.22 24 0.5V15.5C24 15.78 23.78 16 23.5 16H21.5C21.22 16 21 15.78 21 15.5V0.5Z" fill="currentColor"/></svg>`,
-                // SF Symbol: wifi
-                wifi: `<svg viewBox="0 0 24 18" width="54" height="40"><path d="M12 2C7.95 2 4.27 3.39 1.34 5.75L12 18L22.66 5.75C19.73 3.39 16.05 2 12 2Z" fill="currentColor"/></svg>`,
-                // SF Symbol: battery.100 (Rounded & Smoother)
-                bat: `<svg viewBox="0 0 30 14" width="72" height="34"><rect x="0" y="0" width="26" height="14" rx="4.5" ry="4.5" fill="currentColor" opacity="0.35"/><rect x="2" y="2" width="22" height="10" rx="2.5" ry="2.5" fill="currentColor"/><path d="M27 5.5C27 4.67 27.67 4 28.5 4H29C29.55 4 30 4.45 30 5V9C30 9.55 29.55 10 29 10H28.5C27.67 10 27 9.33 27 8.5V5.5Z" fill="currentColor" opacity="0.4"/></svg>`,
-                // SF Symbol: bell.fill
-                bell: `<svg viewBox="0 0 24 24" width="36" height="36"><path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.37 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.64 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z" fill="currentColor"/></svg>`,
-                // SF Symbol: location.fill
-                loc: `<svg viewBox="0 0 24 24" width="32" height="32"><path d="M11.1 2.7L3.45 19.34C3.17 19.95 3.79 20.57 4.4 20.29L12 16.92L19.6 20.29C20.21 20.57 20.83 19.95 20.55 19.34L12.9 2.7C12.63 2.13 11.37 2.13 11.1 2.7Z" fill="currentColor"/></svg>`,
-                // SF Symbol: bluetooth
-                bt: `<svg viewBox="0 0 24 24"><path d="M17.71 7.71L12 2H11V9.58L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L11 14.41V22H12L17.71 16.29L13.41 12L17.71 7.71ZM13 5.83L14.88 7.71L13 9.58V5.83ZM13 18.17V14.41L14.88 16.29L13 18.17Z" fill="currentColor"/></svg>`,
-                // SF Symbol: bubble.left.fill (Chat)
-                chat: `<svg viewBox="0 0 24 24"><path d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H6V22.5C6 22.88 6.43 23.11 6.74 22.88L10.5 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4Z" fill="currentColor"/></svg>`,
-                // SF Symbol: qrcode.viewfinder
-                scan: `<svg viewBox="0 0 24 24"><path d="M4 8V5C4 4.45 4.45 4 5 4H8V2H5C3.34 2 2 3.34 2 5V8H4ZM4 16V19C4 19.55 4.45 20 5 20H8V22H5C3.34 22 2 20.66 2 19V16H4ZM20 16V19C20 20.66 18.66 22 17 22H14V20H17C17.55 20 18 19.55 18 19V16H20ZM20 8V5C20 3.34 18.66 2 17 2H14V4H17C17.55 4 18 4.45 18 5V8H20ZM7 11H9V13H7V11ZM11 11H13V13H11V11ZM15 11H17V13H15V11ZM7 7H11V11H7V7ZM13 7H17V11H13V7ZM7 13H11V17H7V13ZM13 13H17V17H13V13Z" fill="currentColor"/></svg>`,
-                // SF Symbol: person.crop.circle
-                user: `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 5C13.66 5 15 6.34 15 8C15 9.66 13.66 11 12 11C10.34 11 9 9.66 9 8C9 6.34 10.34 5 12 5ZM12 19.2C9.5 19.2 7.29 17.92 6 15.98C6.03 13.99 10 12.9 12 12.9C13.99 12.9 17.97 13.99 18 15.98C16.71 17.92 14.5 19.2 12 19.2Z" fill="currentColor"/></svg>`
-            };
-            html = `
-            <div class="ui-scale">
-                <div class="iphone-ui">
-                    <div class="iphone-status-left">
-                        中国联通 ${icons.bell} ${icons.loc}
-                    </div>
-                    <div class="iphone-status-right">
-                        ${icons.sig} <span>5G</span> ${icons.bat}
-                    </div>
-                    <div class="island"></div>
-                    <div style="text-align:center; z-index:1; display:flex; flex-direction:column; align-items:center">
-                        <div class="iphone-date" id="uiDate"></div>
-                        <div class="iphone-time" id="uiTime"></div>
-                        <div class="iphone-widgets">
-                            <div class="iphone-widget-circle">${icons.bt}</div>
-                            <div class="iphone-widget-circle">${icons.chat}</div>
-                            <div class="iphone-widget-circle">${icons.scan}</div>
-                            <div class="iphone-widget-circle">${icons.user}</div>
-                        </div>
-                    </div>
-                    <div class="iphone-bottom">
-                        <div class="icon-btn">${icons.flash}</div>
-                        <div class="icon-btn">${icons.cam}</div>
-                    </div>
-                    <div class="home-bar"></div>
-                </div>
-            </div>`;
-        } else if(state.device === 'mac') {
-            html = `<div class="ui-scale"><div class="mac-ui"><div class="mac-bar"><span> Finder 文件 编辑</span><span id="macTime"></span></div><div class="mac-dock-wrap"><div class="mac-dock"><div class="app-icon" style="background:#2997ff"></div><div class="app-icon" style="background:#34c759"></div><div class="app-icon" style="background:#ccc"></div></div></div></div></div>`;
-        } else if(state.device === 'ipad') {
-            html = `<div class="ui-scale"><div class="ipad-ui"><div class="ipad-bar"><span id="ipadTime"></span><span id="ipadDate"></span></div><div class="ipad-widgets"><div class="ipad-widget"></div><div class="ipad-widget"></div></div><div class="ipad-icons">${'<div class="ipad-icon"></div>'.repeat(12)}</div><div class="ipad-dock">${'<div class="ipad-icon"></div>'.repeat(6)}</div></div></div>`;
-        }
-        els.os.innerHTML = html;
-        els.os.classList.remove('device-iphone','device-mac','device-ipad');
-        els.os.classList.add(`device-${state.device}`);
-        const scaleMap = { iphone: 1, ipad: 0.9, mac: 1 };
-        els.os.style.setProperty('--ui-scale', scaleMap[state.device] || 1);
-        updateTime();
-    }
+        // 处理选择逻辑
+        function handleSelect(idx, el) {
+            // UI 状态
+            document.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
 
-    function updateTime() {
-        const now = new Date();
-        const t = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-        const d = `${now.getMonth()+1}月${now.getDate()}日 星期${['日','一','二','三','四','五','六'][now.getDay()]}`;
-        if(document.getElementById('uiTime')) document.getElementById('uiTime').innerText = t;
-        if(document.getElementById('uiDate')) document.getElementById('uiDate').innerText = d;
-        if(document.getElementById('macTime')) document.getElementById('macTime').innerText = `${d} ${t}`;
-        if(document.getElementById('ipadTime')) document.getElementById('ipadTime').innerText = t;
-        if(document.getElementById('ipadDate')) document.getElementById('ipadDate').innerText = d;
-    }
-
-    function updateFx(k, v) {
-        state.style[k] = parseFloat(v);
-        const label = document.getElementById({radius:'v-rad', bezel:'v-bez', bright:'v-br', glare:'v-gl', noise:'v-no', edge:'v-ed', opacity:'v-op'}[k]);
-        if(label) label.innerText = v + (k.includes('b')||k.includes('g')||k.includes('n') ? '%' : '');
-
-        if(k==='radius') {
-            els.screen.style.borderRadius = v+'px';
-            document.getElementById('fxBorder').style.borderRadius = v+'px';
-            if(els.fxOuter) els.fxOuter.style.borderRadius = v+'px';
-            if(els.edgeBlend) els.edgeBlend.style.setProperty('--edge-radius', `${v}px`);
-        }
-        if(k==='bezel') {
-            const base = state.bezelBase || 10;
-            const pct = Math.max(0, Math.min(100, parseFloat(v)));
-            const outward = pct > 50 ? ((pct - 50) / 50) * base : 0;
-            const inward = pct < 50 ? ((50 - pct) / 50) * base : 0;
-            const innerSize = base + inward;
-            const outerSize = outward;
-            document.getElementById('fxBorder').style.boxShadow = `inset 0 0 0 ${innerSize}px #000`;
-            if(els.fxOuter) els.fxOuter.style.boxShadow = outerSize > 0 ? `0 0 0 ${outerSize}px #000` : 'none';
-        }
-        if(k==='opacity' && !document.body.classList.contains('preview')) els.screen.style.opacity = v;
-        if(k==='bright') els.wp.style.filter = `brightness(${v}%)`;
-        if(k==='glare') document.getElementById('fxGlare').style.opacity = v/100;
-        if(k==='noise') document.getElementById('fxNoise').style.opacity = v/200;
-        if(k==='edge') {
-            const max = 80;
-            const eased = Math.pow(Math.min(Math.max(v, 0), max) / max, 1.6) * max;
-            const blur = Math.min(36, eased / 2.6);
-            const spread = eased / 2.2;
-            const opacity = Math.min(0.55, 0.18 + (eased / max) * 0.32);
-            if(els.edgeBlend) {
-                els.edgeBlend.style.setProperty('--edge-blur', `${blur.toFixed(1)}px`);
-                els.edgeBlend.style.setProperty('--edge-spread', `${spread.toFixed(1)}px`);
-                els.edgeBlend.style.setProperty('--edge-opacity', `${opacity.toFixed(2)}`);
+            if (state.mode === 'wallpaper') {
+                state.wIdx = idx;
+                updateWallpaper();
+            } else {
+                state.sIdx = idx;
+                initScene(idx);
             }
         }
-        scheduleJsonUpdate();
-    }
 
-    // --- 5. 工具函数 ---
-    function handleFile(input) {
-        if(input.files[0]) {
-            const file = input.files[0];
-            if(state.sceneObjectUrl) URL.revokeObjectURL(state.sceneObjectUrl);
-            const objectUrl = URL.createObjectURL(file);
-            state.sceneObjectUrl = objectUrl;
-            state.sceneSrc = objectUrl;
-            state.sceneExport = file.name;
-            els.base.src = objectUrl;
+        // 更新壁纸 + 背景环境光
+        function updateWallpaper() {
+            const url = WALLPAPERS[state.wIdx];
+            
+            // 屏幕内壁纸更新
+            els.wp.style.backgroundImage = `url(${url})`;
+
+            // 环境背景双缓冲切换 (Cross-fade)
+            state.bgToggle = !state.bgToggle;
+            const activeBg = state.bgToggle ? els.bg2 : els.bg1;
+            const inactiveBg = state.bgToggle ? els.bg1 : els.bg2;
+            
+            activeBg.style.backgroundImage = `url(${url})`;
+            activeBg.classList.add('active');
+            inactiveBg.classList.remove('active');
+        }
+
+        // 加载场景 (模拟 Matrix 计算)
+        function initScene(idx) {
+            const s = SCENES[idx];
+            
+            // 图片加载逻辑
+            els.base.style.opacity = 0.8; // 加载中视觉反馈
+            els.base.src = s.src;
+            
             els.base.onload = () => {
-                state.imgW = els.base.offsetWidth;
-                state.imgH = els.base.offsetHeight;
-                updateLoupeSource();
-                resetPoints();
-                scheduleJsonUpdate();
+                els.base.style.opacity = 1;
+                const imgW = els.base.offsetWidth;
+                const imgH = els.base.offsetHeight;
+
+                // 设置屏幕尺寸
+                const preset = DEVICE_PRESETS[s.device];
+                els.screen.style.width = preset.w + 'px';
+                els.screen.style.height = preset.h + 'px';
+                
+                // 设置圆角
+                const r = s.config.radius || 0;
+                els.screen.style.borderRadius = r + 'px';
+                els.border.style.borderRadius = r + 'px';
+
+                // --- 核心：计算 Matrix3D ---
+                // 将百分比锚点转换为像素
+                const points = s.anchors.map(p => ({
+                    x: p.x * imgW,
+                    y: p.y * imgH
+                }));
+
+                // 简单的自动适配 fallback (如果没有锚点数据)
+                if(points.length === 0) {
+                     // 默认为中心缩放
+                }
+
+                const m = solveHomography(preset.w, preset.h, points);
+                els.warp.style.transform = `matrix3d(${m})`;
+                
+                updateWallpaper();
             };
         }
-    }
-    function togglePreview() {
-        document.body.classList.toggle('preview');
-        els.screen.style.opacity = document.body.classList.contains('preview') ? 1 : state.style.opacity;
-    }
-    function toggleUI(btn) { els.os.style.display = els.os.style.display==='none'?'flex':'none'; if(btn) btn.classList.toggle('active'); }
-    function toggleColor(btn) { els.os.classList.toggle('dark'); if(btn) btn.classList.toggle('active'); }
-    function scheduleJsonUpdate() {
-        clearTimeout(jsonTimer);
-        jsonTimer = setTimeout(updateJson, PERF.jsonDebounce);
-    }
-    function updateJson() {
-        const d = { scene: state.sceneExport || state.sceneSrc || els.base.src, device: state.device, anchors: state.points.map(p=>({x:+(p.x/state.imgW).toFixed(4), y:+(p.y/state.imgH).toFixed(4)})), config: state.style };
-        document.getElementById('jsonOut').value = JSON.stringify(d);
-    }
-    function copyJson() {
-        updateJson();
-        document.getElementById('jsonOut').select();
-        document.execCommand('copy');
-        alert('已复制');
-    }
 
-    function updateLoupeSource() {
-        const img = els.base;
-        const maxSide = PERF.loupeMax;
-        const nw = img.naturalWidth || img.width;
-        const nh = img.naturalHeight || img.height;
-        if(!nw || !nh) { els.loupeImg.src = img.src; return; }
-        if(Math.max(nw, nh) <= maxSide) { els.loupeImg.src = img.src; return; }
-        try {
-            const scale = maxSide / Math.max(nw, nh);
-            const cw = Math.max(1, Math.round(nw * scale));
-            const ch = Math.max(1, Math.round(nh * scale));
-            const c = document.createElement('canvas');
-            c.width = cw; c.height = ch;
-            const ctx = c.getContext('2d', { alpha: false });
-            ctx.imageSmoothingQuality = 'high';
-            ctx.drawImage(img, 0, 0, cw, ch);
-            els.loupeImg.src = c.toDataURL('image/jpeg', 0.82);
-        } catch (e) {
+        // --- Matrix 算法 (与构建工具保持一致) ---
+        function solveHomography(w,h,p){const s=[0,0,w,0,w,h,0,h],d=[p[0].x,p[0].y,p[1].x,p[1].y,p[2].x,p[2].y,p[3].x,p[3].y],A=[],b=[];for(let i=0;i<4;i++){let sx=s[i*2],sy=s[i*2+1],dx=d[i*2],dy=d[i*2+1];A.push([sx,sy,1,0,0,0,-sx*dx,-sy*dx]);b.push(dx);A.push([0,0,0,sx,sy,1,-sx*dy,-sy*dy]);b.push(dy);}let n=8;for(let i=0;i<n;i++){let m=i;for(let j=i+1;j<n;j++)if(Math.abs(A[j][i])>Math.abs(A[m][i]))m=j;[A[i],A[m]]=[A[m],A[i]];[b[i],b[m]]=[b[m],b[i]];for(let j=i+1;j<n;j++){let c=-A[j][i]/A[i][i];for(let k=i;k<n;k++)A[j][k]+=c*A[i][k];b[j]+=c*b[i];}}let x=[];for(let i=n-1;i>=0;i--){let t=0;for(let j=i+1;j<n;j++)t+=A[i][j]*x[j];x[i]=(b[i]-t)/A[i][i];}return [x[0],x[3],0,x[6],x[1],x[4],0,x[7],0,0,1,0,x[2],x[5],0,1].join(',');}
 
-            els.loupeImg.src = img.src;
-        }
-    }
-
-    function resetPoints() {
-        const d = PRESETS[state.device];
-        if(!d) return;
-        const cx = state.imgW/2, cy = state.imgH/2;
-        let w = state.imgW * 0.45, h = w * (d.h/d.w);
-        if(h > state.imgH * 0.85) { h = state.imgH * 0.85; w = h * (d.w/d.h); }
-        state.points = [
-            {x:cx-w/2, y:cy-h/2}, {x:cx+w/2, y:cy-h/2},
-            {x:cx+w/2, y:cy+h/2}, {x:cx-w/2, y:cy+h/2}
-        ];
-        requestRender();
-    }
-
-    // Matrix Math
-    function solveHomography(w,h,p){const s=[0,0,w,0,w,h,0,h],d=[p[0].x,p[0].y,p[1].x,p[1].y,p[2].x,p[2].y,p[3].x,p[3].y],A=[],b=[];for(let i=0;i<4;i++){let sx=s[i*2],sy=s[i*2+1],dx=d[i*2],dy=d[i*2+1];A.push([sx,sy,1,0,0,0,-sx*dx,-sy*dx]);b.push(dx);A.push([0,0,0,sx,sy,1,-sx*dy,-sy*dy]);b.push(dy);}let n=8;for(let i=0;i<n;i++){let m=i;for(let j=i+1;j<n;j++)if(Math.abs(A[j][i])>Math.abs(A[m][i]))m=j;[A[i],A[m]]=[A[m],A[i]];[b[i],b[m]]=[b[m],b[i]];for(let j=i+1;j<n;j++){let c=-A[j][i]/A[i][i];for(let k=i;k<n;k++)A[j][k]+=c*A[i][k];b[j]+=c*b[i];}}let x=[];for(let i=n-1;i>=0;i--){let t=0;for(let j=i+1;j<n;j++)t+=A[i][j]*x[j];x[i]=(b[i]-t)/A[i][i];}return [x[0],x[3],0,x[6],x[1],x[4],0,x[7],0,0,1,0,x[2],x[5],0,1].join(',');}
-</script>
+    </script>
 </body>
 </html>
