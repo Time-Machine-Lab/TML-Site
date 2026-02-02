@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Gallery Preview Ultimate</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&display=swap" rel="stylesheet">
     <style>
         /* =========================================
            1. Design Tokens & Variables (Luxury Redefined)
@@ -331,7 +332,7 @@
             border-radius: 50%;
             background: rgba(255,255,255,0.1); /* 增加底色可见度 */
             backdrop-filter: blur(10px); /* 增加磨砂感 */
-            border: 1px solid rgba(255,255,255,0.1);
+            border: none; /* 彻底移除外边线 */
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             color: rgba(255,255,255,0.9);
@@ -342,7 +343,7 @@
         .icon-btn:hover { 
             background: rgba(255,255,255,0.25); 
             color: #fff; 
-            border-color: rgba(255,255,255,0.4); 
+            /* border-color: rgba(255,255,255,0.4); REMOVED */
             transform: scale(1.1); /* 悬停放大 */
             box-shadow: 0 8px 20px rgba(0,0,0,0.4);
         }
@@ -372,6 +373,254 @@
         .loader.show { opacity: 1; }
         @keyframes loadScan { 0% {transform:translateY(100%)} 50% {transform:translateY(0)} 100% {transform:translateY(-100%)} }
 
+        /* =========================================
+           8. View Switcher (Segmented Control - Apple Style)
+           ========================================= */
+        .view-switch {
+            position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+            display: flex; 
+            background: rgba(0, 0, 0, 0.5); /* Deep dark glass */
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            padding: 4px; 
+            border-radius: 99px; /* Pill shape */
+            border: none; /* Removed cheap border */
+            z-index: 300; /* Above header */
+            opacity: 1; /* Always visible */
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3); /* Deep shadow */
+            pointer-events: auto;
+        }
+
+        .switch-btn {
+            position: relative;
+            padding: 8px 20px; /* Larger hit area */
+            border-radius: 99px;
+            font-family: "SF Pro Text", "Inter", sans-serif;
+            font-size: 13px; font-weight: 500;
+            color: rgba(255,255,255,0.6);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex; align-items: center; gap: 6px;
+        }
+        
+        .switch-btn:hover { color: #fff; }
+
+        .switch-btn.active {
+            background: rgba(255, 255, 255, 1);
+            color: #000;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        /* =========================================
+           9. iOS 16 UI Layer (Reference Style)
+           ========================================= */
+        .os-ui-layer {
+            position: absolute; inset: 0;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0; transition: opacity 0.3s ease;
+            font-family: -apple-system, "SF Pro Display", "SF Pro Text", sans-serif;
+            overflow: hidden; /* Ensure content stays within rounded corners */
+        }
+        
+        .mode-ui .os-ui-layer, .mode-scene .os-ui-layer { opacity: 1; }
+
+        /* Scale Container */
+        .ui-scale {
+            width: calc(100% / var(--ui-scale, 1));
+            height: calc(100% / var(--ui-scale, 1));
+            transform: scale(var(--ui-scale, 1));
+            transform-origin: top left;
+            position: relative;
+        }
+
+        /* Set scale for different views */
+        /* Scene View: Screen width is 1179px (Physical) -> Scale 1 */
+        #screen .os-ui-layer { --ui-scale: 1; }
+        
+        /* Flat View: Phone width is 360px. 360 / 1179 = 0.30534 */
+        .flat-phone .os-ui-layer { --ui-scale: 0.30534; }
+
+
+        /* --- Reference CSS Port --- */
+        
+        .iphone-ui { 
+            height: 100%; width: 1179px; /* Fixed physical width */
+            display: flex; flex-direction: column; align-items: center; 
+            padding-top: 60px; position: relative; 
+        }
+
+        /* Island: 370px wide */
+        .island { 
+            width: 366px; height: 106px; 
+            background: #000; border-radius: 53px; 
+            transition: 0.3s; margin-bottom: 130px; z-index: 2; 
+        }
+
+        /* Status Bar */
+        .iphone-status-left {
+            position: absolute; top: 86px; left: 80px; height: 60px;
+            display: flex; align-items: center; color: #fff; gap: 12px;
+            font-size: 42px; font-weight: 600; letter-spacing: 1px;
+        }
+        .iphone-status-right {
+            position: absolute; top: 92px; right: 80px; height: 60px;
+            display: flex; align-items: center; gap: 18px; color: #fff; font-size: 42px; font-weight: 600;
+        }
+
+        /* Date & Time */
+        .iphone-date { 
+            font-size: 64px; font-weight: 500; opacity: 0.9; 
+            margin-top: 0; margin-bottom: 30px; letter-spacing: 0.5px; 
+            text-shadow: 0 4px 16px rgba(0,0,0,0.2); 
+            text-align: center;
+            font-family: 'SF Pro Display', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .iphone-time {
+            font-size: 300px; line-height: 0.9; letter-spacing: -6px;
+            font-family: 'SF Pro Rounded', 'SF Pro Display', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-weight: 700; /* Reduced from 800 */
+            text-shadow: 0 10px 40px rgba(0,0,0,0.16); 
+            margin-bottom: 70px; margin-top: 0;
+            text-align: center;
+            /* Removed stroke to make it thinner */
+        }
+        
+        .time-colon {
+            position: relative;
+            top: -20px; /* Shift colon up to center it visually */
+            margin: 0 4px; /* Adjust spacing around colon */
+        }
+
+        /* Widgets */
+        .iphone-widgets {
+            display: flex; gap: 72px; justify-content: center; align-items: center;
+            width: 100%; padding: 0 40px;
+        }
+        .iphone-widget-circle {
+            width: 172px; height: 172px; border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(40px);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .iphone-widget-circle svg { width: 88px; height: 88px; fill: currentColor; }
+
+        /* Bottom Buttons */
+        .iphone-bottom {
+            position: absolute; inset: 0; pointer-events: none; z-index: 5;
+        }
+
+        .icon-btn-os { /* Renamed from icon-btn to avoid conflict with header */
+            position: absolute; bottom: 140px;
+            width: 150px; height: 150px; background: rgba(30,30,30,0.45); border-radius: 50%;
+            backdrop-filter: blur(40px); display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); transition: 0.2s;
+            pointer-events: auto;
+        }
+        .iphone-bottom .icon-btn-os:first-child { left: 140px; }
+        .iphone-bottom .icon-btn-os:last-child { right: 140px; }
+
+        .icon-btn-os svg { width: 68px; height: 68px; fill: #fff; display: block; }
+
+        /* Home Bar */
+        .home-bar { 
+            position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); 
+            width: 520px; height: 18px; background: #fff; border-radius: 100px; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2); z-index: 6; 
+        }
+
+        /* =========================================
+           10. View Modes (Scene / Flat / Raw)
+           ========================================= */
+        /* Raw Image View */
+        .raw-view {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+            z-index: 5;
+        }
+        .raw-view img {
+            max-width: 90%; max-height: 90%;
+            object-fit: contain;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        /* UI Flat View */
+        .ui-view {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+            z-index: 5;
+        }
+        .flat-phone {
+            position: relative;
+            width: 360px; height: 780px; /* iPhone Ratio */
+            background: #000;
+            border-radius: 48px;
+            /* overflow: hidden; Removed to allow buttons to protrude */
+            box-shadow: 0 0 0 8px #1a1a1a, 0 0 0 10px #333, 0 40px 80px rgba(0,0,0,0.6);
+        }
+        
+        .phone-screen {
+            position: absolute; inset: 0;
+            border-radius: 48px;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        /* Physical Buttons */
+        .side-btn {
+            position: absolute;
+            z-index: 10; /* Ensure on top of shadows */
+            /* Metallic finish */
+            background: #3a3a3a;
+            transition: transform 0.2s;
+        }
+        
+        .side-btn:active {
+            filter: brightness(0.8);
+        }
+        
+        .side-btn.left {
+            left: -13px; /* Frame 10px + 3px protrude */
+            width: 4px;
+            border-radius: 4px 0 0 4px;
+            /* Highlight on left edge */
+            box-shadow: inset 1px 0 2px rgba(0,0,0,0.8), inset 0 2px 2px rgba(255,255,255,0.15), -2px 0 5px rgba(0,0,0,0.4);
+            background: linear-gradient(90deg, #555 0%, #2a2a2a 100%);
+        }
+        
+        .side-btn.right {
+            right: -13px;
+            width: 4px;
+            border-radius: 0 4px 4px 0;
+            /* Highlight on right edge */
+            box-shadow: inset -1px 0 2px rgba(0,0,0,0.8), inset 0 2px 2px rgba(255,255,255,0.15), 2px 0 5px rgba(0,0,0,0.4);
+            background: linear-gradient(-90deg, #555 0%, #2a2a2a 100%);
+        }
+
+        /* Button Positions - Adjusted for visibility */
+        .btn-mute { top: 100px; height: 32px; background: #2a2a2a !important; box-shadow: inset 0 0 2px rgba(0,0,0,0.5) !important; } /* Mute switch is flatter/darker usually */
+        .btn-vol-up { top: 165px; height: 62px; }
+        .btn-vol-down { top: 245px; height: 62px; }
+        .btn-power { top: 200px; height: 96px; }
+
+        .flat-phone .wallpaper {
+            width: 100%; height: 100%;
+            background-size: cover; background-position: center;
+        }
+
+        /* Mode States */
+        body[data-mode="raw"] .raw-view { opacity: 1; pointer-events: auto; }
+        body[data-mode="raw"] .scene-pivot { opacity: 0; pointer-events: none; }
+        
+        body[data-mode="ui"] .ui-view { opacity: 1; pointer-events: auto; }
+        body[data-mode="ui"] .scene-pivot { opacity: 0; pointer-events: none; }
+
+        body[data-mode="scene"] .scene-pivot { opacity: 1; }
     </style>
 </head>
 <body>
@@ -399,8 +648,16 @@
 </div>
 
 <div class="stage-area">
+    <!-- View Switcher -->
+    <div class="view-switch">
+        <div class="switch-btn active" onclick="setViewMode('scene')">Scene</div>
+        <div class="switch-btn" onclick="setViewMode('ui')">UI Preview</div>
+        <div class="switch-btn" onclick="setViewMode('raw')">Raw Image</div>
+    </div>
+
     <div class="loader" id="loader"></div>
 
+    <!-- Mode 1: 3D Scene -->
     <div class="scene-pivot" id="scenePivot">
         <div class="scene-container" id="sceneBox">
             <img id="baseImg" class="base-img" src="" crossorigin="anonymous">
@@ -408,6 +665,12 @@
             <div class="warp-layer" id="warpLayer">
                 <div class="screen" id="screen">
                     <div class="wallpaper" id="wallpaper"></div>
+                    
+                    <!-- iOS UI Overlay (In Scene) -->
+                    <div class="os-ui-layer" id="os-ui-scene">
+                        <!-- Content will be injected by JS -->
+                    </div>
+
                     <div class="fx-layer">
                         <div class="fx-glare"></div>
                         <div class="fx-inner-shadow"></div>
@@ -415,6 +678,29 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Mode 2: Flat UI View -->
+    <div class="ui-view">
+        <div class="flat-phone">
+            <div class="phone-screen">
+                <div class="wallpaper" id="wallpaperFlat"></div>
+                <!-- iOS UI Overlay (In Flat) -->
+                <div class="os-ui-layer" id="os-ui-flat" style="opacity: 1;">
+                    <!-- Content will be injected by JS -->
+                </div>
+            </div>
+            <!-- Physical Buttons -->
+            <div class="side-btn left btn-mute"></div>
+            <div class="side-btn left btn-vol-up"></div>
+            <div class="side-btn left btn-vol-down"></div>
+            <div class="side-btn right btn-power"></div>
+        </div>
+    </div>
+
+    <!-- Mode 3: Raw Image -->
+    <div class="raw-view">
+        <img id="rawImg" src="" alt="Raw Wallpaper">
     </div>
 </div>
 
@@ -542,7 +828,8 @@
         sceneIndex: 0,
         wallIndex: 0,
         bgFlip: false,
-        isScrolling: false
+        isScrolling: false,
+        viewMode: 'scene'
     };
 
     const els = {
@@ -552,11 +839,14 @@
         warp: document.getElementById('warpLayer'),
         screen: document.getElementById('screen'),
         wp: document.getElementById('wallpaper'),
+        wpFlat: document.getElementById('wallpaperFlat'),
+        rawImg: document.getElementById('rawImg'),
         pivot: document.getElementById('scenePivot'),
         container: document.getElementById('sceneBox'),
         bg1: document.getElementById('bg1'),
         bg2: document.getElementById('bg2'),
-        loader: document.getElementById('loader')
+        loader: document.getElementById('loader'),
+        switchBtns: document.querySelectorAll('.switch-btn')
     };
 
     // 解析 URL 参数
@@ -649,6 +939,76 @@
             scrollToCard(els.sceneTrack, 0);
             scrollToCard(els.wallTrack, initialWallIndex);
         }, 100);
+
+        // 6. Render iOS UI
+        renderIOS_UI();
+        setInterval(updateTime, 1000);
+    }
+
+    /**
+     * =============================================================================
+     * iOS UI RENDERER
+     * =============================================================================
+     */
+    function renderIOS_UI() {
+        const icons = {
+            flash: `<svg viewBox="0 0 24 24"><path d="M12 2C11.17 2 10.5 2.67 10.5 3.5V10H9.5C8.12 10 7 11.12 7 12.5V20.5C7 21.33 7.67 22 8.5 22H15.5C16.33 22 17 21.33 17 20.5V12.5C17 11.12 15.88 10 14.5 10H13.5V3.5C13.5 2.67 12.83 2 12 2ZM12 4C12.28 4 12.5 4.22 12.5 4.5V9H11.5V4.5C11.5 4.22 11.72 4 12 4Z" fill="currentColor"/></svg>`,
+            cam: `<svg viewBox="0 0 24 24"><path d="M12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 9.24 14.76 7 12 7ZM12 15.5C10.07 15.5 8.5 13.93 8.5 12C8.5 10.07 10.07 8.5 12 8.5C13.93 8.5 15.5 10.07 15.5 12C15.5 13.93 13.93 15.5 12 15.5ZM20 6H16.83L15.41 4.59C15.03 4.21 14.52 4 14 4H10C9.48 4 8.97 4.21 8.59 4.59L7.17 6H4C2.9 6 2 6.9 2 8V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V8C22 6.9 21.1 6 20 6ZM20 18H4V8H7.59L9 6.59H15L16.41 8H20V18Z" fill="currentColor"/></svg>`,
+            sig: `<svg viewBox="0 0 26 16" width="58" height="38"><path d="M3 11.5C3 11.22 3.22 11 3.5 11H5.5C5.78 11 6 11.22 6 11.5V15.5C6 15.78 5.78 16 5.5 16H3.5C3.22 16 3 15.78 3 15.5V11.5ZM9 7.5C9 7.22 9.22 7 9.5 7H11.5C11.78 7 12 7.22 12 7.5V15.5C12 15.78 11.78 16 11.5 16H9.5C9.22 16 9 15.78 9 15.5V7.5ZM15 3.5C15 3.22 15.22 3 15.5 3H17.5C17.78 3 18 3.22 18 3.5V15.5C18 15.78 17.78 16 17.5 16H15.5C15.22 16 15 15.78 15 15.5V3.5ZM21 0.5C21 0.22 21.22 0 21.5 0H23.5C23.78 0 24 0.22 24 0.5V15.5C24 15.78 23.78 16 23.5 16H21.5C21.22 16 21 15.78 21 15.5V0.5Z" fill="currentColor"/></svg>`,
+            bat: `<svg viewBox="0 0 30 14" width="72" height="34"><rect x="0" y="0" width="26" height="14" rx="4.5" ry="4.5" fill="currentColor" opacity="0.35"/><rect x="2" y="2" width="22" height="10" rx="2.5" ry="2.5" fill="currentColor"/><path d="M27 5.5C27 4.67 27.67 4 28.5 4H29C29.55 4 30 4.45 30 5V9C30 9.55 29.55 10 29 10H28.5C27.67 10 27 9.33 27 8.5V5.5Z" fill="currentColor" opacity="0.4"/></svg>`,
+            bell: `<svg viewBox="0 0 24 24" width="36" height="36"><path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.37 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.64 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z" fill="currentColor"/></svg>`,
+            loc: `<svg viewBox="0 0 24 24" width="32" height="32"><path d="M11.1 2.7L3.45 19.34C3.17 19.95 3.79 20.57 4.4 20.29L12 16.92L19.6 20.29C20.21 20.57 20.83 19.95 20.55 19.34L12.9 2.7C12.63 2.13 11.37 2.13 11.1 2.7Z" fill="currentColor"/></svg>`,
+            bt: `<svg viewBox="0 0 24 24"><path d="M17.71 7.71L12 2H11V9.58L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L11 14.41V22H12L17.71 16.29L13.41 12L17.71 7.71ZM13 5.83L14.88 7.71L13 9.58V5.83ZM13 18.17V14.41L14.88 16.29L13 18.17Z" fill="currentColor"/></svg>`,
+            chat: `<svg viewBox="0 0 24 24"><path d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H6V22.5C6 22.88 6.43 23.11 6.74 22.88L10.5 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4Z" fill="currentColor"/></svg>`,
+            scan: `<svg viewBox="0 0 24 24"><path d="M4 8V5C4 4.45 4.45 4 5 4H8V2H5C3.34 2 2 3.34 2 5V8H4ZM4 16V19C4 19.55 4.45 20 5 20H8V22H5C3.34 22 2 20.66 2 19V16H4ZM20 16V19C20 20.66 18.66 22 17 22H14V20H17C17.55 20 18 19.55 18 19V16H20ZM20 8V5C20 3.34 18.66 2 17 2H14V4H17C17.55 4 18 4.45 18 5V8H20ZM7 11H9V13H7V11ZM11 11H13V13H11V11ZM15 11H17V13H15V11ZM7 7H11V11H7V7ZM13 7H17V11H13V7ZM7 13H11V17H7V13ZM13 13H17V17H13V13Z" fill="currentColor"/></svg>`,
+            user: `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 5C13.66 5 15 6.34 15 8C15 9.66 13.66 11 12 11C10.34 11 9 9.66 9 8C9 6.34 10.34 5 12 5ZM12 19.2C9.5 19.2 7.29 17.92 6 15.98C6.03 13.99 10 12.9 12 12.9C13.99 12.9 17.97 13.99 18 15.98C16.71 17.92 14.5 19.2 12 19.2Z" fill="currentColor"/></svg>`
+        };
+
+        const html = `
+        <div class="ui-scale">
+            <div class="iphone-ui">
+                <div class="iphone-status-left">
+                    中国联通 ${icons.bell} ${icons.loc}
+                </div>
+                <div class="iphone-status-right">
+                    ${icons.sig} <span>5G</span> ${icons.bat}
+                </div>
+                <div class="island"></div>
+                <div style="text-align:center; z-index:1; display:flex; flex-direction:column; align-items:center">
+                    <div class="iphone-date" id="uiDate"></div>
+                    <div class="iphone-time" id="uiTime"></div>
+                    <div class="iphone-widgets">
+                        <div class="iphone-widget-circle">${icons.bt}</div>
+                        <div class="iphone-widget-circle">${icons.chat}</div>
+                        <div class="iphone-widget-circle">${icons.scan}</div>
+                        <div class="iphone-widget-circle">${icons.user}</div>
+                    </div>
+                </div>
+                <div class="iphone-bottom">
+                    <div class="icon-btn-os">${icons.flash}</div>
+                    <div class="icon-btn-os">${icons.cam}</div>
+                </div>
+                <div class="home-bar"></div>
+            </div>
+        </div>`;
+
+        // Inject into both containers
+        document.getElementById('os-ui-scene').innerHTML = html;
+        document.getElementById('os-ui-flat').innerHTML = html;
+        
+        updateTime();
+    }
+
+    function updateTime() {
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2,'0');
+        const m = String(now.getMinutes()).padStart(2,'0');
+        const t = `${h}<span class="time-colon">:</span>${m}`;
+        const d = `${now.getMonth()+1}月${now.getDate()}日 星期${['日','一','二','三','四','五','六'][now.getDay()]}`;
+        
+        // Update all instances
+        document.querySelectorAll('.iphone-time').forEach(el => el.innerHTML = t);
+        document.querySelectorAll('.iphone-date').forEach(el => el.innerText = d);
     }
 
     /**
@@ -797,17 +1157,55 @@
 
     function updateWallpaper(idx) {
         const url = WALLPAPERS[idx];
+        
+        // 1. Scene Wallpaper
         els.wp.style.backgroundImage = `url(${url})`;
+
+        // 2. Flat UI Wallpaper
+        if(els.wpFlat) els.wpFlat.style.backgroundImage = `url(${url})`;
+
+        // 3. Raw Image
+        if(els.rawImg) els.rawImg.src = url;
 
         // 环境光背景切换 (Cross-fade)
         state.bgFlip = !state.bgFlip;
         const activeBg = state.bgFlip ? els.bg2 : els.bg1;
         const inactiveBg = state.bgFlip ? els.bg1 : els.bg2;
-
+        
         activeBg.style.backgroundImage = `url(${url})`;
         activeBg.classList.add('active');
         inactiveBg.classList.remove('active');
     }
+
+    /**
+     * =============================================================================
+     * VIEW MODE SWITCHER
+     * =============================================================================
+     */
+    
+    window.setViewMode = function(mode) {
+        state.viewMode = mode;
+        document.body.setAttribute('data-mode', mode);
+        
+        // Update buttons state
+        els.switchBtns.forEach(btn => {
+            const onclick = btn.getAttribute('onclick');
+            if(onclick && onclick.includes(`'${mode}'`)) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        // Ensure current wallpaper is loaded for the new mode
+        // (Usually handled by updateWallpaper, but strictly enforcing here for safety)
+        const url = WALLPAPERS[state.wallIndex];
+        if(mode === 'ui' && els.wpFlat) {
+            els.wpFlat.style.backgroundImage = `url(${url})`;
+        } else if (mode === 'raw' && els.rawImg) {
+            els.rawImg.src = url;
+        }
+    };
 
     /**
      * =============================================================================
