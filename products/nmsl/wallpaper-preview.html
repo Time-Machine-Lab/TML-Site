@@ -3,220 +3,313 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Immersive Preview</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Gallery Preview Ultimate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
+        /* =========================================
+           1. Design Tokens & Variables
+           ========================================= */
         :root {
-            --bg: #000000;
-            --glass: rgba(20, 20, 20, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text-main: #FFFFFF;
-            --text-sub: rgba(255, 255, 255, 0.5);
-            --accent: #FFFFFF;
+            /* 空间与颜色 */
+            --bg-deep: #050505;
+            --glass-panel: rgba(20, 20, 20, 0.4);
+            --border-dim: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(255, 255, 255, 0.8);
+            --accent-glow: rgba(255, 255, 255, 0.15);
 
-            /* 苹果风格的缓动曲线 */
+            /* 动画曲线 (Apple Style) */
             --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-            --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-smooth: cubic-bezier(0.33, 1, 0.68, 1);
+            --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+            /* 尺寸定义 */
+            --sidebar-width-left: 280px;
+            --sidebar-width-right: 180px;
+            --card-scene-h: 150px;
+            --card-wall-h: 220px;
         }
 
+        /* =========================================
+           2. Global Reset & Layout
+           ========================================= */
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; outline: none; }
 
         body {
-            background: var(--bg);
-            color: var(--text-main);
-            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-deep);
+            color: #fff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             height: 100vh;
             overflow: hidden;
             display: flex;
-            flex-direction: column;
-            cursor: default;
+            justify-content: center;
+            opacity: 0; /* 初始隐藏，JS加载完后渐显 */
+            animation: appFadeIn 1s var(--ease-out-expo) forwards;
         }
 
-        /* --- 1. 动态环境光背景 (Ambient Light) --- */
+        @keyframes appFadeIn { to { opacity: 1; } }
+
+        /* =========================================
+           3. Ambient Environment (环境光)
+           ========================================= */
         .ambient-canvas {
             position: absolute; inset: -20%; width: 140%; height: 140%;
-            z-index: 0; opacity: 0.5;
-            background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1), transparent 60%);
-            transition: opacity 1s ease;
-            pointer-events: none;
-            filter: blur(80px) contrast(1.2);
+            z-index: 0; pointer-events: none;
+            background: radial-gradient(circle at 50% 50%, rgba(20,20,20,1) 0%, var(--bg-deep) 70%);
         }
-        .ambient-layer {
-            position: absolute; inset: 0; background-size: cover; background-position: center;
-            opacity: 0; transition: opacity 1.5s ease;
-        }
-        .ambient-layer.active { opacity: 1; }
 
-        /* --- 2. 顶部导航 (Minimal Header) --- */
+        /* 双缓冲背景层，用于平滑切换壁纸色调 */
+        .bg-layer {
+            position: absolute; inset: 0;
+            background-size: cover; background-position: center;
+            opacity: 0; transition: opacity 1.5s ease;
+            filter: blur(80px) saturate(1.5) brightness(0.4);
+        }
+        .bg-layer.active { opacity: 0.6; }
+
+        /* =========================================
+           4. The Stage (中央舞台)
+           ========================================= */
+        .stage-area {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 10;
+            pointer-events: none; /* 关键：让鼠标事件穿透给侧边栏 */
+            perspective: 2000px;
+        }
+
+        /* 3D 旋转轴心 */
+        .scene-pivot {
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s linear; /* 实时跟随鼠标，无延迟 */
+            will-change: transform;
+        }
+
+        /* 场景容器 */
+        .scene-container {
+            position: relative;
+            /* 留出两侧空间，避免遮挡侧边栏 */
+            max-width: calc(100vw - var(--sidebar-width-left) - var(--sidebar-width-right) - 40px);
+            max-height: 85vh;
+            transform-style: preserve-3d;
+
+            /* 入场动画 */
+            opacity: 0; transform: scale(0.9) translateY(30px) rotateX(5deg);
+            transition: transform 0.8s var(--ease-out-expo), opacity 0.8s ease;
+        }
+        .scene-container.loaded { opacity: 1; transform: scale(1) translateY(0) rotateX(0); }
+
+        .base-img {
+            display: block; width: auto; height: auto;
+            max-width: 100%; max-height: 85vh;
+            border-radius: 6px;
+            /* 优雅的投影 */
+            box-shadow:
+                    0 50px 100px -20px rgba(0,0,0,0.7),
+                    0 0 0 1px rgba(255,255,255,0.05);
+        }
+
+        /* 渲染层 (Matrix Transform) */
+        .warp-layer {
+            position: absolute; top: 0; left: 0;
+            transform-origin: 0 0;
+            pointer-events: none; z-index: 20;
+        }
+
+        /* 屏幕容器 */
+        .screen {
+            background: #000;
+            position: relative;
+            overflow: hidden;
+            backface-visibility: hidden;
+            will-change: transform;
+            /* 硬件加速抗锯齿 */
+            transform: translateZ(0);
+        }
+
+        /* 壁纸本体 */
+        .wallpaper {
+            width: 100%; height: 100%;
+            background-size: cover; background-position: center;
+            transform: scale(1.02); /* 防止边缘抗锯齿白边 */
+            transition: background-image 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* 屏幕表面质感 */
+        .fx-layer { position: absolute; inset: 0; pointer-events: none; z-index: 30; }
+        .fx-glare {
+            position: absolute; inset: 0; mix-blend-mode: screen;
+            background: linear-gradient(115deg, rgba(255,255,255,0.08) 0%, transparent 45%, rgba(255,255,255,0.02) 100%);
+        }
+        .fx-inner-shadow {
+            position: absolute; inset: 0;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.9), inset 0 0 20px rgba(0,0,0,0.5);
+            z-index: 31; border-radius: inherit;
+        }
+
+        /* =========================================
+           5. Gallery Sidebars (侧边栏核心)
+           ========================================= */
+        .sidebar {
+            position: absolute; top: 0; bottom: 0;
+            z-index: 100;
+            display: flex; flex-direction: column; justify-content: center;
+            pointer-events: none; /* 容器穿透 */
+
+            /* 关键：顶部底部的渐变遮罩，制造“无限延伸”的高级感 */
+            mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+        }
+
+        .sidebar.left { left: 0; width: var(--sidebar-width-left); align-items: center; }
+        .sidebar.right { right: 0; width: var(--sidebar-width-right); align-items: center; }
+
+        /* 滚动轨道 */
+        .scroll-track {
+            height: 100%; width: 100%;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            pointer-events: auto; /* 内容可交互 */
+
+            /* 巨大的 Padding 确保首尾元素能居中 */
+            padding: 50vh 0;
+            display: flex; flex-direction: column; align-items: center; gap: 32px;
+
+            /* 隐藏滚动条 */
+            -ms-overflow-style: none; scrollbar-width: none;
+        }
+        .scroll-track::-webkit-scrollbar { display: none; }
+
+        /* =========================================
+           6. Cards (卡片样式)
+           ========================================= */
+        .card {
+            position: relative; flex-shrink: 0;
+            background-size: cover; background-position: center;
+            border-radius: 12px;
+            cursor: pointer;
+
+            /* 默认状态 (未选中)：虚化、变暗 */
+            transition: all 0.5s var(--ease-out-expo);
+            filter: grayscale(1) brightness(0.4) blur(4px);
+            opacity: 0.5;
+            transform: scale(0.85);
+            border: 1px solid rgba(255,255,255,0);
+        }
+
+        /* 左侧卡片 (场景) */
+        .card.scene {
+            width: 200px; height: 120px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        /* 右侧卡片 (壁纸) */
+        .card.wall {
+            width: 100px; height: 180px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        /* 激活状态 (JS控制) */
+        .card.active {
+            filter: grayscale(0) brightness(1.1) blur(0);
+            opacity: 1;
+            transform: scale(1.1); /* 微微放大 */
+            border-color: var(--border-highlight);
+            box-shadow:
+                    0 20px 50px rgba(0,0,0,0.6),
+                    0 0 0 4px rgba(255,255,255,0.05); /* 光晕环 */
+            z-index: 10;
+        }
+
+        /* 悬停微交互 */
+        .card:hover:not(.active) {
+            filter: grayscale(0.5) brightness(0.7) blur(2px);
+            opacity: 0.8;
+            transform: scale(0.9);
+        }
+
+        /* 卡片标签 */
+        .card-info {
+            position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
+            text-align: center; opacity: 0; transition: 0.3s; pointer-events: none;
+            width: 200px;
+        }
+        .card.active .card-info { opacity: 1; bottom: -35px; }
+
+        .card-title { font-size: 11px; font-weight: 500; color: #fff; letter-spacing: 0.5px; margin-bottom: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .card-sub { font-size: 9px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; }
+
+        /* =========================================
+           7. Header & UI Elements (保持原样)
+           ========================================= */
         .header {
             position: fixed; top: 0; left: 0; right: 0; height: 100px;
             display: flex; justify-content: space-between; align-items: flex-start;
-            padding: 40px 60px; z-index: 100;
-            pointer-events: none;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent);
+            padding: 40px 50px; z-index: 200;
+            pointer-events: none; /* UI层穿透 */
         }
 
         .brand {
             font-size: 14px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
             color: rgba(255,255,255,0.9); pointer-events: auto; opacity: 0.8;
+            display: flex; align-items: center; gap: 10px;
         }
+        .brand::before { content: ''; width: 6px; height: 6px; background: #fff; border-radius: 50%; display: block; box-shadow: 0 0 10px #fff; }
 
-        .actions { pointer-events: auto; display: flex; gap: 20px; }
+        .actions { pointer-events: auto; display: flex; gap: 16px; }
+
         .icon-btn {
             width: 44px; height: 44px; border-radius: 50%;
-            background: rgba(255,255,255,0.1); backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.05); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.4s var(--ease-out-expo);
-            color: #fff;
+            cursor: pointer; transition: all 0.3s var(--ease-out-expo);
+            color: #fff; position: relative; overflow: hidden;
         }
-        .icon-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.05); }
-        .icon-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; }
+        .icon-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.05); border-color: rgba(255,255,255,0.3); }
+        .icon-btn:active { transform: scale(0.95); }
+        .icon-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; }
 
-        /* --- 3. 核心舞台 (The Stage) --- */
-        .stage-wrapper {
-            flex: 1; position: relative; z-index: 10;
-            display: flex; justify-content: center; align-items: center;
-            perspective: 1200px; /* 3D 透视深度 */
+        /* Loading Indicator */
+        .loader {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 40px; height: 40px; border: 2px solid rgba(255,255,255,0.1);
+            border-top-color: #fff; border-radius: 50%;
+            animation: spin 1s linear infinite; z-index: 5;
+            opacity: 0; transition: opacity 0.3s; pointer-events: none;
         }
-
-        .scene-pivot {
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.1s linear; /* 实时视差响应 */
-        }
-
-        .scene-container {
-            position: relative;
-            max-width: 80vw; max-height: 70vh;
-            opacity: 0; transform: scale(0.9) translateY(40px) rotateX(10deg);
-            animation: heroEnter 1.2s var(--ease-out-expo) forwards 0.3s;
-            box-shadow: 0 50px 120px -20px rgba(0,0,0,0.6); /* 深邃投影 */
-            border-radius: 4px;
-        }
-
-        @keyframes heroEnter {
-            to { opacity: 1; transform: scale(1) translateY(0) rotateX(0); }
-        }
-
-        .base-img {
-            display: block; max-width: 100%; max-height: 70vh; height: auto;
-            pointer-events: none; border-radius: 2px;
-        }
-
-        /* 渲染层 */
-        .warp-layer { position: absolute; top: 0; left: 0; transform-origin: 0 0; pointer-events: none; z-index: 20; }
-        .screen { background: #000; position: relative; overflow: hidden; backface-visibility: hidden; will-change: transform; }
-        .wallpaper {
-            width: 100%; height: 100%;
-            background-size: cover; background-position: center;
-            transform: scale(1.01);
-            transition: background-image 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* 质感光效 */
-        .fx-layer div { position: absolute; inset: 0; pointer-events: none; }
-        .fx-reflection {
-            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 40%, rgba(255,255,255,0.05) 100%);
-            mix-blend-mode: overlay; z-index: 30; pointer-events: none;
-        }
-        .fx-grain {
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
-            opacity: 0.3; mix-blend-mode: overlay; z-index: 32;
-        }
-
-        /* --- 4. 底部悬浮控制台 (Floating Dock) --- */
-        .dock-container {
-            position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%);
-            z-index: 200; width: auto;
-            display: flex; flex-direction: column; align-items: center; gap: 24px;
-        }
-
-        /* 场景标题 */
-        .scene-info {
-            text-align: center; opacity: 0; transform: translateY(20px);
-            animation: fadeUp 1s var(--ease-out-expo) forwards 0.8s;
-        }
-        .scene-title { font-size: 18px; font-weight: 500; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .scene-device { font-size: 12px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; }
-
-        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
-
-        /* 玻璃控制栏 */
-        .dock-bar {
-            height: 80px; padding: 10px;
-            background: rgba(40, 40, 40, 0.4); backdrop-filter: blur(40px) saturate(150%);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 40px;
-            display: flex; align-items: center; gap: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            transition: all 0.4s var(--ease-out-expo);
-        }
-
-        .dock-bar:hover {
-            background: rgba(50, 50, 50, 0.5);
-            transform: scale(1.02);
-            box-shadow: 0 30px 80px rgba(0,0,0,0.6);
-        }
-
-        .dock-btn {
-            padding: 0 24px; height: 100%; border-radius: 30px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 14px; font-weight: 500; color: #fff;
-            cursor: pointer; transition: 0.3s; position: relative;
-        }
-        .dock-btn.active { background: rgba(255,255,255,0.15); }
-        .dock-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
-
-        .divider { width: 1px; height: 24px; background: rgba(255,255,255,0.15); }
-
-        /* 壁纸/场景选择器 (弹出式) */
-        .selector-popover {
-            position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%) scale(0.95);
-            background: rgba(30, 30, 30, 0.7); backdrop-filter: blur(50px);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 24px;
-            padding: 16px; width: max-content; max-width: 90vw;
-            opacity: 0; pointer-events: none;
-            transition: all 0.4s var(--ease-spring);
-            box-shadow: 0 20px 80px rgba(0,0,0,0.6);
-            display: flex; gap: 12px;
-        }
-        .selector-popover.show {
-            opacity: 1; pointer-events: auto; transform: translateX(-50%) scale(1); bottom: 110px;
-        }
-
-        .thumb {
-            width: 64px; height: 64px; border-radius: 14px;
-            background-size: cover; background-position: center;
-            cursor: pointer; border: 2px solid transparent;
-            opacity: 0.6; transition: 0.3s var(--ease-out-expo);
-            position: relative;
-        }
-        .thumb:hover { opacity: 1; transform: scale(1.1) translateY(-4px); }
-        .thumb.active { opacity: 1; border-color: #fff; transform: scale(1.1); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .loader.show { opacity: 1; }
+        @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
 
     </style>
 </head>
 <body>
 
 <div class="ambient-canvas">
-    <div class="ambient-layer active" id="bg1"></div>
-    <div class="ambient-layer" id="bg2"></div>
+    <div class="bg-layer active" id="bg1"></div>
+    <div class="bg-layer" id="bg2"></div>
 </div>
 
 <header class="header">
-    <div class="brand">NMSL <span>/ SPACE</span></div>
+    <div class="brand">NMSL <span>Gallery</span></div>
     <div class="actions">
-        <div class="icon-btn" title="Download" onclick="alert('Downloading...')">
+        <div class="icon-btn" title="Download Scene" onclick="downloadScene()">
             <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div class="icon-btn" title="Close" onclick="window.close()">
+        <div class="icon-btn" title="Close Preview" onclick="handleClose()">
             <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </div>
     </div>
 </header>
 
-<div class="stage-wrapper" id="stageArea">
+<div class="sidebar left">
+    <div class="scroll-track" id="sceneTrack">
+    </div>
+</div>
+
+<div class="stage-area">
+    <div class="loader" id="loader"></div>
+
     <div class="scene-pivot" id="scenePivot">
         <div class="scene-container" id="sceneBox">
             <img id="baseImg" class="base-img" src="" crossorigin="anonymous">
@@ -225,9 +318,8 @@
                 <div class="screen" id="screen">
                     <div class="wallpaper" id="wallpaper"></div>
                     <div class="fx-layer">
-                        <div class="fx-reflection"></div>
-                        <div class="fx-grain"></div>
-                        <div style="box-shadow: inset 0 0 0 1px rgba(0,0,0,1); z-index:40; border-radius:inherit"></div>
+                        <div class="fx-glare"></div>
+                        <div class="fx-inner-shadow"></div>
                     </div>
                 </div>
             </div>
@@ -235,208 +327,433 @@
     </div>
 </div>
 
-<div class="dock-container">
-    <div class="scene-info">
-        <div class="scene-title" id="sceneTitle">Loading Scene...</div>
-        <div class="scene-device" id="sceneDevice">...</div>
-    </div>
-
-    <div class="dock-bar">
-        <div class="dock-btn active" id="btnWall" onclick="toggleSelector('wallpaper')">Wallpapers</div>
-        <div class="divider"></div>
-        <div class="dock-btn" id="btnScene" onclick="toggleSelector('scene')">Scenes</div>
-    </div>
-
-    <div class="selector-popover" id="selector">
+<div class="sidebar right">
+    <div class="scroll-track" id="wallTrack">
     </div>
 </div>
 
 <script>
-    // ==========================================
-    // CONFIG DATA (从构建工具导出的数据)
-    // ==========================================
+    /**
+     * =============================================================================
+     * CONFIGURATION & DATA
+     * =============================================================================
+     */
+
+    // 模拟数据源 - 实际使用时替换为您构建工具生成的 JSON
     const SCENES = [
-        {
-            id: 'desk-setup',
-            title: 'Minimalist Desk Setup',
-            device: 'Desktop',
-            src: 'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=1600',
-            // 示例锚点数据 (0-1百分比)
-            anchors: [ {x:0.366, y:0.225}, {x:0.686, y:0.354}, {x:0.563, y:0.785}, {x:0.212, y:0.623} ],
-            // 示例配置
-            config: { w: 1179, h: 2556, r: 120 }
-        },
-        {
-            id: 'mac-dark',
-            title: 'MacBook Pro Space Black',
-            device: 'Laptop',
-            src: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca4?q=80&w=1600',
-            anchors: [ {x:0.182, y:0.175}, {x:0.818, y:0.175}, {x:0.818, y:0.845}, {x:0.182, y:0.845} ],
-            config: { w: 1600, h: 1000, r: 12 }
-        },
-        {
-            id: 'ipad-pro',
-            title: 'iPad Pro Handheld',
-            device: 'Tablet',
-            src: 'https://images.unsplash.com/photo-1544256718-3bcf237f3974?q=80&w=1600',
-            anchors: [ {x:0.12, y:0.15}, {x:0.88, y:0.15}, {x:0.88, y:0.85}, {x:0.12, y:0.85} ],
-            config: { w: 2048, h: 2732, r: 35 }
-        }
-    ];
+            {
+                id: 's1',
+                title: 'Cyber Tokyo',
+                device: 'Holographic Display',
+                src: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=1200',
+                anchors: [{x:0.2,y:0.15},{x:0.8,y:0.15},{x:0.8,y:0.85},{x:0.2,y:0.85}],
+                config: {w:1920, h:1080, r:20}
+            },
+            {
+                id: 's2',
+                title: 'Deep Void',
+                device: 'Floating Screen',
+                src: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?q=80&w=1200',
+                anchors: [{x:0.25,y:0.2},{x:0.75,y:0.2},{x:0.75,y:0.8},{x:0.25,y:0.8}],
+                config: {w:1600, h:1200, r:12}
+            },
+            {
+                id: 's3',
+                title: 'Neon Rain',
+                device: 'Cyber Frame',
+                src: 'https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=1200',
+                anchors: [{x:0.15,y:0.15},{x:0.85,y:0.15},{x:0.85,y:0.85},{x:0.15,y:0.85}],
+                config: {w:2560, h:1440, r:0}
+            },
+            {
+                id: 's4',
+                title: 'Iceland Mist',
+                device: 'Glass Panel',
+                src: 'https://images.unsplash.com/photo-1476610182048-b716b8518aae?q=80&w=1200',
+                anchors: [{x:0.3,y:0.25},{x:0.7,y:0.25},{x:0.7,y:0.75},{x:0.3,y:0.75}],
+                config: {w:1080, h:1080, r:30}
+            },
+            {
+                id: 's5',
+                title: 'Retrowave',
+                device: 'Retro Monitor',
+                src: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1200',
+                anchors: [{x:0.22,y:0.22},{x:0.78,y:0.22},{x:0.78,y:0.78},{x:0.22,y:0.78}],
+                config: {w:1280, h:1024, r:15}
+            },
+            {
+                id: 's6',
+                title: 'Abstract Flow',
+                device: 'Fluid Surface',
+                src: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200',
+                anchors: [{x:0.18,y:0.18},{x:0.82,y:0.18},{x:0.82,y:0.82},{x:0.18,y:0.82}],
+                config: {w:2000, h:1500, r:40}
+            },
+            {
+                id: 's7',
+                title: 'Urban Night',
+                device: 'City Canvas',
+                src: 'https://images.unsplash.com/photo-1480796927426-f609979314bd?q=80&w=1200',
+                anchors: [{x:0.2,y:0.1},{x:0.8,y:0.1},{x:0.8,y:0.9},{x:0.2,y:0.9}],
+                config: {w:1080, h:1920, r:24}
+            },
+            {
+                id: 's8',
+                title: 'Minimal Void',
+                device: 'Dark Frame',
+                src: 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=1200',
+                anchors: [{x:0.35,y:0.25},{x:0.65,y:0.25},{x:0.65,y:0.75},{x:0.35,y:0.75}],
+                config: {w:1170, h:2532, r:60}
+            },
+            {
+                id: 's9',
+                title: 'Sci-Fi Corridor',
+                device: 'Portal View',
+                src: 'https://images.unsplash.com/photo-1496564203457-11bb12075d90?q=80&w=1200',
+                anchors: [{x:0.3,y:0.3},{x:0.7,y:0.3},{x:0.7,y:0.7},{x:0.3,y:0.7}],
+                config: {w:1000, h:1000, r:100}
+            },
+            {
+                id: 's10',
+                title: 'Holographic',
+                device: 'Prism Display',
+                src: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1200',
+                anchors: [{x:0.25,y:0.15},{x:0.75,y:0.15},{x:0.7,y:0.85},{x:0.3,y:0.85}], // Slight perspective
+                config: {w:1400, h:2100, r:25}
+            }
+        ];
 
     const WALLPAPERS = [
-        'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800',
-        'https://images.unsplash.com/photo-1634152962476-4b8a00e1915c?w=800',
-        'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=800',
-        'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?w=800',
-        'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=800'
+        'assets/killian-prevost-caillou-final.jpg',
+        'assets/jacek-pilarski-citadel.webp',
+        'assets/yucong-tang-yucong-tang-2e.webp',
+        'assets/david-arno-schwaiger-david-arno-schwaiger-ldr-spiderrose-cover-2.webp',
+        'assets/sergey-semenovykh-sergey-semenovykh-chainsaw-man-1x1.jpg',
+        'assets/shurazhao-desert-skies-and-rusty-leviathans-2.webp',
+        'assets/geoffroy-thoorens-geoffroy-thoorens-sans-titre.webp',
+        'assets/julian-calle-city-master-class.jpg',
+        'assets/julien-long-forestroot2final.jpg',
+        'assets/thu-berchs-liberty-city-6.jpg',
+        'assets/vladimir-manyukhin-9-2.webp',
+        'assets/yura-kozhevnikov-rank-sprint-v2-wg-spb-wows-3840x2560.jpg',
+        'assets/040e51e28d1dd7aa5f1aec953e79ccc8.jpg',
+        'assets/2025-epic-megajam-register-now-header-2.jpg',
+        'assets/artstation-artblast-edgeoffate-01destiny-eof-890x500-notext.jpg'
     ];
 
-    // ==========================================
-    // CORE LOGIC
-    // ==========================================
+    /**
+     * =============================================================================
+     * APPLICATION STATE & DOM ELEMENTS
+     * =============================================================================
+     */
+
     const state = {
-        sIdx: 0,
-        wIdx: 0,
-        activeSelector: null, // 'wallpaper' | 'scene' | null
-        bgFlip: false
+        sceneIndex: 0,
+        wallIndex: 0,
+        bgFlip: false,
+        isScrolling: false
     };
 
     const els = {
+        sceneTrack: document.getElementById('sceneTrack'),
+        wallTrack: document.getElementById('wallTrack'),
         base: document.getElementById('baseImg'),
         warp: document.getElementById('warpLayer'),
         screen: document.getElementById('screen'),
         wp: document.getElementById('wallpaper'),
         pivot: document.getElementById('scenePivot'),
-        title: document.getElementById('sceneTitle'),
-        device: document.getElementById('sceneDevice'),
-        selector: document.getElementById('selector'),
+        container: document.getElementById('sceneBox'),
         bg1: document.getElementById('bg1'),
-        bg2: document.getElementById('bg2')
+        bg2: document.getElementById('bg2'),
+        loader: document.getElementById('loader')
     };
 
-    window.onload = () => {
-        loadScene(0);
-
-        // 启动视差交互
-        document.addEventListener('mousemove', handleParallax);
-    };
-
-    // --- 1. 场景加载 ---
-    function loadScene(idx) {
-        const s = SCENES[idx];
-        els.base.style.opacity = 0; // 淡出旧图
-
-        const img = new Image();
-        img.src = s.src;
-        img.onload = () => {
-            els.base.src = s.src;
-            els.base.style.opacity = 1; // 淡入新图
-
-            // 更新文字信息
-            els.title.innerText = s.title;
-            els.device.innerText = s.device;
-
-            // 设置屏幕参数
-            els.screen.style.width = s.config.w + 'px';
-            els.screen.style.height = s.config.h + 'px';
-            els.screen.style.borderRadius = s.config.r + 'px';
-
-            // 计算 Matrix
-            const imgW = els.base.offsetWidth;
-            const imgH = els.base.offsetHeight;
-
-            // 将百分比锚点转为像素
-            const points = s.anchors.map(p => ({ x: p.x * imgW, y: p.y * imgH }));
-
-            // 如果没有锚点数据，提供一个默认的居中
-            if(!points.length || points.length < 4) {
-                // Fallback logic here if needed
-            } else {
-                const m = solveHomography(s.config.w, s.config.h, points);
-                els.warp.style.transform = `matrix3d(${m})`;
-            }
-
-            updateWallpaper();
+    // 解析 URL 参数
+    function getUrlParams() {
+        const params = new URLSearchParams(window.location.search);
+        return {
+            src: params.get('src'),
+            title: params.get('title'),
+            artist: params.get('artist')
         };
     }
 
-    // --- 2. 壁纸更新 & 环境光 ---
-    function updateWallpaper() {
-        const url = WALLPAPERS[state.wIdx];
-        els.wp.style.backgroundImage = `url(${url})`;
+    /**
+     * =============================================================================
+     * INITIALIZATION
+     * =============================================================================
+     */
 
-        // 环境光双缓冲切换
-        state.bgFlip = !state.bgFlip;
-        const active = state.bgFlip ? els.bg2 : els.bg1;
-        const inactive = state.bgFlip ? els.bg1 : els.bg2;
+    function init() {
+        const params = getUrlParams();
+        let initialWallIndex = 0;
 
-        active.style.backgroundImage = `url(${url})`;
-        active.classList.add('active');
-        inactive.classList.remove('active');
-    }
-
-    // --- 3. 悬浮选择器逻辑 ---
-    function toggleSelector(type) {
-        // 如果点击已激活的，则关闭
-        if(state.activeSelector === type) {
-            state.activeSelector = null;
-            els.selector.classList.remove('show');
-            document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
-            return;
+        // 如果 URL 提供了壁纸 src
+        if (params.src) {
+            // 检查壁纸是否已存在于列表中
+            const existingIndex = WALLPAPERS.indexOf(params.src);
+            if (existingIndex !== -1) {
+                initialWallIndex = existingIndex;
+            } else {
+                // 如果是新壁纸，添加到列表开头或结尾，这里我们添加到开头作为当前展示
+                WALLPAPERS.unshift(params.src);
+                initialWallIndex = 0;
+            }
         }
 
-        state.activeSelector = type;
-        els.selector.classList.add('show');
+        // 1. 构建左侧场景画廊
+        SCENES.forEach((s, i) => {
+            const card = document.createElement('div');
+            card.className = 'card scene';
+            card.style.backgroundImage = `url(${s.src})`;
+            card.innerHTML = `
+                    <div class="card-info">
+                        <div class="card-title">${s.title}</div>
+                        <div class="card-sub">${s.device}</div>
+                    </div>
+                `;
+            // 点击直接滚动到该项
+            card.onclick = () => scrollToCard(els.sceneTrack, i);
+            els.sceneTrack.appendChild(card);
+        });
 
-        // 按钮高亮
-        document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(type === 'wallpaper' ? 'btnWall' : 'btnScene').classList.add('active');
+        // 2. 构建右侧壁纸画廊
+        WALLPAPERS.forEach((url, i) => {
+            const card = document.createElement('div');
+            card.className = 'card wall';
+            card.style.backgroundImage = `url(${url})`;
+            
+            // 简单处理标题
+            let title = `Wallpaper #${i + 1}`;
+            // 如果是刚才添加的第一张且有参数标题
+            if (i === 0 && params.src && params.title) {
+                title = params.title;
+            }
 
-        // 渲染内容
-        renderThumbs(type);
+            card.innerHTML = `
+                    <div class="card-info">
+                        <div class="card-title">${title}</div>
+                        <div class="card-sub">4K UHD</div>
+                    </div>
+                `;
+            card.onclick = () => scrollToCard(els.wallTrack, i);
+            els.wallTrack.appendChild(card);
+        });
+
+        // 3. 启动监听器
+        // 绑定滚动事件到“光学对焦引擎”
+        els.sceneTrack.addEventListener('scroll', () => requestAnimationFrame(() => focusEngine(els.sceneTrack, 'scene')));
+        els.wallTrack.addEventListener('scroll', () => requestAnimationFrame(() => focusEngine(els.wallTrack, 'wall')));
+
+        // 启动3D视差
+        document.addEventListener('mousemove', handleParallax);
+
+        // 4. 加载初始资源
+        loadScene(0);
+        updateWallpaper(initialWallIndex);
+
+        // 5. 初始对齐
+        // 延时执行以确保布局渲染完毕
+        setTimeout(() => {
+            scrollToCard(els.sceneTrack, 0);
+            scrollToCard(els.wallTrack, initialWallIndex);
+        }, 100);
     }
 
-    function renderThumbs(type) {
-        els.selector.innerHTML = '';
-        const list = type === 'wallpaper' ? WALLPAPERS : SCENES;
-        const curIdx = type === 'wallpaper' ? state.wIdx : state.sIdx;
+    /**
+     * =============================================================================
+     * FOCUS ENGINE (核心：光学对焦滚动算法)
+     * =============================================================================
+     */
 
-        list.forEach((item, i) => {
-            const url = type === 'wallpaper' ? item : item.src;
-            const div = document.createElement('div');
-            div.className = `thumb ${i === curIdx ? 'active' : ''}`;
-            div.style.backgroundImage = `url(${url})`;
-            div.onclick = () => {
-                if(type === 'wallpaper') { state.wIdx = i; updateWallpaper(); }
-                else { state.sIdx = i; loadScene(i); }
-                renderThumbs(type); // 刷新高亮
-            };
-            els.selector.appendChild(div);
+    let sceneScrollTimeout, wallScrollTimeout;
+
+    function focusEngine(container, type) {
+        const centerY = container.scrollTop + container.clientHeight / 2;
+        const cards = container.children;
+        let minDist = Infinity;
+        let centerIndex = -1;
+
+        for (let i = 0; i < cards.length; i++) {
+            const card = cards[i];
+            const cardCenterY = card.offsetTop + card.offsetHeight / 2;
+            const dist = Math.abs(centerY - cardCenterY);
+
+            // --- 视觉算法 ---
+            // 距离越近，scale越大，blur越小，opacity越高
+
+            // 衰减半径 (Sensitivity)
+            const radius = 400;
+
+            let scale = 0.85;
+            let opacity = 0.4;
+            let blur = 4;
+            let grayscale = 1;
+
+            if (dist < radius) {
+                const ratio = 1 - (dist / radius); // 0 to 1
+                scale = 0.85 + (0.25 * ratio); // 0.85 -> 1.1
+                opacity = 0.4 + (0.6 * ratio); // 0.4 -> 1.0
+                blur = 4 * (1 - ratio);        // 4 -> 0
+                grayscale = 1 - ratio;         // 1 -> 0
+            }
+
+            // 样式应用
+            card.style.transform = `scale(${scale})`;
+            card.style.opacity = opacity;
+
+            // 只有最中心的卡片是全彩清晰的
+            if (dist < 80) {
+                card.classList.add('active');
+                card.style.filter = `grayscale(0) brightness(1.1) blur(0)`;
+                if (dist < minDist) {
+                    minDist = dist;
+                    centerIndex = i;
+                }
+            } else {
+                card.classList.remove('active');
+                card.style.filter = `grayscale(${grayscale}) brightness(${0.5 + opacity*0.3}) blur(${blur}px)`;
+            }
+        }
+
+        // --- 自动加载逻辑 (Debounced) ---
+        // 只有当卡片停留在中心一段时间后才加载，避免快速滚动时频繁加载
+        if (centerIndex !== -1) {
+            if (type === 'scene' && centerIndex !== state.sceneIndex) {
+                clearTimeout(sceneScrollTimeout);
+                sceneScrollTimeout = setTimeout(() => {
+                    state.sceneIndex = centerIndex;
+                    loadScene(centerIndex);
+                }, 200);
+            }
+            if (type === 'wall' && centerIndex !== state.wallIndex) {
+                clearTimeout(wallScrollTimeout);
+                wallScrollTimeout = setTimeout(() => {
+                    state.wallIndex = centerIndex;
+                    updateWallpaper(centerIndex);
+                }, 100); // 壁纸切换可以快一点
+            }
+        }
+    }
+
+    // 辅助：平滑滚动到指定卡片
+    function scrollToCard(container, index) {
+        const card = container.children[index];
+        if (!card) return;
+        // 计算让卡片居中的滚动位置
+        const scrollPos = card.offsetTop - (container.clientHeight / 2) + (card.offsetHeight / 2);
+        container.scrollTo({
+            top: scrollPos,
+            behavior: 'smooth'
         });
     }
 
-    // --- 4. 3D 视差交互 (Parallax) ---
+    /**
+     * =============================================================================
+     * SCENE & WALLPAPER LOADERS
+     * =============================================================================
+     */
+
+    function loadScene(idx) {
+        const s = SCENES[idx];
+        els.loader.classList.add('show');
+        els.container.classList.remove('loaded');
+
+        const img = new Image();
+        img.src = s.src;
+
+        img.onload = () => {
+            els.base.src = s.src;
+
+            // 更新屏幕参数
+            els.screen.style.width = s.config.w + 'px';
+            els.screen.style.height = s.config.h + 'px';
+
+            // 更新圆角 (包括反光层)
+            const r = s.config.r + 'px';
+            els.screen.style.borderRadius = r;
+            document.querySelector('.fx-inner-shadow').style.borderRadius = r;
+
+            // 计算 Matrix 透视
+            // 注意：这里需要获取图片的实际显示尺寸
+            // 在 display:none 或 opacity:0 时可能获取不准，所以最好基于自然尺寸比例计算
+            const displayW = els.base.offsetWidth || 1200;
+            const displayH = els.base.offsetHeight || 800;
+
+            // 将百分比锚点转换为像素
+            const points = s.anchors.map(p => ({ x: p.x * displayW, y: p.y * displayH }));
+            const m = solveHomography(s.config.w, s.config.h, points);
+            els.warp.style.transform = `matrix3d(${m})`;
+
+            // 动画进场
+            requestAnimationFrame(() => {
+                els.loader.classList.remove('show');
+                els.container.classList.add('loaded');
+            });
+        };
+    }
+
+    function updateWallpaper(idx) {
+        const url = WALLPAPERS[idx];
+        els.wp.style.backgroundImage = `url(${url})`;
+
+        // 环境光背景切换 (Cross-fade)
+        state.bgFlip = !state.bgFlip;
+        const activeBg = state.bgFlip ? els.bg2 : els.bg1;
+        const inactiveBg = state.bgFlip ? els.bg1 : els.bg2;
+
+        activeBg.style.backgroundImage = `url(${url})`;
+        activeBg.classList.add('active');
+        inactiveBg.classList.remove('active');
+    }
+
+    /**
+     * =============================================================================
+     * 3D PARALLAX & MATRIX MATH
+     * =============================================================================
+     */
+
     function handleParallax(e) {
-        const x = (e.clientX / window.innerWidth - 0.5) * 2; // -1 to 1
+        // 将鼠标位置映射到 -1 到 1 的范围
+        const x = (e.clientX / window.innerWidth - 0.5) * 2;
         const y = (e.clientY / window.innerHeight - 0.5) * 2;
 
-        // 极其细微的移动，制造高级感
-        const rotateX = -y * 3; // Max 3deg tilt
+        // 计算旋转角度 (非常细微，为了高级感)
+        const rotateX = -y * 3;
         const rotateY = x * 3;
         const translateX = x * 10;
+        const translateY = y * 5;
 
+        // 应用到 Pivot 容器
         requestAnimationFrame(() => {
             els.pivot.style.transform = `
                     rotateX(${rotateX}deg)
                     rotateY(${rotateY}deg)
-                    translateX(${translateX}px)
+                    translate3d(${translateX}px, ${translateY}px, 0)
                 `;
         });
     }
 
-    // --- 5. Matrix Math (Core) ---
+    // 经典的 Matrix3D 求解算法
     function solveHomography(w,h,p){const s=[0,0,w,0,w,h,0,h],d=[p[0].x,p[0].y,p[1].x,p[1].y,p[2].x,p[2].y,p[3].x,p[3].y],A=[],b=[];for(let i=0;i<4;i++){let sx=s[i*2],sy=s[i*2+1],dx=d[i*2],dy=d[i*2+1];A.push([sx,sy,1,0,0,0,-sx*dx,-sy*dx]);b.push(dx);A.push([0,0,0,sx,sy,1,-sx*dy,-sy*dy]);b.push(dy);}let n=8;for(let i=0;i<n;i++){let m=i;for(let j=i+1;j<n;j++)if(Math.abs(A[j][i])>Math.abs(A[m][i]))m=j;[A[i],A[m]]=[A[m],A[i]];[b[i],b[m]]=[b[m],b[i]];for(let j=i+1;j<n;j++){let c=-A[j][i]/A[i][i];for(let k=i;k<n;k++)A[j][k]+=c*A[i][k];b[j]+=c*b[i];}}let x=[];for(let i=n-1;i>=0;i--){let t=0;for(let j=i+1;j<n;j++)t+=A[i][j]*x[j];x[i]=(b[i]-t)/A[i][i];}return [x[0],x[3],0,x[6],x[1],x[4],0,x[7],0,0,1,0,x[2],x[5],0,1].join(',');}
+
+    function downloadScene() {
+        // 这里可以对接 html2canvas 等截图库
+        alert("正在生成 4K 预览图...");
+    }
+
+    function handleClose() {
+        // 尝试发送消息给父窗口
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage('close-preview', '*');
+        } else {
+            // 如果是独立窗口打开，则关闭
+            window.close();
+        }
+    }
+
+    // Boot
+    init();
 
 </script>
 </body>
