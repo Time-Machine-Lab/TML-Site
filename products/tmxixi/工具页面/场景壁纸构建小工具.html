@@ -351,6 +351,7 @@
     <div>
         <div class="label">Device & Scene</div>
         <div style="margin-bottom:10px">
+            <input type="text" id="sceneTitle" placeholder="Enter Scene Title" oninput="scheduleJsonUpdate()" style="width:100%; padding:10px; border-radius:10px; background:rgba(255,255,255,0.05); border:1px solid transparent; color:#fff; font-size:12px; margin-bottom:8px">
             <button class="btn" style="width:100%; border:1px dashed rgba(255,255,255,0.2)" onclick="document.getElementById('fileIn').click()">📂 上传本地场景...</button>
             <input type="file" id="fileIn" hidden accept="image/*" onchange="handleFile(this)">
         </div>
@@ -376,38 +377,41 @@
 
         <div class="slider-wrap">
             <div class="slider-head"><span>Radius (圆角)</span> <span id="v-rad">12</span></div>
-            <input type="range" min="0" max="200" value="12" oninput="updateFx('radius', this.value)">
+            <input type="range" data-key="radius" min="0" max="200" value="12" oninput="updateFx('radius', this.value)">
         </div>
         <div class="slider-wrap">
             <div class="slider-head"><span>Bezel (黑边)</span> <span id="v-bez">50%</span></div>
-            <input type="range" min="0" max="100" value="50" oninput="updateFx('bezel', this.value)">
+            <input type="range" data-key="bezel" min="0" max="100" value="50" oninput="updateFx('bezel', this.value)">
         </div>
         <div class="slider-wrap">
             <div class="slider-head"><span>Brightness (屏幕亮度)</span> <span id="v-br">100%</span></div>
-            <input type="range" min="50" max="150" value="100" oninput="updateFx('bright', this.value)">
+            <input type="range" data-key="bright" min="50" max="150" value="100" oninput="updateFx('bright', this.value)">
         </div>
         <div class="slider-wrap">
             <div class="slider-head"><span>Glare (表面反光)</span> <span id="v-gl">20%</span></div>
-            <input type="range" min="0" max="100" value="20" oninput="updateFx('glare', this.value)">
+            <input type="range" data-key="glare" min="0" max="100" value="20" oninput="updateFx('glare', this.value)">
         </div>
         <div class="slider-wrap">
             <div class="slider-head"><span>Grain (胶片噪点)</span> <span id="v-no">0%</span></div>
-            <input type="range" min="0" max="50" value="0" oninput="updateFx('noise', this.value)">
+            <input type="range" data-key="noise" min="0" max="50" value="0" oninput="updateFx('noise', this.value)">
         </div>
         <div class="slider-wrap">
             <div class="slider-head"><span>Edge Blend (边缘融合)</span> <span id="v-ed">0</span></div>
-            <input type="range" min="0" max="80" value="0" oninput="updateFx('edge', this.value)">
+            <input type="range" data-key="edge" min="0" max="80" value="0" oninput="updateFx('edge', this.value)">
         </div>
         <div class="slider-wrap">
             <div class="slider-head"><span>Opacity (辅助对齐)</span> <span id="v-op">0.1</span></div>
-            <input type="range" min="0" max="1" step="0.1" value="0.1" oninput="updateFx('opacity', this.value)">
+            <input type="range" data-key="opacity" min="0" max="1" step="0.1" value="0.1" oninput="updateFx('opacity', this.value)">
         </div>
     </div>
 
     <div style="margin-top:auto">
-        <div class="label">Export</div>
-        <textarea id="jsonOut" style="width:100%; height:50px; background:#111; color:#0f0; border:1px solid #333; border-radius:8px; resize:none; font-size:10px; padding:8px; margin-bottom:8px" readonly></textarea>
-        <button class="btn" style="width:100%; background:var(--accent); color:#fff" onclick="copyJson()">复制 JSON 配置</button>
+        <div class="label">Export / Import</div>
+        <textarea id="jsonOut" style="width:100%; height:80px; background:#111; color:#0f0; border:1px solid #333; border-radius:8px; resize:none; font-size:10px; padding:8px; margin-bottom:8px" placeholder="在此粘贴 JSON 配置以导入..." onfocus="isEditingJson=true" onblur="isEditingJson=false"></textarea>
+        <div class="btn-group">
+            <button class="btn" style="background:var(--accent); color:#fff" onclick="copyJson()">复制 JSON</button>
+            <button class="btn" onclick="importJson()">导入 JSON</button>
+        </div>
     </div>
 </div>
 
@@ -458,6 +462,7 @@
     const PERF = { jsonDebounce: 160, loupeMax: 1600, loupeZoom: 6 };
     let renderQueued = false;
     let jsonTimer = null;
+    let isEditingJson = false;
 
     const els = {
         base: document.getElementById('baseImg'), warp: document.getElementById('warpLayer'),
@@ -583,10 +588,12 @@
     });
 
     window.addEventListener('mouseup', () => {
-        state.dragging = null;
-        els.loupe.style.display = 'none';
-        controls.style.cursor = 'default';
-        updateJson();
+        if(state.dragging !== null) {
+            state.dragging = null;
+            els.loupe.style.display = 'none';
+            controls.style.cursor = 'default';
+            updateJson();
+        }
     });
 
     function requestRender() {
@@ -773,9 +780,86 @@
         jsonTimer = setTimeout(updateJson, PERF.jsonDebounce);
     }
     function updateJson() {
-        const d = { scene: state.sceneExport || state.sceneSrc || els.base.src, device: state.device, anchors: state.points.map(p=>({x:+(p.x/state.imgW).toFixed(4), y:+(p.y/state.imgH).toFixed(4)})), config: state.style };
+        if(isEditingJson) return;
+        const title = document.getElementById('sceneTitle').value;
+        const d = { 
+            scene: "base.jpg", // Force relative path for project structure compatibility
+            title: title || 'Untitled Scene',
+            device: state.device, 
+            anchors: state.points.map(p=>({x:+(p.x/state.imgW).toFixed(4), y:+(p.y/state.imgH).toFixed(4)})), 
+            config: state.style 
+        };
         document.getElementById('jsonOut').value = JSON.stringify(d);
     }
+
+    function importJson() {
+        try {
+            const val = document.getElementById('jsonOut').value;
+            if(!val) return alert('请先粘贴 JSON 内容');
+            const d = JSON.parse(val);
+            
+            console.log('Importing JSON:', d);
+
+            // 1. Update Title
+            if(d.title) document.getElementById('sceneTitle').value = d.title;
+            
+            // 2. Switch Device
+            if(d.device) {
+                if (d.device !== state.device) {
+                    const btn = document.querySelector(`.btn[onclick*="'${d.device}'"]`);
+                    setDevice(d.device, btn);
+                } else {
+                    // Even if device is same, we might need to reset some base params if needed
+                    // But for now, we trust the subsequent overrides
+                }
+            }
+            
+            // 3. Update Anchors
+            if(d.anchors && d.anchors.length === 4) {
+                // Ensure imgW/H are valid
+                if (state.imgW === 0 || state.imgH === 0) {
+                     state.imgW = els.base.offsetWidth || 1;
+                     state.imgH = els.base.offsetHeight || 1;
+                }
+
+                state.points = d.anchors.map(p => ({
+                    x: p.x * state.imgW,
+                    y: p.y * state.imgH
+                }));
+                // Force handle update immediately
+                state.points.forEach((p, i) => {
+                    els.handles[i].style.setProperty('--x', `${p.x}px`);
+                    els.handles[i].style.setProperty('--y', `${p.y}px`);
+                });
+            }
+            
+            // 4. Update Config
+            if(d.config) {
+                Object.keys(d.config).forEach(k => {
+                    const v = d.config[k];
+                    // Update Slider UI using data-key for robustness
+                    const slider = document.querySelector(`input[data-key="${k}"]`);
+                    if(slider) {
+                        slider.value = v;
+                    } else {
+                        // Fallback to old selector if data-key is missing
+                        const oldSlider = document.querySelector(`input[oninput*="'${k}'"]`);
+                        if(oldSlider) oldSlider.value = v;
+                    }
+                    // Apply Effect
+                    updateFx(k, v);
+                });
+            }
+            
+            requestRender();
+            scheduleJsonUpdate(); // Update export box
+            alert('导入成功！\n已更新：' + (d.title || '未命名场景'));
+        } catch(e) {
+            alert('JSON 解析错误: ' + e.message);
+            console.error(e);
+        }
+    }
+
     function copyJson() {
         updateJson();
         document.getElementById('jsonOut').select();

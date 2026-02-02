@@ -471,7 +471,7 @@
 
         /* Date & Time */
         .iphone-date { 
-            font-size: 64px; font-weight: 500; opacity: 0.9; 
+            font-size: 64px; font-weight: 600; opacity: 0.9; 
             margin-top: 0; margin-bottom: 30px; letter-spacing: 0.5px; 
             text-shadow: 0 4px 16px rgba(0,0,0,0.2); 
             text-align: center;
@@ -480,8 +480,8 @@
 
         .iphone-time {
             font-size: 300px; line-height: 0.9; letter-spacing: -6px;
-            font-family: 'SF Pro Rounded', 'SF Pro Display', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            font-weight: 700; /* Reduced from 800 */
+            font-family: 'Saira Stencil One', 'SF Pro Rounded', 'SF Pro Display', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-weight: 400; /* Saira Stencil One usually looks bold enough */
             text-shadow: 0 10px 40px rgba(0,0,0,0.16); 
             margin-bottom: 70px; margin-top: 0;
             text-align: center;
@@ -571,13 +571,13 @@
             z-index: 2;
         }
 
-        /* Physical Buttons */
+        /* Physical Buttons - Optimized Visibility */
         .side-btn {
             position: absolute;
-            z-index: 10; /* Ensure on top of shadows */
-            /* Metallic finish */
-            background: #3a3a3a;
+            z-index: 10; 
+            background: #4a4a4a; /* Lighter base */
             transition: transform 0.2s;
+            border: 1px solid rgba(255,255,255,0.1); /* Subtle edge definition */
         }
         
         .side-btn:active {
@@ -585,25 +585,24 @@
         }
         
         .side-btn.left {
-            left: -13px; /* Frame 10px + 3px protrude */
-            width: 4px;
+            left: -14px; /* Protrude slightly more */
+            width: 6px; /* Thicker */
             border-radius: 4px 0 0 4px;
-            /* Highlight on left edge */
-            box-shadow: inset 1px 0 2px rgba(0,0,0,0.8), inset 0 2px 2px rgba(255,255,255,0.15), -2px 0 5px rgba(0,0,0,0.4);
-            background: linear-gradient(90deg, #555 0%, #2a2a2a 100%);
+            /* Stronger highlight for 3D effect */
+            background: linear-gradient(90deg, #666 0%, #2a2a2a 100%);
+            box-shadow: -2px 0 4px rgba(0,0,0,0.5), inset 1px 0 1px rgba(255,255,255,0.3);
         }
         
         .side-btn.right {
-            right: -13px;
-            width: 4px;
+            right: -14px;
+            width: 6px; /* Thicker */
             border-radius: 0 4px 4px 0;
-            /* Highlight on right edge */
-            box-shadow: inset -1px 0 2px rgba(0,0,0,0.8), inset 0 2px 2px rgba(255,255,255,0.15), 2px 0 5px rgba(0,0,0,0.4);
-            background: linear-gradient(-90deg, #555 0%, #2a2a2a 100%);
+            background: linear-gradient(-90deg, #666 0%, #2a2a2a 100%);
+            box-shadow: 2px 0 4px rgba(0,0,0,0.5), inset -1px 0 1px rgba(255,255,255,0.3);
         }
 
         /* Button Positions - Adjusted for visibility */
-        .btn-mute { top: 100px; height: 32px; background: #2a2a2a !important; box-shadow: inset 0 0 2px rgba(0,0,0,0.5) !important; } /* Mute switch is flatter/darker usually */
+        .btn-mute { top: 100px; height: 32px; background: #333 !important; } 
         .btn-vol-up { top: 165px; height: 62px; }
         .btn-vol-down { top: 245px; height: 62px; }
         .btn-power { top: 200px; height: 96px; }
@@ -716,89 +715,8 @@
      * =============================================================================
      */
 
-    // 模拟数据源 - 实际使用时替换为您构建工具生成的 JSON
-    const SCENES = [
-            {
-                id: 's1',
-                title: 'Cyber Tokyo',
-                device: 'Holographic Display',
-                src: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=1200',
-                anchors: [{x:0.2,y:0.15},{x:0.8,y:0.15},{x:0.8,y:0.85},{x:0.2,y:0.85}],
-                config: {w:1920, h:1080, r:20}
-            },
-            {
-                id: 's2',
-                title: 'Deep Void',
-                device: 'Floating Screen',
-                src: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?q=80&w=1200',
-                anchors: [{x:0.25,y:0.2},{x:0.75,y:0.2},{x:0.75,y:0.8},{x:0.25,y:0.8}],
-                config: {w:1600, h:1200, r:12}
-            },
-            {
-                id: 's3',
-                title: 'Neon Rain',
-                device: 'Cyber Frame',
-                src: 'https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=1200',
-                anchors: [{x:0.15,y:0.15},{x:0.85,y:0.15},{x:0.85,y:0.85},{x:0.15,y:0.85}],
-                config: {w:2560, h:1440, r:0}
-            },
-            {
-                id: 's4',
-                title: 'Iceland Mist',
-                device: 'Glass Panel',
-                src: 'https://images.unsplash.com/photo-1476610182048-b716b8518aae?q=80&w=1200',
-                anchors: [{x:0.3,y:0.25},{x:0.7,y:0.25},{x:0.7,y:0.75},{x:0.3,y:0.75}],
-                config: {w:1080, h:1080, r:30}
-            },
-            {
-                id: 's5',
-                title: 'Retrowave',
-                device: 'Retro Monitor',
-                src: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1200',
-                anchors: [{x:0.22,y:0.22},{x:0.78,y:0.22},{x:0.78,y:0.78},{x:0.22,y:0.78}],
-                config: {w:1280, h:1024, r:15}
-            },
-            {
-                id: 's6',
-                title: 'Abstract Flow',
-                device: 'Fluid Surface',
-                src: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200',
-                anchors: [{x:0.18,y:0.18},{x:0.82,y:0.18},{x:0.82,y:0.82},{x:0.18,y:0.82}],
-                config: {w:2000, h:1500, r:40}
-            },
-            {
-                id: 's7',
-                title: 'Urban Night',
-                device: 'City Canvas',
-                src: 'https://images.unsplash.com/photo-1480796927426-f609979314bd?q=80&w=1200',
-                anchors: [{x:0.2,y:0.1},{x:0.8,y:0.1},{x:0.8,y:0.9},{x:0.2,y:0.9}],
-                config: {w:1080, h:1920, r:24}
-            },
-            {
-                id: 's8',
-                title: 'Minimal Void',
-                device: 'Dark Frame',
-                src: 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=1200',
-                anchors: [{x:0.35,y:0.25},{x:0.65,y:0.25},{x:0.65,y:0.75},{x:0.35,y:0.75}],
-                config: {w:1170, h:2532, r:60}
-            },
-            {
-                id: 's9',
-                title: 'Sci-Fi Corridor',
-                device: 'Portal View',
-                src: 'https://images.unsplash.com/photo-1496564203457-11bb12075d90?q=80&w=1200',
-                anchors: [{x:0.3,y:0.3},{x:0.7,y:0.3},{x:0.7,y:0.7},{x:0.3,y:0.7}],
-                config: {w:1000, h:1000, r:100}
-            },
-            {
-                id: 's10',
-                title: 'Holographic',
-                device: 'Prism Display',
-                src: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1200',
-                anchors: [{x:0.25,y:0.15},{x:0.75,y:0.15},{x:0.7,y:0.85},{x:0.3,y:0.85}], // Slight perspective
-                config: {w:1400, h:2100, r:25}
-            }
-        ];
+    // 场景列表容器 - 动态加载
+    let SCENES = [];
 
     const WALLPAPERS = [
         'assets/killian-prevost-caillou-final.jpg',
@@ -859,13 +777,75 @@
         };
     }
 
+    // Device Presets for resolution fallback
+    const PRESETS = {
+        mac:    { w: 1600, h: 1000, r: 12 },
+        iphone: { w: 1179, h: 2556, r: 170 },
+        ipad:   { w: 2048, h: 2732, r: 35 }
+    };
+
+    // Load Scene Data
+    async function loadScenes() {
+        try {
+            // 1. Fetch list of available scenes
+            const listRes = await fetch('scenes/list.json');
+            if (!listRes.ok) throw new Error('Failed to load scene list');
+            const sceneIds = await listRes.json();
+            
+            // 2. Fetch config for each scene
+            const promises = sceneIds.map(async (id) => {
+                const configRes = await fetch(`scenes/${id}/config.json`);
+                if (!configRes.ok) return null;
+                const data = await configRes.json();
+                
+                // 3. Normalize data to match application structure
+                const deviceType = (data.device || 'iphone').toLowerCase();
+                const preset = PRESETS[deviceType] || PRESETS.iphone;
+                
+                // Merge config: data.config > preset
+                const config = {
+                    w: data.config?.w || preset.w,
+                    h: data.config?.h || preset.h,
+                    r: data.config?.r || data.config?.radius || preset.r
+                };
+
+                return {
+                    id: id,
+                    title: data.title || id.replace(/_/g, ' ').toUpperCase(),
+                    device: data.device || 'Unknown Device',
+                    src: `scenes/${id}/base.jpg`, // Enforce standard path convention
+                    anchors: data.anchors,
+                    config: config
+                };
+            });
+            
+            const loadedScenes = await Promise.all(promises);
+            SCENES = loadedScenes.filter(s => s !== null);
+            
+            if (SCENES.length === 0) {
+                console.warn("No valid scenes loaded");
+            }
+        } catch (err) {
+            console.error("Error loading scenes:", err);
+            // Fallback to empty or show error
+        }
+    }
+
     /**
      * =============================================================================
      * INITIALIZATION
      * =============================================================================
      */
 
-    function init() {
+    async function init() {
+        // Load Scenes
+        try {
+            await loadScenes();
+        } catch (e) {
+            console.error("Failed to load scenes:", e);
+            // Fallback or alert if needed
+        }
+
         const params = getUrlParams();
         let initialWallIndex = 0;
 
@@ -1135,6 +1115,56 @@
             const r = s.config.r + 'px';
             els.screen.style.borderRadius = r;
             document.querySelector('.fx-inner-shadow').style.borderRadius = r;
+
+            // --- 视觉参数增强 (From Builder) ---
+            if (s.config) {
+                const c = s.config;
+                // Bezel (模拟 Builder 的 bezel)
+                // Builder 逻辑: base=10, pct>50 => outer, pct<50 => inner
+                // 这里我们简化，只处理 inner shadow 模拟黑边
+                if (c.bezel !== undefined) {
+                    const base = 10;
+                    const pct = Math.max(0, Math.min(100, parseFloat(c.bezel)));
+                    const inward = pct < 50 ? ((50 - pct) / 50) * base : 0;
+                    const innerSize = base + inward;
+                    // fx-border is actually fx-inner-shadow in this file, or we need to check html structure
+                    // The HTML has .fx-inner-shadow. Let's use it for bezel-like effect
+                    document.querySelector('.fx-inner-shadow').style.boxShadow = `inset 0 0 0 ${innerSize}px rgba(0,0,0,1)`;
+                }
+
+                // Glare
+                if (c.glare !== undefined) {
+                    const glareEl = document.querySelector('.fx-glare');
+                    if (glareEl) glareEl.style.opacity = c.glare / 100;
+                }
+
+                // Noise (需添加 DOM)
+                if (c.noise !== undefined) {
+                    // Check if noise element exists, if not create it
+                    let noiseEl = document.querySelector('.fx-noise');
+                    if (!noiseEl) {
+                        noiseEl = document.createElement('div');
+                        noiseEl.className = 'fx-noise';
+                        // Add SVG filter style
+                        noiseEl.style.position = 'absolute';
+                        noiseEl.style.inset = '0';
+                        noiseEl.style.zIndex = '34';
+                        noiseEl.style.mixBlendMode = 'overlay';
+                        noiseEl.style.pointerEvents = 'none';
+                        noiseEl.style.backgroundImage = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
+                        document.querySelector('.fx-layer').appendChild(noiseEl);
+                    }
+                    noiseEl.style.opacity = c.noise / 200;
+                }
+
+                // Opacity (Screen Opacity)
+                if (c.opacity !== undefined) {
+                     // Only apply if we want semi-transparent screens (usually for AR/Holo)
+                     // But Builder 'opacity' is usually for alignment helper. 
+                     // If user set it to 1 in config, it means fully opaque.
+                     els.screen.style.opacity = c.opacity;
+                }
+            }
 
             // 计算 Matrix 透视
             // 注意：这里需要获取图片的实际显示尺寸
