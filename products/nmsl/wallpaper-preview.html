@@ -98,7 +98,7 @@
         .scene-container {
             position: relative;
             /* 严格限制在舞台宽度内，留出安全边距 */
-            width: 100%;
+            width: auto; /* Changed from 100% to auto to wrap image tightly */
             max-width: calc(var(--stage-width) - 40px); 
             max-height: 82vh;
             transform-style: preserve-3d;
@@ -151,6 +151,21 @@
             position: absolute; inset: 0;
             box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05); /* 极细边框 */
             z-index: 31; border-radius: inherit;
+        }
+        /* 外扩黑边 */
+        .fx-outer {
+            position: absolute; inset: 0; z-index: 29; pointer-events: none;
+            box-shadow: none; border-radius: inherit;
+        }
+        /* 边缘融合 */
+        .edge-blend {
+            position: absolute; inset: 0; z-index: 9; pointer-events: none;
+            background: rgba(0,0,0,0.5);
+            border-radius: var(--edge-radius, 0px);
+            mix-blend-mode: soft-light;
+            box-shadow: 
+                0 0 var(--edge-blur, 0px) var(--edge-spread, 0px) rgba(0,0,0,var(--edge-opacity, 0.6)),
+                0 0 calc(var(--edge-blur, 0px) * 1.8) calc(var(--edge-spread, 0px) * 1.6) rgba(0,0,0,0.18);
         }
 
         /* =========================================
@@ -418,13 +433,14 @@
         .os-ui-layer {
             position: absolute; inset: 0;
             pointer-events: none;
-            z-index: 50;
+            z-index: 25; /* Below FX layer (30) */
             opacity: 0; transition: opacity 0.3s ease;
             font-family: -apple-system, "SF Pro Display", "SF Pro Text", sans-serif;
             overflow: hidden; /* Ensure content stays within rounded corners */
         }
         
-        .mode-ui .os-ui-layer, .mode-scene .os-ui-layer { opacity: 1; }
+        body[data-mode="ui"] .os-ui-layer, 
+        body[data-mode="scene"] .os-ui-layer { opacity: 1; }
 
         /* Scale Container */
         .ui-scale {
@@ -675,6 +691,8 @@
                         <div class="fx-inner-shadow"></div>
                     </div>
                 </div>
+                <div class="edge-blend" id="edgeBlend"></div>
+                <div class="fx-outer" id="fxOuter"></div>
             </div>
         </div>
     </div>
@@ -803,7 +821,10 @@
                 const preset = PRESETS[deviceType] || PRESETS.iphone;
                 
                 // Merge config: data.config > preset
+                // Spread all config props to support visual effects
                 const config = {
+                    ...preset,
+                    ...(data.config || {}),
                     w: data.config?.w || preset.w,
                     h: data.config?.h || preset.h,
                     r: data.config?.r || data.config?.radius || preset.r
@@ -923,6 +944,9 @@
         // 6. Render iOS UI
         renderIOS_UI();
         setInterval(updateTime, 1000);
+
+        // 7. Initialize View Mode (Ensure data-mode is set)
+        setViewMode('scene');
     }
 
     /**
@@ -1101,11 +1125,22 @@
         els.loader.classList.add('show');
         els.container.classList.remove('loaded');
 
+        // Preload image object to check validity
         const img = new Image();
         img.src = s.src;
 
-        img.onload = () => {
-            els.base.src = s.src;
+        // Use els.base.onload to ensure layout is updated before calculation
+        els.base.onload = () => {
+            // Update Scene Dimensions based on the rendered image
+            // We must use the actual displayed size, not natural size, because anchors are relative to the displayed image
+            const displayW = els.base.offsetWidth;
+            const displayH = els.base.offsetHeight;
+
+            if (!displayW || !displayH) {
+                console.error("Image dimensions are zero, layout might be pending");
+                // Fallback loop? Or just retry? 
+                // Usually requestAnimationFrame helps
+            }
 
             // 更新屏幕参数
             els.screen.style.width = s.config.w + 'px';
@@ -1115,27 +1150,40 @@
             const r = s.config.r + 'px';
             els.screen.style.borderRadius = r;
             document.querySelector('.fx-inner-shadow').style.borderRadius = r;
+            // Update fx-outer radius as well
+            if(document.getElementById('fxOuter')) document.getElementById('fxOuter').style.borderRadius = r;
+            // Update edge-blend radius
+            if(document.getElementById('edgeBlend')) document.getElementById('edgeBlend').style.setProperty('--edge-radius', r);
 
             // --- 视觉参数增强 (From Builder) ---
             if (s.config) {
                 const c = s.config;
                 // Bezel (模拟 Builder 的 bezel)
-                // Builder 逻辑: base=10, pct>50 => outer, pct<50 => inner
-                // 这里我们简化，只处理 inner shadow 模拟黑边
                 if (c.bezel !== undefined) {
                     const base = 10;
                     const pct = Math.max(0, Math.min(100, parseFloat(c.bezel)));
                     const inward = pct < 50 ? ((50 - pct) / 50) * base : 0;
+                    const outward = pct > 50 ? ((pct - 50) / 50) * base : 0;
                     const innerSize = base + inward;
-                    // fx-border is actually fx-inner-shadow in this file, or we need to check html structure
-                    // The HTML has .fx-inner-shadow. Let's use it for bezel-like effect
+                    const outerSize = outward;
+                    
                     document.querySelector('.fx-inner-shadow').style.boxShadow = `inset 0 0 0 ${innerSize}px rgba(0,0,0,1)`;
+                    
+                    const outerEl = document.getElementById('fxOuter');
+                    if (outerEl) {
+                        outerEl.style.boxShadow = outerSize > 0 ? `0 0 0 ${outerSize}px #000` : 'none';
+                    }
                 }
 
                 // Glare
                 if (c.glare !== undefined) {
                     const glareEl = document.querySelector('.fx-glare');
                     if (glareEl) glareEl.style.opacity = c.glare / 100;
+                }
+                
+                // Brightness
+                if (c.bright !== undefined) {
+                    els.wp.style.filter = `brightness(${c.bright}%)`;
                 }
 
                 // Noise (需添加 DOM)
@@ -1156,6 +1204,23 @@
                     }
                     noiseEl.style.opacity = c.noise / 200;
                 }
+                
+                // Edge Blend
+                if (c.edge !== undefined) {
+                    const edgeEl = document.getElementById('edgeBlend');
+                    if (edgeEl) {
+                        const max = 80;
+                        const v = parseFloat(c.edge);
+                        const eased = Math.pow(Math.min(Math.max(v, 0), max) / max, 1.6) * max;
+                        const blur = Math.min(36, eased / 2.6);
+                        const spread = eased / 2.2;
+                        const opacity = Math.min(0.55, 0.18 + (eased / max) * 0.32);
+                        
+                        edgeEl.style.setProperty('--edge-blur', `${blur.toFixed(1)}px`);
+                        edgeEl.style.setProperty('--edge-spread', `${spread.toFixed(1)}px`);
+                        edgeEl.style.setProperty('--edge-opacity', `${opacity.toFixed(2)}`);
+                    }
+                }
 
                 // Opacity (Screen Opacity)
                 if (c.opacity !== undefined) {
@@ -1167,11 +1232,6 @@
             }
 
             // 计算 Matrix 透视
-            // 注意：这里需要获取图片的实际显示尺寸
-            // 在 display:none 或 opacity:0 时可能获取不准，所以最好基于自然尺寸比例计算
-            const displayW = els.base.offsetWidth || 1200;
-            const displayH = els.base.offsetHeight || 800;
-
             // 将百分比锚点转换为像素
             const points = s.anchors.map(p => ({ x: p.x * displayW, y: p.y * displayH }));
             const m = solveHomography(s.config.w, s.config.h, points);
@@ -1183,6 +1243,9 @@
                 els.container.classList.add('loaded');
             });
         };
+        
+        // Trigger load
+        els.base.src = s.src;
     }
 
     function updateWallpaper(idx) {
