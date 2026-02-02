@@ -208,7 +208,15 @@
             
             /* 隐藏滚动条 */
             -ms-overflow-style: none; scrollbar-width: none;
+            
+            /* Initial state hidden to prevent flicker */
+            opacity: 0; transition: opacity 0.3s ease;
         }
+        /* 临时禁用平滑滚动的类 */
+        .scroll-track.no-smooth { scroll-behavior: auto !important; }
+        /* 布局稳定后显示 */
+        .scroll-track.ready { opacity: 1; }
+
         .scroll-track::-webkit-scrollbar { display: none; }
 
         /* 左右对齐方式不同 - 统一改为居中，因为现在是独立的侧边栏区域 */
@@ -736,7 +744,7 @@
     // 场景列表容器 - 动态加载
     let SCENES = [];
 
-    const WALLPAPERS = [
+    let WALLPAPERS = [
         'assets/killian-prevost-caillou-final.jpg',
         'assets/jacek-pilarski-citadel.webp',
         'assets/yucong-tang-yucong-tang-2e.webp',
@@ -765,7 +773,8 @@
         wallIndex: 0,
         bgFlip: false,
         isScrolling: false,
-        viewMode: 'scene'
+        viewMode: 'scene',
+        currentBgUrl: ''
     };
 
     const els = {
@@ -859,6 +868,19 @@
      */
 
     async function init() {
+        // Try to load wallpapers from sessionStorage first
+        try {
+            const storedWallpapers = sessionStorage.getItem('preview_wallpapers');
+            if (storedWallpapers) {
+                const parsed = JSON.parse(storedWallpapers);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    WALLPAPERS = parsed;
+                }
+            }
+        } catch (e) {
+            console.error("Failed to load wallpapers from session", e);
+        }
+
         // Load Scenes
         try {
             await loadScenes();
@@ -873,7 +895,21 @@
         // 如果 URL 提供了壁纸 src
         if (params.src) {
             // 检查壁纸是否已存在于列表中
-            const existingIndex = WALLPAPERS.indexOf(params.src);
+            // Normalize URLs for comparison (handle absolute/relative)
+            const normalize = (url) => {
+                try {
+                    return new URL(url, window.location.href).href;
+                } catch(e) { return url; }
+            };
+            const targetSrc = normalize(params.src);
+            
+            let existingIndex = WALLPAPERS.findIndex(w => normalize(w) === targetSrc);
+            
+            // Fallback: simple string inclusion if normalization fails to match
+            if (existingIndex === -1) {
+                existingIndex = WALLPAPERS.findIndex(w => w.includes(params.src) || params.src.includes(w));
+            }
+
             if (existingIndex !== -1) {
                 initialWallIndex = existingIndex;
             } else {
@@ -937,8 +973,25 @@
         // 5. 初始对齐
         // 延时执行以确保布局渲染完毕
         setTimeout(() => {
-            scrollToCard(els.sceneTrack, 0);
-            scrollToCard(els.wallTrack, initialWallIndex);
+            // 临时禁用 CSS 平滑滚动
+            els.sceneTrack.classList.add('no-smooth');
+            els.wallTrack.classList.add('no-smooth');
+
+            // 强制瞬间跳转
+            scrollToCard(els.sceneTrack, 0, 'auto');
+            scrollToCard(els.wallTrack, initialWallIndex, 'auto');
+
+            // 恢复平滑滚动 (下一帧恢复，确保跳转已执行)
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    els.sceneTrack.classList.remove('no-smooth');
+                    els.wallTrack.classList.remove('no-smooth');
+                    
+                    // Show tracks after position is stabilized
+                    els.sceneTrack.classList.add('ready');
+                    els.wallTrack.classList.add('ready');
+                }, 50);
+            });
         }, 100);
 
         // 6. Render iOS UI
@@ -1103,14 +1156,14 @@
     }
 
     // 辅助：平滑滚动到指定卡片
-    function scrollToCard(container, index) {
+    function scrollToCard(container, index, behavior = 'smooth') {
         const card = container.children[index];
         if (!card) return;
         // 计算让卡片居中的滚动位置
         const scrollPos = card.offsetTop - (container.clientHeight / 2) + (card.offsetHeight / 2);
         container.scrollTo({
             top: scrollPos,
-            behavior: 'smooth'
+            behavior: behavior
         });
     }
 
@@ -1244,8 +1297,11 @@
             });
         };
         
-        // Trigger load
+        // 触发 load
         els.base.src = s.src;
+        
+        // 更新背景 (如果是 Scene 模式，背景随场景变)
+        updateAmbientBackground();
     }
 
     function updateWallpaper(idx) {
@@ -1260,12 +1316,33 @@
         // 3. Raw Image
         if(els.rawImg) els.rawImg.src = url;
 
+        // 更新背景 (如果是 UI/Raw 模式，背景随壁纸变)
+        updateAmbientBackground();
+    }
+    
+    // 统一背景更新逻辑
+    function updateAmbientBackground() {
+        let bgUrl = '';
+        
+        if (state.viewMode === 'scene') {
+            // Scene 模式：背景使用场景图
+            if (SCENES[state.sceneIndex]) {
+                bgUrl = SCENES[state.sceneIndex].src;
+            }
+        } else {
+            // 其他模式：背景使用壁纸
+            bgUrl = WALLPAPERS[state.wallIndex];
+        }
+
+        if (!bgUrl || state.currentBgUrl === bgUrl) return;
+        state.currentBgUrl = bgUrl;
+
         // 环境光背景切换 (Cross-fade)
         state.bgFlip = !state.bgFlip;
         const activeBg = state.bgFlip ? els.bg2 : els.bg1;
         const inactiveBg = state.bgFlip ? els.bg1 : els.bg2;
         
-        activeBg.style.backgroundImage = `url(${url})`;
+        activeBg.style.backgroundImage = `url(${bgUrl})`;
         activeBg.classList.add('active');
         inactiveBg.classList.remove('active');
     }
@@ -1289,6 +1366,9 @@
                 btn.classList.remove('active');
             }
         });
+
+        // 切换模式时，检查是否需要更新背景
+        updateAmbientBackground();
 
         // Ensure current wallpaper is loaded for the new mode
         // (Usually handled by updateWallpaper, but strictly enforcing here for safety)

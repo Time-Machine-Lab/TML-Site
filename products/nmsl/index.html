@@ -939,6 +939,17 @@
                 }
 
                 if (src) {
+                    // Collect all wallpaper URLs from the gallery to maintain order
+                    const allCards = document.querySelectorAll('.gallery-card img');
+                    const wallpaperList = Array.from(allCards).map(img => img.src);
+                    
+                    // Save to sessionStorage for the preview page to access
+                    try {
+                        sessionStorage.setItem('preview_wallpapers', JSON.stringify(wallpaperList));
+                    } catch (e) {
+                        console.error('Failed to save wallpapers to sessionStorage', e);
+                    }
+
                     // Open Modal
                     // Encode params
                     const params = new URLSearchParams({
