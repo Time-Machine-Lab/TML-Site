@@ -1,0 +1,712 @@
+[
+  {
+    "title": "Caillou",
+    "artist": "Killian Prevost",
+    "category": "Character Animation",
+    "href": "/artwork",
+    "src": "/assets/killian-prevost-caillou-final.jpg",
+    "alt": "Caillou",
+    "infoTitle": "Caillou",
+    "infoArtist": "Killian Prevost"
+  },
+  {
+    "title": "Bull",
+    "artist": "Killian Prevost",
+    "category": "Visual Development",
+    "href": "/artwork",
+    "src": "/assets/killian-prevost-bull.jpg",
+    "alt": "Bull",
+    "infoTitle": "Bull",
+    "infoArtist": "Killian Prevost"
+  },
+  {
+    "title": "Wanabe Matte",
+    "artist": "Killian Prevost",
+    "category": "Game Art",
+    "href": "/artwork",
+    "src": "/assets/killian-prevost-wanabematte.webp",
+    "alt": "Wanabe Matte",
+    "infoTitle": "Wanabe Matte",
+    "infoArtist": "Killian Prevost"
+  },
+  {
+    "title": "Killian Prevost Tour",
+    "artist": "TmlStation Artist",
+    "category": "Architectural Visualization",
+    "href": "/artwork",
+    "src": "/assets/killian-prevost-tour.jpg",
+    "alt": "Killian Prevost Tour",
+    "infoTitle": "Killian Prevost Tour",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "Marc Mons A1",
+    "artist": "TmlStation Artist",
+    "category": "Character Animation",
+    "href": "/artwork",
+    "src": "/assets/marc-mons-a1.jpg",
+    "alt": "Marc Mons A1",
+    "infoTitle": "Marc Mons A1",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "Nemo Art 4C434Ebf F1B2 4A48 9D66 F92477857Dfa",
+    "artist": "TmlStation Artist",
+    "category": "Games and Real-Time 3D Environment Art",
+    "href": "/artwork",
+    "src": "/assets/nemo-art-4c434ebf-f1b2-4a48-9d66-f92477857dfa.webp",
+    "alt": "Nemo Art 4C434Ebf F1B2 4A48 9D66 F92477857Dfa",
+    "infoTitle": "Nemo Art 4C434Ebf F1B2 4A48 9D66 F92477857Dfa",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "Sergey Semenovykh Sergey Semenovykh Chainsaw Man 1X1",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/sergey-semenovykh-sergey-semenovykh-chainsaw-man-1x1.jpg",
+    "alt": "Sergey Semenovykh Sergey Semenovykh Chainsaw Man 1X1",
+    "infoTitle": "Sergey Semenovykh Sergey Semenovykh Chainsaw Man 1X1",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "Sergey Semenovykh Sergey Semenovykh The Crimson Invasion 1X1",
+    "artist": "TmlStation Artist",
+    "category": "Matte Painting",
+    "href": "/artwork",
+    "src": "/assets/sergey-semenovykh-sergey-semenovykh-the-crimson-invasion-1x1.webp",
+    "alt": "Sergey Semenovykh Sergey Semenovykh The Crimson Invasion 1X1",
+    "infoTitle": "Sergey Semenovykh Sergey Semenovykh The Crimson Invasion 1X1",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "Shurazhao 1 02",
+    "artist": "TmlStation Artist",
+    "category": "Environmental Concept Art &amp; Design",
+    "href": "/artwork",
+    "src": "/assets/shurazhao-1-02.jpg",
+    "alt": "Shurazhao 1 02",
+    "infoTitle": "Shurazhao 1 02",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "Shurazhao Ncounter With The Ancient Leviathan 2",
+    "artist": "TmlStation Artist",
+    "category": "Game Art",
+    "href": "/artwork",
+    "src": "/assets/shurazhao-ncounter-with-the-ancient-leviathan-2.webp",
+    "alt": "Shurazhao Ncounter With The Ancient Leviathan 2",
+    "infoTitle": "Shurazhao Ncounter With The Ancient Leviathan 2",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "Denis Bodrov Dsc0764",
+    "artist": "TmlStation Artist",
+    "category": "Character Animation",
+    "href": "/artwork",
+    "src": "/assets/denis-bodrov-dsc0764.jpg",
+    "alt": "Denis Bodrov Dsc0764",
+    "infoTitle": "Denis Bodrov Dsc0764",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "Denis Bodrov Dsc2378 2",
+    "artist": "TmlStation Artist",
+    "category": "Visual Development",
+    "href": "/artwork",
+    "src": "/assets/denis-bodrov-dsc2378-2.webp",
+    "alt": "Denis Bodrov Dsc2378 2",
+    "infoTitle": "Denis Bodrov Dsc2378 2",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "Yucong Tang 11 22 4",
+    "artist": "Yucong Tang",
+    "category": "Character Design",
+    "href": "/artwork",
+    "src": "/assets/yucong-tang-yucong-tang-11-22-4.webp",
+    "alt": "Yucong Tang 11 22 4",
+    "infoTitle": "Yucong Tang 11 22 4",
+    "infoArtist": "Yucong Tang"
+  },
+  {
+    "title": "Yucong Tang 2e",
+    "artist": "Yucong Tang",
+    "category": "Character Design",
+    "href": "/artwork",
+    "src": "/assets/yucong-tang-yucong-tang-2e.webp",
+    "alt": "Yucong Tang 2e",
+    "infoTitle": "Yucong Tang 2e",
+    "infoArtist": "Yucong Tang"
+  },
+  {
+    "title": "Yucong Tang 3",
+    "artist": "Yucong Tang",
+    "category": "Character Design",
+    "href": "/artwork",
+    "src": "/assets/yucong-tang-yucong-tang-3.webp",
+    "alt": "Yucong Tang 3",
+    "infoTitle": "Yucong Tang 3",
+    "infoArtist": "Yucong Tang"
+  },
+  {
+    "title": "1 15",
+    "artist": "Zaq",
+    "category": "Sketches",
+    "href": "/artwork",
+    "src": "/assets/zaq-1-15.jpg",
+    "alt": "1 15",
+    "infoTitle": "1 15",
+    "infoArtist": "Zaq"
+  },
+  {
+    "title": "Environment Illustration Final Small 02",
+    "artist": "Adrien Gonzalez",
+    "category": "Environmental Concept Art &amp; Design",
+    "href": "/artwork",
+    "src": "/assets/adrien-gonzalez-environment-illustration-final-small-02.webp",
+    "alt": "Environment Illustration Final Small 02",
+    "infoTitle": "Environment Illustration Final Small 02",
+    "infoArtist": "Adrien Gonzalez"
+  },
+  {
+    "title": "4CkOe7bPRy0mo14g",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/4CkOe7bPRy0mo14g.png",
+    "alt": "4CkOe7bPRy0mo14g",
+    "infoTitle": "4CkOe7bPRy0mo14g",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "4FDzxckWeL0ok1hc",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/4FDzxckWeL0ok1hc.png",
+    "alt": "4FDzxckWeL0ok1hc",
+    "infoTitle": "4FDzxckWeL0ok1hc",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "4hPJjwtG2S1e81uo",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/4hPJjwtG2S1e81uo.png",
+    "alt": "4hPJjwtG2S1e81uo",
+    "infoTitle": "4hPJjwtG2S1e81uo",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "9ahUN2wJ3O0fk0jk",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/9ahUN2wJ3O0fk0jk.png",
+    "alt": "9ahUN2wJ3O0fk0jk",
+    "infoTitle": "9ahUN2wJ3O0fk0jk",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "HJF91J30tX18g1uo",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/HJF91J30tX18g1uo.png",
+    "alt": "HJF91J30tX18g1uo",
+    "infoTitle": "HJF91J30tX18g1uo",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "KrsPdvRidR0ls0wg",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/KrsPdvRidR0ls0wg.png",
+    "alt": "KrsPdvRidR0ls0wg",
+    "infoTitle": "KrsPdvRidR0ls0wg",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "P7bLuaWnWR0lc0w0",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/P7bLuaWnWR0lc0w0.png",
+    "alt": "P7bLuaWnWR0lc0w0",
+    "infoTitle": "P7bLuaWnWR0lc0w0",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "PahCQadPn116v1kw",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/PahCQadPn116v1kw.png",
+    "alt": "PahCQadPn116v1kw",
+    "infoTitle": "PahCQadPn116v1kw",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "RkM4Puh5Xa1ds1uo",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/RkM4Puh5Xa1ds1uo.png",
+    "alt": "RkM4Puh5Xa1ds1uo",
+    "infoTitle": "RkM4Puh5Xa1ds1uo",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "Vz9RrIvPTb1bs0j4",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/Vz9RrIvPTb1bs0j4.png",
+    "alt": "Vz9RrIvPTb1bs0j4",
+    "infoTitle": "Vz9RrIvPTb1bs0j4",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "W4j62TiiK40ps0y8",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/W4j62TiiK40ps0y8.png",
+    "alt": "W4j62TiiK40ps0y8",
+    "infoTitle": "W4j62TiiK40ps0y8",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "Yoh8ypLjn70pu0xc",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/Yoh8ypLjn70pu0xc.png",
+    "alt": "Yoh8ypLjn70pu0xc",
+    "infoTitle": "Yoh8ypLjn70pu0xc",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "aJU4GK7T5B0ps0y8",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/aJU4GK7T5B0ps0y8.png",
+    "alt": "aJU4GK7T5B0ps0y8",
+    "infoTitle": "aJU4GK7T5B0ps0y8",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "aNf1Hr1rBB0mo14g",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/aNf1Hr1rBB0mo14g.png",
+    "alt": "aNf1Hr1rBB0mo14g",
+    "infoTitle": "aNf1Hr1rBB0mo14g",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "bZKahhci900ok1hc",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/bZKahhci900ok1hc.png",
+    "alt": "bZKahhci900ok1hc",
+    "infoTitle": "bZKahhci900ok1hc",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "dJb5Bz1Tfp0j30sg",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/dJb5Bz1Tfp0j30sg.png",
+    "alt": "dJb5Bz1Tfp0j30sg",
+    "infoTitle": "dJb5Bz1Tfp0j30sg",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "ln0cYBIMFZ0p40xc",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/ln0cYBIMFZ0p40xc.png",
+    "alt": "ln0cYBIMFZ0p40xc",
+    "infoTitle": "ln0cYBIMFZ0p40xc",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "mhDnuLgjMU0mo14g",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/mhDnuLgjMU0mo14g.png",
+    "alt": "mhDnuLgjMU0mo14g",
+    "infoTitle": "mhDnuLgjMU0mo14g",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "oZb99Th2Nu0m80xc",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/oZb99Th2Nu0m80xc.png",
+    "alt": "oZb99Th2Nu0m80xc",
+    "infoTitle": "oZb99Th2Nu0m80xc",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "pOByTYls860ps0y8",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/pOByTYls860ps0y8.png",
+    "alt": "pOByTYls860ps0y8",
+    "infoTitle": "pOByTYls860ps0y8",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "ty6IcbY2vR0eg0lo",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/ty6IcbY2vR0eg0lo.png",
+    "alt": "ty6IcbY2vR0eg0lo",
+    "infoTitle": "ty6IcbY2vR0eg0lo",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "ujSLqE7IgZ0ow11c",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/ujSLqE7IgZ0ow11c.png",
+    "alt": "ujSLqE7IgZ0ow11c",
+    "infoTitle": "ujSLqE7IgZ0ow11c",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "vYvdpcpPUR0hs0vl",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/vYvdpcpPUR0hs0vl.png",
+    "alt": "vYvdpcpPUR0hs0vl",
+    "infoTitle": "vYvdpcpPUR0hs0vl",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "wEtwau4EsJ0vw1kw",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/wEtwau4EsJ0vw1kw.png",
+    "alt": "wEtwau4EsJ0vw1kw",
+    "infoTitle": "wEtwau4EsJ0vw1kw",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "xU79A821t91bs0j4",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/xU79A821t91bs0j4.png",
+    "alt": "xU79A821t91bs0j4",
+    "infoTitle": "xU79A821t91bs0j4",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "yhvwP9l1xo0lj0sg",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/yhvwP9l1xo0lj0sg.png",
+    "alt": "yhvwP9l1xo0lj0sg",
+    "infoTitle": "yhvwP9l1xo0lj0sg",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "zEqVVIjoI80ok1hc",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/zEqVVIjoI80ok1hc.png",
+    "alt": "zEqVVIjoI80ok1hc",
+    "infoTitle": "zEqVVIjoI80ok1hc",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "zJpFcDPqfs0sg0sg",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/zJpFcDPqfs0sg0sg.jpg",
+    "alt": "zJpFcDPqfs0sg0sg",
+    "infoTitle": "zJpFcDPqfs0sg0sg",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "Eugenia Korolkova Final1",
+    "artist": "TmlStation Artist",
+    "category": "Game Art",
+    "href": "/artwork",
+    "src": "/assets/eugenia-korolkova-final1.webp",
+    "alt": "Eugenia Korolkova Final1",
+    "infoTitle": "Eugenia Korolkova Final1",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "Evgeny Dvoretckiy 3",
+    "artist": "TmlStation Artist",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/evgeny-dvoretckiy-3.webp",
+    "alt": "Evgeny Dvoretckiy 3",
+    "infoTitle": "Evgeny Dvoretckiy 3",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "Citadel",
+    "artist": "Jacek Pilarski",
+    "category": "All Channels",
+    "href": "/artwork",
+    "src": "/assets/jacek-pilarski-citadel.webp",
+    "alt": "Citadel",
+    "infoTitle": "Citadel",
+    "infoArtist": "Jacek Pilarski"
+  },
+  {
+    "title": "Environment Illustration",
+    "artist": "Adrien Gonzalez",
+    "category": "Matte Painting",
+    "href": "/artwork",
+    "src": "/assets/adrien-gonzalez-environment-illustration-final-small-02.webp",
+    "alt": "Environment Illustration",
+    "infoTitle": "Environment Illustration",
+    "infoArtist": "Adrien Gonzalez"
+  },
+  {
+    "title": "Keyframe",
+    "artist": "Ainara Blanch",
+    "category": "Architectural Visualization",
+    "href": "/artwork",
+    "src": "/assets/ainara-blanch-keyframe-def.jpg",
+    "alt": "Keyframe",
+    "infoTitle": "Keyframe",
+    "infoArtist": "Ainara Blanch"
+  },
+  {
+    "title": "End Result",
+    "artist": "Alex Che",
+    "category": "Environmental Concept Art &amp; Design",
+    "href": "/artwork",
+    "src": "/assets/alex_che-end-result-02.jpg",
+    "alt": "End Result",
+    "infoTitle": "End Result",
+    "infoArtist": "Alex Che"
+  },
+  {
+    "title": "Denis Bodrov",
+    "artist": "Denis Bodrov",
+    "category": "Architectural Visualization",
+    "href": "/artwork",
+    "src": "/assets/denis-bodrov-dsc0764.jpg",
+    "alt": "Denis Bodrov",
+    "infoTitle": "Denis Bodrov",
+    "infoArtist": "Denis Bodrov"
+  },
+  {
+    "title": "Denis Bodrov 2",
+    "artist": "Denis Bodrov",
+    "category": "Environmental Concept Art &amp; Design",
+    "href": "/artwork",
+    "src": "/assets/denis-bodrov-dsc2378-2.webp",
+    "alt": "Denis Bodrov 2",
+    "infoTitle": "Denis Bodrov 2",
+    "infoArtist": "Denis Bodrov"
+  },
+  {
+    "title": "Final Scene",
+    "artist": "Eugenia Korolkova",
+    "category": "Character Animation",
+    "href": "/artwork",
+    "src": "/assets/eugenia-korolkova-final1.webp",
+    "alt": "Final Scene",
+    "infoTitle": "Final Scene",
+    "infoArtist": "Eugenia Korolkova"
+  },
+  {
+    "title": "Dvoretckiy",
+    "artist": "Evgeny Dvoretckiy",
+    "category": "Visual Development",
+    "href": "/artwork",
+    "src": "/assets/evgeny-dvoretckiy-3.webp",
+    "alt": "Dvoretckiy",
+    "infoTitle": "Dvoretckiy",
+    "infoArtist": "Evgeny Dvoretckiy"
+  },
+  {
+    "title": "U2",
+    "artist": "Jacek Pilarski",
+    "category": "Games and Real-Time 3D Environment Art",
+    "href": "/artwork",
+    "src": "/assets/jacek-pilarski-u2.jpg",
+    "alt": "U2",
+    "infoTitle": "U2",
+    "infoArtist": "Jacek Pilarski"
+  },
+  {
+    "title": "Shurazhao Shurazhao Guardian Of The Forgotten City 3",
+    "artist": "TmlStation Artist",
+    "category": "Games and Real-Time 3D Environment Art",
+    "href": "/artwork",
+    "src": "/assets/shurazhao-shurazhao-guardian-of-the-forgotten-city-3.webp",
+    "alt": "Shurazhao Shurazhao Guardian Of The Forgotten City 3",
+    "infoTitle": "Shurazhao Shurazhao Guardian Of The Forgotten City 3",
+    "infoArtist": "TmlStation Artist"
+  },
+  {
+    "title": "Thumb Ffws",
+    "artist": "Caio Peral",
+    "category": "Game Art",
+    "href": "/artwork",
+    "src": "/assets/caio-peral-caio-peral-thumb-ffws.webp",
+    "alt": "Thumb Ffws",
+    "infoTitle": "Thumb Ffws",
+    "infoArtist": "Caio Peral"
+  },
+  {
+    "title": "Artstation61",
+    "artist": "Peter Krasevec",
+    "category": "Games and Real-Time 3D Environment Art",
+    "href": "/artwork",
+    "src": "/assets/peter-krasevec-artstation61.jpg",
+    "alt": "Artstation61",
+    "infoTitle": "Artstation61",
+    "infoArtist": "Peter Krasevec"
+  },
+  {
+    "title": "Thumbs",
+    "artist": "Robin Lhebrard",
+    "category": "Character Animation",
+    "href": "/artwork",
+    "src": "/assets/robin-lhebrard-robin-lhebrard-thumbs.webp",
+    "alt": "Thumbs",
+    "infoTitle": "Thumbs",
+    "infoArtist": "Robin Lhebrard"
+  },
+  {
+    "title": "Breath Of The Ancient Earth Sam",
+    "artist": "Sugi",
+    "category": "Environmental Concept Art &amp; Design",
+    "href": "/artwork",
+    "src": "/assets/sugi-sugi-breath-of-the-ancient-earth-sam.webp",
+    "alt": "Breath Of The Ancient Earth Sam",
+    "infoTitle": "Breath Of The Ancient Earth Sam",
+    "infoArtist": "Sugi"
+  },
+  {
+    "title": "Fs Final",
+    "artist": "Thomas Delatte",
+    "category": "Game Art",
+    "href": "/artwork",
+    "src": "/assets/thomas-delatte-fs-final.webp",
+    "alt": "Fs Final",
+    "infoTitle": "Fs Final",
+    "infoArtist": "Thomas Delatte"
+  },
+  {
+    "title": "Liberty City 6",
+    "artist": "Thu Berchs",
+    "category": "Games and Real-Time 3D Environment Art",
+    "href": "/artwork",
+    "src": "/assets/thu-berchs-liberty-city-6.jpg",
+    "alt": "Liberty City 6",
+    "infoTitle": "Liberty City 6",
+    "infoArtist": "Thu Berchs"
+  },
+  {
+    "title": "20260109",
+    "artist": "Toh Yasu",
+    "category": "Illustration",
+    "href": "/artwork",
+    "src": "/assets/toh-yasu-20260109.jpg",
+    "alt": "20260109",
+    "infoTitle": "20260109",
+    "infoArtist": "Toh Yasu"
+  },
+  {
+    "title": "20260113",
+    "artist": "Toh Yasu",
+    "category": "Illustration",
+    "href": "/artwork",
+    "src": "/assets/toh-yasu-20260113.jpg",
+    "alt": "20260113",
+    "infoTitle": "20260113",
+    "infoArtist": "Toh Yasu"
+  },
+  {
+    "title": "Img 9860",
+    "artist": "Tysen Johnson",
+    "category": "Matte Painting",
+    "href": "/artwork",
+    "src": "/assets/tysen-johnson-img-9860.jpg",
+    "alt": "Img 9860",
+    "infoTitle": "Img 9860",
+    "infoArtist": "Tysen Johnson"
+  },
+  {
+    "title": "Cg Art 2",
+    "artist": "Yf Cg",
+    "category": "Games and Real-Time 3D Environment Art",
+    "href": "/artwork",
+    "src": "/assets/yf-cg-005eiqs9ly1i5th7engcij34w0280x6v.webp",
+    "alt": "Cg Art 2",
+    "infoTitle": "Cg Art 2",
+    "infoArtist": "Yf Cg"
+  },
+  {
+    "title": "Cg Art 3",
+    "artist": "Yf Cg",
+    "category": "Games and Real-Time 3D Environment Art",
+    "href": "/artwork",
+    "src": "/assets/yf-cg-005eiqs9ly1i5th7eu4h3j34w0280he0-1.webp",
+    "alt": "Cg Art 3",
+    "infoTitle": "Cg Art 3",
+    "infoArtist": "Yf Cg"
+  },
+  {
+    "title": "Cg Art 4",
+    "artist": "Yf Cg",
+    "category": "Games and Real-Time 3D Environment Art",
+    "href": "/artwork",
+    "src": "/assets/yf-cg-005eiqs9ly1i5th7f056nj34vk280u14.webp",
+    "alt": "Cg Art 4",
+    "infoTitle": "Cg Art 4",
+    "infoArtist": "Yf Cg"
+  },
+  {
+    "title": "Cg Art 7",
+    "artist": "Yf Cg",
+    "category": "Games and Real-Time 3D Environment Art",
+    "href": "/artwork",
+    "src": "/assets/yf-cg-005eiqs9ly1i5the8636zj32nm15oqv7.jpg",
+    "alt": "Cg Art 7",
+    "infoTitle": "Cg Art 7",
+    "infoArtist": "Yf Cg"
+  },
+  {
+    "title": "Yucong Tang 1",
+    "artist": "Yucong Tang",
+    "category": "Character Design",
+    "href": "/artwork",
+    "src": "/assets/yucong-tang-yucong-tang-1.webp",
+    "alt": "Yucong Tang 1",
+    "infoTitle": "Yucong Tang 1",
+    "infoArtist": "Yucong Tang"
+  }
+]

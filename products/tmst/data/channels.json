@@ -1,0 +1,151 @@
+[
+  {
+    "label": "All Channels",
+    "channel": "All Channels",
+    "iconType": "svg",
+    "viewBox": "0 0 24 24",
+    "path": "M3 3h8v8H3V3Zm10 0h8v8h-8V3ZM3 13h8v8H3v-8Zm10 0h8v8h-8v-8Z",
+    "all": true,
+    "active": true
+  },
+  {
+    "label": "Matte Painting",
+    "channel": "Matte Painting",
+    "iconType": "img",
+    "icon": "/assets/thumb.jpg",
+    "alt": "Matte Painting"
+  },
+  {
+    "label": "Architectural Visualization",
+    "channel": "Architectural Visualization",
+    "iconType": "img",
+    "icon": "/assets/thumb(1).jpg",
+    "alt": "Architectural Visualization"
+  },
+  {
+    "label": "Environmental Concept Art & Design",
+    "channel": "Environmental Concept Art & Design",
+    "iconType": "img",
+    "icon": "/assets/thumb(2).jpg",
+    "alt": "Environmental Concept Art & Design"
+  },
+  {
+    "label": "Character Animation",
+    "channel": "Character Animation",
+    "iconType": "img",
+    "icon": "/assets/thumb(3).jpg",
+    "alt": "Character Animation"
+  },
+  {
+    "label": "Visual Development",
+    "channel": "Visual Development",
+    "iconType": "img",
+    "icon": "/assets/thumb(4).jpg",
+    "alt": "Visual Development"
+  },
+  {
+    "label": "Game Art",
+    "channel": "Game Art",
+    "iconType": "img",
+    "icon": "/assets/thumb(5).jpg",
+    "alt": "Game Art"
+  },
+  {
+    "label": "Games and Real-Time 3D Environment Art",
+    "channel": "Games & Real-Time 3D Environment",
+    "iconType": "img",
+    "icon": "/assets/thumb(6).jpg",
+    "alt": "Games and Real-Time 3D Environment Art"
+  },
+  {
+    "label": "Sketches",
+    "channel": "Sketches",
+    "iconType": "img",
+    "icon": "/assets/thumb(8).jpg",
+    "alt": "Sketches"
+  },
+  {
+    "label": "Tutorials",
+    "channel": "Tutorials",
+    "iconType": "img",
+    "icon": "/assets/thumb(9).jpg",
+    "alt": "Tutorials"
+  },
+  {
+    "label": "Abstract",
+    "channel": "Abstract",
+    "iconType": "img",
+    "icon": "/assets/thumb(10).jpg",
+    "alt": "Abstract"
+  },
+  {
+    "label": "Anatomy",
+    "channel": "Anatomy",
+    "iconType": "img",
+    "icon": "/assets/thumb(11).jpg",
+    "alt": "Anatomy"
+  },
+  {
+    "label": "Animals & Wildlife",
+    "channel": "Animals & Wildlife",
+    "iconType": "img",
+    "icon": "/assets/thumb(12).jpg",
+    "alt": "Animals & Wildlife"
+  },
+  {
+    "label": "Anime & Manga",
+    "channel": "Anime & Manga",
+    "iconType": "img",
+    "icon": "/assets/thumb(13).jpg",
+    "alt": "Anime & Manga"
+  },
+  {
+    "label": "Architectural Concepts",
+    "channel": "Architectural Concepts",
+    "iconType": "img",
+    "icon": "/assets/thumb(14).jpg",
+    "alt": "Architectural Concepts"
+  },
+  {
+    "label": "Board & Card Game Art",
+    "channel": "Board & Card Game Art",
+    "iconType": "img",
+    "icon": "/assets/thumb(15).jpg",
+    "alt": "Board & Card Game Art"
+  },
+  {
+    "label": "Book Illustration",
+    "channel": "Book Illustration",
+    "iconType": "img",
+    "icon": "/assets/thumb(16).jpg",
+    "alt": "Book Illustration"
+  },
+  {
+    "label": "Character Design",
+    "channel": "Character Design",
+    "iconType": "img",
+    "icon": "/assets/thumb(17).jpg",
+    "alt": "Character Design"
+  },
+  {
+    "label": "Character Modeling",
+    "channel": "Character Modeling",
+    "iconType": "img",
+    "icon": "/assets/thumb(18).jpg",
+    "alt": "Character Modeling"
+  },
+  {
+    "label": "Children's Art",
+    "channel": "Children's Art",
+    "iconType": "img",
+    "icon": "/assets/thumb(19).jpg",
+    "alt": "Children's Art"
+  },
+  {
+    "label": "Comic Art",
+    "channel": "Comic Art",
+    "iconType": "img",
+    "icon": "/assets/thumb(20).jpg",
+    "alt": "Comic Art"
+  }
+]
