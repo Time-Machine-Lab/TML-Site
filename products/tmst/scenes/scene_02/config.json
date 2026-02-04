@@ -1,1 +1,1 @@
-{"scene":"base.jpg","title":"Untitled Scene","device":"iphone","anchors":[{"x":0.2984,"y":0.1282},{"x":0.7,"y":0.1282},{"x":0.7016,"y":0.7605},{"x":0.3,"y":0.7628}],"config":{"radius":170,"bezel":50,"opacity":1,"bright":100,"glare":20,"noise":0,"edge":28}}
+{"scene":"base.jpg","title":"Untitled Scene","device":"iphone","anchors":[{"x":0.3743,"y":0.0859},{"x":0.8569,"y":0.0859},{"x":0.8586,"y":0.8515},{"x":0.3743,"y":0.8503}],"config":{"radius":188,"bezel":50,"opacity":1,"bright":100,"glare":31,"noise":5,"edge":30}}
