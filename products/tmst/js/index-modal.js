@@ -4,12 +4,12 @@
         const iframe = document.getElementById('preview-iframe');
         if (!modal || !iframe) return;
 
-        // Attach click handlers to all gallery cards
-        // Select both .gallery-card and .hero-card to cover all bases
-        const cards = document.querySelectorAll('.gallery-card, .hero-card');
-        
-        cards.forEach(card => {
-            card.addEventListener('click', (e) => {
+    // Attach click handlers using Event Delegation for dynamic content support
+        document.body.addEventListener('click', (e) => {
+            const card = e.target.closest('.gallery-card, .hero-card');
+            
+            // If card found and it's not the upload trigger
+            if (card && !card.classList.contains('upload-trigger') && !card.closest('.upload-trigger')) {
                 e.preventDefault(); // Prevent default navigation
                 
                 // Get image source
@@ -34,7 +34,8 @@
 
                 if (src) {
                     // Collect all wallpaper URLs from the gallery to maintain order
-                    const allCards = document.querySelectorAll('.gallery-card img');
+                    // Exclude upload trigger images if any
+                    const allCards = document.querySelectorAll('.gallery-card:not(.upload-trigger) img');
                     const wallpaperList = Array.from(allCards).map(img => img.src);
                     
                     // Save to sessionStorage for the preview page to access
@@ -56,7 +57,7 @@
                     modal.style.display = 'block';
                     document.body.style.overflow = 'hidden'; // Disable scroll on body
                 }
-            });
+            }
         });
 
         // Listen for close message from iframe
