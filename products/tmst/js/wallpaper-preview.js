@@ -64,7 +64,8 @@
         bgFlip: false,
         isScrolling: false,
         viewMode: 'scene',
-        currentBgUrl: ''
+        currentBgUrl: '',
+        uiSettings: null
     };
 
     const els = {
@@ -81,7 +82,34 @@
         bg1: document.getElementById('bg1'),
         bg2: document.getElementById('bg2'),
         loader: document.getElementById('loader'),
-        switchBtns: document.querySelectorAll('.switch-btn')
+        switchBtns: document.querySelectorAll('.switch-btn'),
+        uiPanel: document.getElementById('uiControlPanel'),
+        uiControls: null,
+        uiControlsBound: false
+    };
+
+    const UI_SETTINGS_KEY = 'preview_ios_ui_settings_v1';
+    const IOS_UI_DEFAULTS = {
+        showTime: true,
+        showDate: true,
+        showStatusLeft: true,
+        showStatusRight: true,
+        showIsland: true,
+        showWidgets: true,
+        showBottomButtons: true,
+        showHomeBar: true,
+        timeFontFamily: "'SF Pro Display','SF Pro Text','Inter',-apple-system,sans-serif",
+        dateFontFamily: "'SF Pro Display','SF Pro Text','Inter',-apple-system,sans-serif",
+        timeSize: 300,
+        dateSize: 64,
+        useGlobalColor: false,
+        globalColor: '#ffffff',
+        timeColor: '#ffffff',
+        dateColor: '#ffffff',
+        statusColor: '#ffffff',
+        widgetColor: '#ffffff',
+        bottomColor: '#ffffff',
+        homeBarColor: '#ffffff'
     };
 
     // 解析 URL 参数
@@ -168,6 +196,8 @@
      */
 
     async function init() {
+        state.uiSettings = getStoredIOSUISettings();
+
         // Try to load wallpapers from sessionStorage first
         try {
             const storedWallpapers = sessionStorage.getItem('preview_wallpapers');
@@ -300,6 +330,9 @@
 
         // 6. Render iOS UI
         renderIOS_UI();
+        initUIControlPanel();
+        initUIPanelInteractions();
+        applyIOSUISettings();
         setInterval(updateTime, 1000);
 
         // 7. Initialize View Mode (Ensure data-mode is set)
@@ -358,6 +391,7 @@
         document.getElementById('os-ui-flat').innerHTML = html;
         
         updateTime();
+        applyIOSUISettings();
     }
 
     function updateTime() {
@@ -687,6 +721,211 @@
             els.rawImg.src = url;
         }
     };
+
+    function getStoredIOSUISettings() {
+        try {
+            const raw = localStorage.getItem(UI_SETTINGS_KEY);
+            if (!raw) return { ...IOS_UI_DEFAULTS };
+            const parsed = JSON.parse(raw);
+            return {
+                ...IOS_UI_DEFAULTS,
+                ...(parsed || {}),
+                timeSize: clampNumber(parsed?.timeSize, 180, 360, IOS_UI_DEFAULTS.timeSize),
+                dateSize: clampNumber(parsed?.dateSize, 36, 90, IOS_UI_DEFAULTS.dateSize)
+            };
+        } catch (err) {
+            console.error('Failed to parse UI settings', err);
+            return { ...IOS_UI_DEFAULTS };
+        }
+    }
+
+    function saveIOSUISettings() {
+        try {
+            localStorage.setItem(UI_SETTINGS_KEY, JSON.stringify(state.uiSettings));
+        } catch (err) {
+            console.error('Failed to save UI settings', err);
+        }
+    }
+
+    function clampNumber(v, min, max, fallback) {
+        const n = Number(v);
+        if (Number.isNaN(n)) return fallback;
+        return Math.min(max, Math.max(min, n));
+    }
+
+    function initUIControlPanel() {
+        els.uiControls = {
+            showTime: document.getElementById('ui-toggle-time'),
+            showDate: document.getElementById('ui-toggle-date'),
+            showStatusLeft: document.getElementById('ui-toggle-status-left'),
+            showStatusRight: document.getElementById('ui-toggle-status-right'),
+            showIsland: document.getElementById('ui-toggle-island'),
+            showWidgets: document.getElementById('ui-toggle-widgets'),
+            showBottomButtons: document.getElementById('ui-toggle-bottom'),
+            showHomeBar: document.getElementById('ui-toggle-homebar'),
+            timeFontFamily: document.getElementById('ui-time-font'),
+            dateFontFamily: document.getElementById('ui-date-font'),
+            timeSize: document.getElementById('ui-time-size'),
+            dateSize: document.getElementById('ui-date-size'),
+            useGlobalColor: document.getElementById('ui-use-global-color'),
+            globalColor: document.getElementById('ui-global-color'),
+            timeColor: document.getElementById('ui-time-color'),
+            dateColor: document.getElementById('ui-date-color'),
+            statusColor: document.getElementById('ui-status-color'),
+            widgetColor: document.getElementById('ui-widget-color'),
+            bottomColor: document.getElementById('ui-bottom-color'),
+            homeBarColor: document.getElementById('ui-homebar-color')
+        };
+
+        const c = els.uiControls;
+        if (!c.showTime) return;
+
+        syncUIControlsFromState();
+
+        if (els.uiControlsBound) return;
+        els.uiControlsBound = true;
+
+        const bindInput = (key, parser = (value) => value) => {
+            const el = c[key];
+            if (!el) return;
+            const handler = () => {
+                state.uiSettings[key] = parser(el.type === 'checkbox' ? el.checked : el.value);
+                applyIOSUISettings();
+                saveIOSUISettings();
+            };
+            el.addEventListener('input', handler);
+            el.addEventListener('change', handler);
+        };
+
+        bindInput('showTime', Boolean);
+        bindInput('showDate', Boolean);
+        bindInput('showStatusLeft', Boolean);
+        bindInput('showStatusRight', Boolean);
+        bindInput('showIsland', Boolean);
+        bindInput('showWidgets', Boolean);
+        bindInput('showBottomButtons', Boolean);
+        bindInput('showHomeBar', Boolean);
+        bindInput('timeFontFamily');
+        bindInput('dateFontFamily');
+        bindInput('timeSize', (v) => clampNumber(v, 180, 360, IOS_UI_DEFAULTS.timeSize));
+        bindInput('dateSize', (v) => clampNumber(v, 36, 90, IOS_UI_DEFAULTS.dateSize));
+        bindInput('useGlobalColor', Boolean);
+        bindInput('globalColor');
+        bindInput('timeColor');
+        bindInput('dateColor');
+        bindInput('statusColor');
+        bindInput('widgetColor');
+        bindInput('bottomColor');
+        bindInput('homeBarColor');
+    }
+
+    function syncUIControlsFromState() {
+        if (!els.uiControls || !state.uiSettings) return;
+        const c = els.uiControls;
+        if (!c.showTime) return;
+
+        c.showTime.checked = !!state.uiSettings.showTime;
+        c.showDate.checked = !!state.uiSettings.showDate;
+        c.showStatusLeft.checked = !!state.uiSettings.showStatusLeft;
+        c.showStatusRight.checked = !!state.uiSettings.showStatusRight;
+        c.showIsland.checked = !!state.uiSettings.showIsland;
+        c.showWidgets.checked = !!state.uiSettings.showWidgets;
+        c.showBottomButtons.checked = !!state.uiSettings.showBottomButtons;
+        c.showHomeBar.checked = !!state.uiSettings.showHomeBar;
+
+        c.timeFontFamily.value = state.uiSettings.timeFontFamily;
+        c.dateFontFamily.value = state.uiSettings.dateFontFamily;
+        c.timeSize.value = String(state.uiSettings.timeSize);
+        c.dateSize.value = String(state.uiSettings.dateSize);
+        c.useGlobalColor.checked = !!state.uiSettings.useGlobalColor;
+        c.globalColor.value = state.uiSettings.globalColor;
+        c.timeColor.value = state.uiSettings.timeColor;
+        c.dateColor.value = state.uiSettings.dateColor;
+        c.statusColor.value = state.uiSettings.statusColor;
+        c.widgetColor.value = state.uiSettings.widgetColor;
+        c.bottomColor.value = state.uiSettings.bottomColor;
+        c.homeBarColor.value = state.uiSettings.homeBarColor;
+    }
+
+    function applyIOSUISettings() {
+        if (!state.uiSettings) return;
+        const s = state.uiSettings;
+        const colorOf = (specificColor) => (s.useGlobalColor ? s.globalColor : specificColor);
+
+        document.querySelectorAll('.iphone-time').forEach((el) => {
+            el.style.display = s.showTime ? '' : 'none';
+            el.style.fontFamily = s.timeFontFamily;
+            el.style.fontSize = `${s.timeSize}px`;
+            el.style.color = colorOf(s.timeColor);
+        });
+
+        document.querySelectorAll('.iphone-date').forEach((el) => {
+            el.style.display = s.showDate ? '' : 'none';
+            el.style.fontFamily = s.dateFontFamily;
+            el.style.fontSize = `${s.dateSize}px`;
+            el.style.color = colorOf(s.dateColor);
+        });
+
+        document.querySelectorAll('.iphone-status-left').forEach((el) => {
+            el.style.display = s.showStatusLeft ? '' : 'none';
+            el.style.color = colorOf(s.statusColor);
+        });
+        document.querySelectorAll('.iphone-status-right').forEach((el) => {
+            el.style.display = s.showStatusRight ? '' : 'none';
+            el.style.color = colorOf(s.statusColor);
+        });
+
+        document.querySelectorAll('.island').forEach((el) => {
+            el.style.display = s.showIsland ? '' : 'none';
+        });
+
+        document.querySelectorAll('.iphone-widgets').forEach((el) => {
+            el.style.display = s.showWidgets ? '' : 'none';
+        });
+        document.querySelectorAll('.iphone-widget-circle').forEach((el) => {
+            el.style.color = colorOf(s.widgetColor);
+        });
+
+        document.querySelectorAll('.iphone-bottom').forEach((el) => {
+            el.style.display = s.showBottomButtons ? '' : 'none';
+        });
+        document.querySelectorAll('.icon-btn-os').forEach((el) => {
+            el.style.color = colorOf(s.bottomColor);
+        });
+        document.querySelectorAll('.icon-btn-os svg').forEach((el) => {
+            el.style.fill = colorOf(s.bottomColor);
+        });
+
+        document.querySelectorAll('.home-bar').forEach((el) => {
+            el.style.display = s.showHomeBar ? '' : 'none';
+            el.style.background = colorOf(s.homeBarColor);
+        });
+    }
+
+    window.toggleUIControlPanel = function(force) {
+        const shouldOpen = typeof force === 'boolean'
+            ? force
+            : !document.body.classList.contains('ui-panel-open');
+        document.body.classList.toggle('ui-panel-open', shouldOpen);
+    };
+
+    window.resetIOSUISettings = function() {
+        state.uiSettings = { ...IOS_UI_DEFAULTS };
+        syncUIControlsFromState();
+        applyIOSUISettings();
+        saveIOSUISettings();
+    };
+
+    function initUIPanelInteractions() {
+        document.addEventListener('click', (e) => {
+            if (!document.body.classList.contains('ui-panel-open')) return;
+            const insidePanel = e.target.closest('#uiControlPanel');
+            const toggleBtn = e.target.closest('.switch-icon-btn');
+            if (!insidePanel && !toggleBtn) {
+                window.toggleUIControlPanel(false);
+            }
+        });
+    }
 
     /**
      * =============================================================================
