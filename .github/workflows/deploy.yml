@@ -8,91 +8,19 @@ on:
   workflow_dispatch:
     inputs:
       force_deploy:
-        description: 'Force deploy all products'
+        description: Force deploy all products
         required: false
         default: 'false'
 
-env:
-  SERVER_HOST: ${{ secrets.SERVER_HOST }}
-  SERVER_USER: ${{ secrets.SERVER_USER }}
-  SERVER_PASS: ${{ secrets.SERVER_PASS }}
-  DEPLOY_PATH: /var/www/static-sites
+permissions:
+  contents: read
 
 jobs:
-  detect-changes:
-    runs-on: ubuntu-latest
-    outputs:
-      changed_products: ${{ steps.changes.outputs.products }}
-      has_changes: ${{ steps.changes.outputs.has_changes }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-
-      - name: Detect changed products
-        id: changes
-        run: |
-          if [ "${{ github.event.inputs.force_deploy }}" == "true" ]; then
-            PRODUCTS=$(find products -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | jq -R -s -c 'split("\n")[:-1]')
-          else
-            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD -- products/ 2>/dev/null || echo "")
-            if [ -z "$CHANGED_FILES" ]; then
-              CHANGED_FILES=$(find products -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
-            fi
-            PRODUCTS=$(echo "$CHANGED_FILES" | grep -oP 'products/\K[^/]+' | sort -u | jq -R -s -c 'split("\n")[:-1]')
-          fi
-
-          echo "products=$PRODUCTS" >> $GITHUB_OUTPUT
-          if [ "$PRODUCTS" == "[]" ] || [ "$PRODUCTS" == '[""]' ]; then
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-          else
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-          fi
-          echo "Changed products: $PRODUCTS"
-
   deploy:
-    needs: detect-changes
-    if: needs.detect-changes.outputs.has_changes == 'true'
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        product: ${{ fromJson(needs.detect-changes.outputs.changed_products) }}
-      max-parallel: 3
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install sshpass
-        run: sudo apt-get install -y sshpass
-
-      - name: Add server to known hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ env.SERVER_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Deploy ${{ matrix.product }}
-        run: |
-          echo "Deploying product: ${{ matrix.product }}"
-          sshpass -p "${{ env.SERVER_PASS }}" rsync -avz --delete \
-            --exclude='.git*' \
-            -e "ssh -o StrictHostKeyChecking=no" \
-            products/${{ matrix.product }}/ \
-            ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.DEPLOY_PATH }}/${{ matrix.product }}/
-
-  reload-nginx:
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install sshpass
-        run: sudo apt-get install -y sshpass
-
-      - name: Add server to known hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Reload Nginx
-        run: |
-          sshpass -p "${{ secrets.SERVER_PASS }}" ssh -o StrictHostKeyChecking=no \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            "docker exec static-sites nginx -s reload || true"
+    uses: Time-Machine-Lab/TML-Github_Actions/.github/workflows/deploy-static-sites.yml@main
+    with:
+      force_deploy: ${{ github.event.inputs.force_deploy == 'true' }}
+    secrets:
+      SERVER_HOST: ${{ secrets.SERVER_HOST }}
+      SERVER_USER: ${{ secrets.SERVER_USER }}
+      SERVER_PASS: ${{ secrets.SERVER_PASS }}
