@@ -1,0 +1,955 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>透明图制作 - 工具箱</title>
+  <meta name="description" content="在线抠图工具，AI 自动识别主体或颜色抠图，导出透明 PNG，无需安装，图片不上传服务器。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>window.ToolHubNav = { currentSlug: 'remove-bg', mark: 'RB' };</script>
+  <script src="/shared/analytics/analytics.js" defer></script>
+  <script src="/shared/navbar/navbar.js" defer></script>
+  <style>
+    /* ── Design tokens (DESIGN.md) ── */
+    :root {
+      --primary:       #4f46e5;
+      --primary-hover: #4338ca;
+      --secondary:     #06b6d4;
+      --tertiary:      #f97316;
+      --bg:            #fafafa;
+      --surface:       #ffffff;
+      --border:        #e4e4e7;
+      --border-hover:  #a1a1aa;
+      --text:          #18181b;
+      --muted:         #52525b;
+      --success:       #22c55e;
+      --error:         #ef4444;
+      --shadow-sm:     0 1px 3px rgba(24,24,27,.08), 0 1px 2px rgba(24,24,27,.06);
+      --shadow-md:     0 4px 6px -1px rgba(24,24,27,.07), 0 2px 4px -2px rgba(24,24,27,.05);
+      --shadow-lg:     0 10px 15px -3px rgba(24,24,27,.08), 0 4px 6px -4px rgba(24,24,27,.04);
+      --radius-sm:     4px;
+      --radius-md:     8px;
+      --radius-lg:     12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100vh;
+    }
+
+    [data-shared-navbar] { position: sticky; top: 0; z-index: 100; }
+
+    /* ── 页面布局 ── */
+    .rb-page {
+      width: min(1100px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 64px;
+    }
+
+    .rb-heading {
+      margin: 0 0 24px;
+      font-family: Outfit, Inter, sans-serif;
+      font-size: clamp(24px, 4vw, 38px);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: .015em;
+    }
+
+    /* ── 上传区 ── */
+    .rb-upload-zone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      min-height: 220px;
+      border: 2px dashed var(--border-hover);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      cursor: pointer;
+      transition: border-color .18s, background .18s;
+      padding: 32px 24px;
+      text-align: center;
+    }
+    .rb-upload-zone:hover,
+    .rb-upload-zone--dragover {
+      border-color: var(--primary);
+      background: rgba(79,70,229,.04);
+    }
+    .rb-upload-zone__icon { width: 48px; height: 48px; color: var(--primary); opacity: .7; }
+    .rb-upload-zone__title {
+      margin: 0;
+      font-family: Outfit, Inter, sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .rb-upload-zone__hint { margin: 0; font-size: 14px; color: var(--muted); }
+    .rb-upload-zone__btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 20px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .18s;
+    }
+    .rb-upload-zone__btn:hover { background: var(--primary-hover); }
+    #rb-file-input { display: none; }
+
+    /* ── Toast ── */
+    .rb-toast {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      background: var(--error);
+      color: #fff;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 1000;
+      box-shadow: var(--shadow-lg);
+      animation: rb-slide-up .2s ease;
+      white-space: nowrap;
+    }
+    .rb-toast--info { background: var(--primary); }
+    @keyframes rb-slide-up {
+      from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* ── 编辑器 ── */
+    .rb-editor { display: none; flex-direction: column; gap: 20px; }
+    .rb-editor--visible { display: flex; }
+
+    /* 工作区：预览图 + 侧边栏 */
+    .rb-work-area {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 768px) {
+      .rb-work-area { grid-template-columns: 1fr; }
+    }
+
+    /* ── 预览面板 ── */
+    .rb-preview-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+    .rb-preview-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      flex-wrap: wrap;
+    }
+    .rb-view-toggle {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+    .rb-view-btn {
+      padding: 5px 11px;
+      background: none;
+      border: none;
+      font-family: Inter, sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      white-space: nowrap;
+    }
+    .rb-view-btn + .rb-view-btn { border-left: 1px solid var(--border); }
+    .rb-view-btn--active { background: var(--primary); color: #fff; }
+    .rb-view-btn:not(.rb-view-btn--active):hover:not(:disabled) { color: var(--primary); background: rgba(79,70,229,.06); }
+    .rb-view-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .rb-toolbar-sep { width: 1px; height: 18px; background: var(--border); margin: 0 2px; flex-shrink: 0; }
+    .rb-zoom-group { display: flex; align-items: center; gap: 4px; }
+    .rb-icon-btn {
+      min-width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color .15s, color .15s;
+      padding: 0 6px;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1;
+      white-space: nowrap;
+      font-family: Inter, sans-serif;
+    }
+    .rb-icon-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+    .rb-icon-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .rb-zoom-val {
+      min-width: 42px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+    .rb-history-group { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+    .rb-viewport {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: repeating-conic-gradient(#d1d5db 0% 25%, #f9fafb 0% 50%) 0 0 / 20px 20px;
+      min-height: 460px;
+      cursor: zoom-in;
+    }
+    #rb-view-img {
+      max-width: 100%;
+      max-height: 440px;
+      object-fit: contain;
+      display: block;
+      transform-origin: center center;
+      transition: transform .12s ease-out;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    /* 处理中遮罩 */
+    .rb-processing-spin {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(250, 250, 250, 0.55);
+      z-index: 10;
+      pointer-events: none;
+    }
+    .rb-processing-spin::after {
+      content: '';
+      width: 38px;
+      height: 38px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: rb-spin 0.65s linear infinite;
+    }
+    @keyframes rb-spin { to { transform: rotate(360deg); } }
+
+    /* ── 侧边栏 ── */
+    .rb-sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+    /* 引擎选择卡片 */
+    .rb-engine-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .rb-engine-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+    .rb-tab {
+      flex: 1;
+      padding: 10px 8px;
+      background: none;
+      border: none;
+      font-family: Inter, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .rb-tab:hover { color: var(--primary); background: rgba(79,70,229,.04); }
+    .rb-tab--active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      font-weight: 600;
+    }
+    .rb-engine-controls { padding: 16px; }
+
+    /* 控制面板公共样式（引擎内部使用） */
+    .rb-ctrl-row { margin-bottom: 14px; }
+    .rb-ctrl-row:last-child { margin-bottom: 0; }
+    .rb-ctrl-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .rb-slider {
+      width: 100%;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+    .rb-color-row { display: flex; align-items: center; gap: 8px; }
+    .rb-color-input {
+      width: 40px;
+      height: 32px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      padding: 2px;
+      background: var(--bg);
+    }
+    .rb-eyedropper-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color .15s, color .15s;
+    }
+    .rb-eyedropper-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .rb-ctrl-hint { margin: 6px 0 0; font-size: 12px; color: var(--muted); }
+
+    /* AI 引擎状态 */
+    .rb-ai-status { margin: 0; font-size: 13px; color: var(--muted); }
+    .rb-ai-status--error { color: var(--error); }
+    .rb-ai-tips {
+      margin: 10px 0 0;
+      padding: 0 0 0 16px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* 进度条 */
+    .rb-progress-wrap {
+      height: 6px;
+      background: var(--border);
+      border-radius: 9999px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .rb-progress-bar {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 9999px;
+      width: 0%;
+      transition: width .2s ease;
+    }
+
+    /* 处理按钮 */
+    .rb-process-btn {
+      width: 100%;
+      padding: 11px 0;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: Inter, sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .18s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .rb-process-btn:hover:not(:disabled) { background: var(--primary-hover); }
+    .rb-process-btn:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+    .rb-process-btn--hidden { display: none; }
+
+    /* 操作卡片 */
+    .rb-action-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .rb-download-btn {
+      width: 100%;
+      padding: 10px 0;
+      background: var(--success);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: Inter, sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .18s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .rb-download-btn:hover:not(:disabled) { background: #16a34a; }
+    .rb-download-btn:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+
+    /* 重新上传 */
+    .rb-reupload {
+      background: none;
+      border: none;
+      font-size: 13px;
+      color: var(--primary);
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+      font-family: Inter, sans-serif;
+    }
+    .rb-reupload:hover { color: var(--primary-hover); }
+
+    /* 历史信息 */
+    .rb-history-info {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 共享导航挂载点 -->
+  <div data-shared-navbar></div>
+
+  <main class="rb-page">
+    <h1 class="rb-heading">透明图制作</h1>
+
+    <!-- 隐藏文件输入 -->
+    <input type="file" id="rb-file-input" accept="image/png,image/jpeg,image/webp">
+
+    <!-- 上传区 -->
+    <div id="rb-upload-zone" class="rb-upload-zone" role="button" tabindex="0" aria-label="上传图片">
+      <svg class="rb-upload-zone__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+      <p class="rb-upload-zone__title">拖拽或粘贴图片到这里</p>
+      <p class="rb-upload-zone__hint">支持 PNG / JPG / WEBP，最大 20MB</p>
+      <button type="button" id="rb-upload-btn" class="rb-upload-zone__btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        选择文件
+      </button>
+    </div>
+
+    <!-- 编辑器区域 -->
+    <div id="rb-editor" class="rb-editor">
+
+      <!-- 隐藏原图：供引擎处理用，不对用户显示 -->
+      <img id="rb-source-img" src="" alt="" style="display:none; position:absolute; visibility:hidden;" aria-hidden="true">
+      <!-- 当前工作基底图（随历史变化），颜色引擎从此读取像素 -->
+      <img id="rb-working-img" src="" alt="" style="display:none; position:absolute; visibility:hidden;" aria-hidden="true">
+
+      <div class="rb-work-area">
+
+        <!-- 左：预览面板 -->
+        <div class="rb-preview-panel">
+          <div class="rb-preview-toolbar">
+
+            <!-- 原图 / 结果切换 -->
+            <div class="rb-view-toggle" role="group" aria-label="视图切换">
+              <button type="button" id="rb-btn-orig" class="rb-view-btn rb-view-btn--active">原图</button>
+              <button type="button" id="rb-btn-result" class="rb-view-btn" disabled>结果</button>
+            </div>
+
+            <div class="rb-toolbar-sep"></div>
+
+            <!-- 缩放控制 -->
+            <div class="rb-zoom-group" role="group" aria-label="缩放">
+              <button type="button" id="rb-zoom-out" class="rb-icon-btn" title="缩小 (滚轮)">−</button>
+              <span id="rb-zoom-val" class="rb-zoom-val">100%</span>
+              <button type="button" id="rb-zoom-in" class="rb-icon-btn" title="放大 (滚轮)">+</button>
+              <button type="button" id="rb-zoom-fit" class="rb-icon-btn" title="恢复适应">适应</button>
+            </div>
+
+            <div class="rb-toolbar-sep"></div>
+
+            <!-- 撤销 / 重做 -->
+            <div class="rb-history-group" role="group" aria-label="历史记录">
+              <button type="button" id="rb-undo" class="rb-icon-btn" title="撤销 (Ctrl+Z)" disabled>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+                撤销
+              </button>
+              <button type="button" id="rb-redo" class="rb-icon-btn" title="重做 (Ctrl+Y)" disabled>
+                重做
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- 可缩放视口 -->
+          <div id="rb-viewport" class="rb-viewport">
+            <img id="rb-view-img" src="" alt="图片预览" draggable="false">
+            <div id="rb-processing-spin" class="rb-processing-spin" role="status" aria-label="处理中…"></div>
+          </div>
+        </div>
+
+        <!-- 右：侧边栏 -->
+        <div class="rb-sidebar">
+
+          <!-- 引擎选择卡片 -->
+          <div class="rb-engine-card">
+            <div id="rb-engine-tabs" class="rb-engine-tabs"></div>
+            <div id="rb-engine-controls" class="rb-engine-controls"></div>
+          </div>
+
+          <!-- 处理按钮 -->
+          <button type="button" id="rb-process-btn" class="rb-process-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            开始处理
+          </button>
+
+          <!-- 操作卡片 -->
+          <div class="rb-action-card">
+            <p class="rb-history-info" id="rb-history-info">尚未处理</p>
+            <button type="button" id="rb-download-btn" class="rb-download-btn" disabled>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              下载 PNG
+            </button>
+            <button type="button" id="rb-reupload-btn" class="rb-reupload">重新上传</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div id="rb-toast" class="rb-toast" role="alert" aria-live="assertive"></div>
+
+  <!-- 引擎文件（顺序关键：注册表在 Shell 初始化之前填充） -->
+  <script src="engine-ai.js"></script>
+  <script src="engine-color.js"></script>
+
+  <script>
+  (function () {
+    'use strict';
+
+    var MAX_FILE_SIZE = 20 * 1024 * 1024; /* 20MB */
+    var ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+
+    /* ── DOM 引用 ── */
+    var uploadZone  = document.getElementById('rb-upload-zone');
+    var fileInput   = document.getElementById('rb-file-input');
+    var uploadBtn   = document.getElementById('rb-upload-btn');
+    var editor      = document.getElementById('rb-editor');
+    var sourceImg   = document.getElementById('rb-source-img'); /* 隐藏，供引擎处理 */
+    var workingImg  = document.getElementById('rb-working-img'); /* 工作基底图，随历史变化 */
+    var viewportEl  = document.getElementById('rb-viewport');
+    var viewImg     = document.getElementById('rb-view-img');   /* 可见预览 */
+    var tabsEl      = document.getElementById('rb-engine-tabs');
+    var controlsEl  = document.getElementById('rb-engine-controls');
+    var processBtn  = document.getElementById('rb-process-btn');
+    var downloadBtn = document.getElementById('rb-download-btn');
+    var reuploadBtn = document.getElementById('rb-reupload-btn');
+    var toast       = document.getElementById('rb-toast');
+    var zoomValEl   = document.getElementById('rb-zoom-val');
+    var btnOrig     = document.getElementById('rb-btn-orig');
+    var btnResult   = document.getElementById('rb-btn-result');
+    var undoBtn     = document.getElementById('rb-undo');
+    var redoBtn     = document.getElementById('rb-redo');
+    var historyInfo = document.getElementById('rb-history-info');
+    var spinEl      = document.getElementById('rb-processing-spin');
+
+    /* ── 状态 ── */
+    var engines          = window.RBEngines || [];
+    var currentEngine    = null;
+    var srcUrl           = null;   /* 上传图片的 Blob URL（保活，供原图预览）*/
+    var history          = [];     /* Blob[] 历史栈 */
+    var histIdx          = -1;     /* 当前索引，-1 = 未处理 */
+    var currentResultUrl = null;   /* 当前结果的 Blob URL（历史结果，保活）*/
+    var viewMode         = 'original'; /* 'original' | 'result' */
+    var zoom             = 1;
+    var offsetX          = 0;     /* 图片水平偏移 px（光标中心缩放用）*/
+    var offsetY          = 0;     /* 图片垂直偏移 px */
+    var toastTimer       = null;
+
+    /* ── Toast ── */
+    function showToast(msg, isInfo) {
+      clearTimeout(toastTimer);
+      toast.textContent = msg;
+      toast.className = 'rb-toast' + (isInfo ? ' rb-toast--info' : '');
+      toast.style.display = 'block';
+      toastTimer = setTimeout(function () { toast.style.display = 'none'; }, 4000);
+    }
+
+    /* ── 处理中加载动画 ── */
+    var _spinSafetyTimer = null;
+    function showProcessing() {
+      spinEl.style.display = 'flex';
+      /* 安全兜底：最多 30 秒后强制隐藏，防止异常时一直转圈 */
+      clearTimeout(_spinSafetyTimer);
+      _spinSafetyTimer = setTimeout(hideProcessing, 30000);
+    }
+    function hideProcessing() {
+      clearTimeout(_spinSafetyTimer);
+      spinEl.style.display = '';
+    }
+
+    /* ── 工作基底图同步（频色引擎从 workingImg 读像素）── */
+    function updateWorkingImg() {
+      workingImg.src = (histIdx >= 0 && currentResultUrl) ? currentResultUrl : (srcUrl || '');
+    }
+
+    /* ── 文件验证 ── */
+    function validateFile(file) {
+      if (!file) return '请选择图片文件';
+      if (ALLOWED_TYPES.indexOf(file.type) === -1) return '不支持该格式，请上传 PNG / JPG / WEBP 图片';
+      if (file.size > MAX_FILE_SIZE) return '文件过大，请上传 20MB 以内的图片';
+      return null;
+    }
+
+    /* ── 加载图片 ── */
+    function loadImage(file) {
+      var err = validateFile(file);
+      if (err) { showToast(err); return; }
+      /* 保活：不 revoke，供引擎 drawImage 及原图预览使用 */
+      if (srcUrl) { URL.revokeObjectURL(srcUrl); srcUrl = null; }
+      srcUrl = URL.createObjectURL(file);
+      sourceImg.onload = function () { showEditor(); };
+      sourceImg.src = srcUrl;
+    }
+
+    /* ── 显示编辑器 ── */
+    function showEditor() {
+      uploadZone.style.display = 'none';
+      editor.classList.add('rb-editor--visible');
+      resetHistory();
+      zoom = 1;
+      offsetX = 0;
+      offsetY = 0;
+      viewMode = 'original';
+      viewImg.src = srcUrl;
+      applyZoom();
+      updateViewToggle();
+      initTabs();
+    }
+
+    /* ── 重置到上传区 ── */
+    function resetToUpload() {
+      if (currentEngine) { currentEngine.destroy(); currentEngine = null; }
+      resetHistory();
+      if (srcUrl) { URL.revokeObjectURL(srcUrl); srcUrl = null; }
+      editor.classList.remove('rb-editor--visible');
+      uploadZone.style.display = '';
+      sourceImg.src = '';
+      viewImg.src = '';
+      workingImg.src = '';
+      fileInput.value = '';
+    }
+
+    /* ── 历史管理 ── */
+    function resetHistory() {
+      history = [];
+      histIdx = -1;
+      if (currentResultUrl) { URL.revokeObjectURL(currentResultUrl); currentResultUrl = null; }
+      updateHistoryButtons();
+      updateDownloadButton();
+      updateHistoryInfo();
+      updateWorkingImg();
+    }
+
+    function pushHistory(blob) {
+      /* 截断分支后的历史 */
+      history = history.slice(0, histIdx + 1);
+      history.push(blob);
+      histIdx = history.length - 1;
+      if (currentResultUrl) { URL.revokeObjectURL(currentResultUrl); currentResultUrl = null; }
+      currentResultUrl = URL.createObjectURL(blob);
+      updateHistoryButtons();
+      updateDownloadButton();
+      updateHistoryInfo();
+      updateWorkingImg();
+    }
+
+    function applyHistoryAt(idx) {
+      histIdx = idx;
+      if (currentResultUrl) { URL.revokeObjectURL(currentResultUrl); currentResultUrl = null; }
+      if (histIdx >= 0) {
+        currentResultUrl = URL.createObjectURL(history[histIdx]);
+        setViewMode('result');
+      } else {
+        setViewMode('original');
+      }
+      updateHistoryButtons();
+      updateDownloadButton();
+      updateHistoryInfo();
+      updateWorkingImg();
+    }
+
+    function undoAction() {
+      if (histIdx > -1) applyHistoryAt(histIdx - 1);
+    }
+
+    function redoAction() {
+      if (histIdx < history.length - 1) applyHistoryAt(histIdx + 1);
+    }
+
+    function updateHistoryButtons() {
+      undoBtn.disabled = (histIdx < 0);
+      redoBtn.disabled = (histIdx >= history.length - 1);
+    }
+
+    function updateDownloadButton() {
+      downloadBtn.disabled = (histIdx < 0 || !currentResultUrl);
+    }
+
+    function updateHistoryInfo() {
+      if (histIdx < 0) {
+        historyInfo.textContent = '尚未处理';
+      } else {
+        historyInfo.textContent = '第 ' + (histIdx + 1) + ' 步 / 共 ' + history.length + ' 步';
+      }
+    }
+
+    /* ── 视图切换 ── */
+    function setViewMode(mode) {
+      if (mode === 'result' && histIdx < 0) mode = 'original';
+      viewMode = mode;
+      viewImg.src = (viewMode === 'result' && currentResultUrl) ? currentResultUrl : (srcUrl || '');
+      updateViewToggle();
+    }
+
+    function updateViewToggle() {
+      btnOrig.classList.toggle('rb-view-btn--active', viewMode === 'original');
+      btnResult.classList.toggle('rb-view-btn--active', viewMode === 'result');
+      btnResult.disabled = (histIdx < 0);
+    }
+
+    /* ── 缩放 ── */
+    function applyZoom() {
+      if (zoom === 1 && offsetX === 0 && offsetY === 0) {
+        viewImg.style.transform = '';
+      } else {
+        viewImg.style.transform =
+          'translate(' + offsetX.toFixed(1) + 'px,' + offsetY.toFixed(1) + 'px) scale(' + zoom.toFixed(3) + ')';
+      }
+      zoomValEl.textContent = Math.round(zoom * 100) + '%';
+    }
+
+    /* 以指定视口中心相对坐标 (mx, my) 为中心缩放 */
+    function zoomBy(factor, mx, my) {
+      var oldZoom = zoom;
+      zoom = Math.max(0.1, Math.min(8, zoom * factor));
+      var ratio = zoom / oldZoom;
+      offsetX = (mx || 0) * (1 - ratio) + offsetX * ratio;
+      offsetY = (my || 0) * (1 - ratio) + offsetY * ratio;
+      applyZoom();
+    }
+
+    /* ── 引擎结果回调（所有引擎统一入历史）── */
+    function onEngineResult(blob) {
+      hideProcessing();
+      if (!blob) return;
+      pushHistory(blob);
+      setViewMode('result');
+    }
+
+    /* ── Tab 渲染 ── */
+    function initTabs() {
+      tabsEl.innerHTML = '';
+      engines.forEach(function (engine, i) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'rb-tab' + (i === 0 ? ' rb-tab--active' : '');
+        btn.setAttribute('data-engine-id', engine.id);
+        btn.innerHTML = '<span aria-hidden="true">' + engine.icon + '</span>' + engine.name;
+        btn.title = engine.description || '';
+        btn.addEventListener('click', function () { switchEngine(engine); });
+        tabsEl.appendChild(btn);
+      });
+      if (engines.length > 0) switchEngine(engines[0]);
+    }
+
+    /* ── 切换引擎 ── */
+    function switchEngine(engine) {
+      if (currentEngine && currentEngine.id === engine.id) return;
+      if (currentEngine) currentEngine.destroy();
+      currentEngine = engine;
+
+      Array.prototype.forEach.call(tabsEl.querySelectorAll('.rb-tab'), function (btn) {
+        btn.classList.toggle('rb-tab--active', btn.getAttribute('data-engine-id') === engine.id);
+      });
+
+      /* 切换引擎时不需要额外清理，历史状态保留 */
+      /* 两种引擎统一使用 onEngineResult，区别只在于是否显示处理按鈕 */
+      engine.init(controlsEl, onEngineResult, workingImg, viewImg);
+
+      if (engine.mode === 'realtime') {
+        processBtn.classList.add('rb-process-btn--hidden');
+      } else {
+        processBtn.classList.remove('rb-process-btn--hidden');
+        processBtn.disabled = false;
+        processBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg> 开始处理';
+      }
+      updateDownloadButton();
+    }
+
+    /* ── 处理按钮（oneshot 模式）── */
+    processBtn.addEventListener('click', function () {
+      if (!currentEngine || currentEngine.mode !== 'oneshot') return;
+      showProcessing();
+      processBtn.disabled = true;
+      processBtn.textContent = '处理中…';
+
+      currentEngine.process(workingImg).then(function (blob) {
+        onEngineResult(blob);
+        processBtn.disabled = false;
+        processBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg> 重新处理';
+      }).catch(function (err) {
+        if (err && err.message === 'destroyed') { hideProcessing(); return; }
+        hideProcessing();
+        showToast((err && err.message) || '处理失败，请重试');
+        processBtn.disabled = false;
+        processBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg> 开始处理';
+      });
+    });
+    /* 实时引擎点击时展示加载动画（capture 阶段先于引擎 bubble）*/
+    viewImg.addEventListener('click', function () {
+      if (currentEngine && currentEngine.mode === 'realtime') {
+        showProcessing();
+      }
+    }, true);
+    /* ── 缩放按钮（以视口中心为基准）── */
+    document.getElementById('rb-zoom-in').addEventListener('click', function () {
+      zoomBy(1.3, 0, 0);
+    });
+    document.getElementById('rb-zoom-out').addEventListener('click', function () {
+      zoomBy(1 / 1.3, 0, 0);
+    });
+    document.getElementById('rb-zoom-fit').addEventListener('click', function () {
+      zoom = 1; offsetX = 0; offsetY = 0;
+      applyZoom();
+    });
+
+    /* 滚轮缩放（以鼠标位置为中心）*/
+    viewportEl.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      var factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+      var vpRect = viewportEl.getBoundingClientRect();
+      var mx = e.clientX - vpRect.left - vpRect.width / 2;
+      var my = e.clientY - vpRect.top - vpRect.height / 2;
+      zoomBy(factor, mx, my);
+    }, { passive: false });
+
+    /* ── 视图切换按钮 ── */
+    btnOrig.addEventListener('click', function () { setViewMode('original'); });
+    btnResult.addEventListener('click', function () { setViewMode('result'); });
+
+    /* ── 撤销 / 重做 ── */
+    undoBtn.addEventListener('click', undoAction);
+    redoBtn.addEventListener('click', redoAction);
+    document.addEventListener('keydown', function (e) {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z') {
+        e.preventDefault(); undoAction();
+      }
+      if ((e.ctrlKey || e.metaKey) &&
+          (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) {
+        e.preventDefault(); redoAction();
+      }
+    });
+
+    /* ── 下载 ── */
+    downloadBtn.addEventListener('click', function () {
+      if (histIdx < 0 || !history[histIdx]) return;
+      var dlUrl = URL.createObjectURL(history[histIdx]);
+      var a = document.createElement('a');
+      a.href = dlUrl;
+      a.download = 'result.png';
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(dlUrl); }, 1000);
+    });
+
+    /* ── 重新上传 ── */
+    reuploadBtn.addEventListener('click', resetToUpload);
+
+    /* ── 上传区交互 ── */
+    uploadZone.addEventListener('click', function (e) {
+      if (e.target === uploadBtn || uploadBtn.contains(e.target)) return;
+      fileInput.click();
+    });
+    uploadBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      fileInput.click();
+    });
+    fileInput.addEventListener('change', function () {
+      if (fileInput.files && fileInput.files[0]) loadImage(fileInput.files[0]);
+    });
+
+    /* 拖拽 */
+    uploadZone.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      uploadZone.classList.add('rb-upload-zone--dragover');
+    });
+    uploadZone.addEventListener('dragleave', function () {
+      uploadZone.classList.remove('rb-upload-zone--dragover');
+    });
+    uploadZone.addEventListener('drop', function (e) {
+      e.preventDefault();
+      uploadZone.classList.remove('rb-upload-zone--dragover');
+      var file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (file) loadImage(file);
+    });
+
+    /* 粘贴 */
+    document.addEventListener('paste', function (e) {
+      var items = e.clipboardData && e.clipboardData.items;
+      if (!items) return;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].kind === 'file' && items[i].type.indexOf('image/') === 0) {
+          loadImage(items[i].getAsFile());
+          break;
+        }
+      }
+    });
+
+    /* 键盘无障碍：Enter/Space 触发上传区 */
+    uploadZone.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+    });
+
+  }());
+  </script>
+</body>
+</html>

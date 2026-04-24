@@ -5,7 +5,8 @@
     "homePath": "/home/"
   },
   "items": [
-    { "slug": "image-crop", "label": "图片裁剪", "path": "/image-crop/" }
+    { "slug": "image-crop", "label": "图片裁剪", "path": "/image-crop/" },
+    { "slug": "remove-bg", "label": "透明图制作", "path": "/remove-bg/" }
   ],
   "categories": [
     {
@@ -18,6 +19,12 @@
           "label": "图片裁剪",
           "path": "/image-crop/",
           "description": "在线裁剪图片，支持自由裁剪与多种比例预设，结果即时下载"
+        },
+        {
+          "slug": "remove-bg",
+          "label": "透明图制作",
+          "path": "/remove-bg/",
+          "description": "在线抠图，AI 自动识别主体或颜色抠图，导出透明 PNG，无需安装"
         }
       ]
     }
