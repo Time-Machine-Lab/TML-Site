@@ -1,0 +1,1027 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>图片裁剪 - 工具箱</title>
+  <meta name="description" content="在线图片裁剪工具，支持自由裁剪与多种比例预设，结果即时下载，无需安装。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>window.ToolHubNav = { currentSlug: 'image-crop', mark: 'IC' };</script>
+  <script src="/shared/navbar/navbar.js" defer></script>
+  <style>
+    /* ── Design tokens (DESIGN.md) ── */
+    :root {
+      --primary:       #4f46e5;
+      --primary-hover: #4338ca;
+      --secondary:     #06b6d4;
+      --tertiary:      #f97316;
+      --bg:            #fafafa;
+      --surface:       #ffffff;
+      --border:        #e4e4e7;
+      --border-hover:  #a1a1aa;
+      --text:          #18181b;
+      --muted:         #52525b;
+      --success:       #22c55e;
+      --error:         #ef4444;
+      --shadow-sm:     0 1px 3px rgba(24,24,27,.08), 0 1px 2px rgba(24,24,27,.06);
+      --shadow-md:     0 4px 6px -1px rgba(24,24,27,.07), 0 2px 4px -2px rgba(24,24,27,.05);
+      --shadow-lg:     0 10px 15px -3px rgba(24,24,27,.08), 0 4px 6px -4px rgba(24,24,27,.04);
+      --radius-sm:     4px;
+      --radius-md:     8px;
+      --radius-lg:     12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100vh;
+    }
+
+    /* ── Shared navbar mount ── */
+    [data-shared-navbar] { position: sticky; top: 0; z-index: 100; }
+
+    /* ── Page layout ── */
+    .ic-page {
+      width: min(1200px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 64px;
+    }
+
+    .ic-heading {
+      margin: 0 0 24px;
+      font-family: Outfit, Inter, sans-serif;
+      font-size: clamp(24px, 4vw, 38px);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: .015em;
+    }
+
+    /* ── Upload zone ── */
+    .ic-upload-zone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      min-height: 220px;
+      border: 2px dashed var(--border-hover);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      cursor: pointer;
+      transition: border-color .18s, background .18s;
+      padding: 32px 24px;
+      text-align: center;
+    }
+    .ic-upload-zone:hover,
+    .ic-upload-zone--dragover {
+      border-color: var(--primary);
+      background: rgba(79,70,229,.04);
+    }
+    .ic-upload-zone__icon {
+      width: 48px; height: 48px;
+      color: var(--primary);
+      opacity: .7;
+    }
+    .ic-upload-zone__title {
+      margin: 0;
+      font-family: Outfit, Inter, sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .ic-upload-zone__hint {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .ic-upload-zone__btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 20px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: Inter, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .18s;
+    }
+    .ic-upload-zone__btn:hover { background: var(--primary-hover); }
+    #ic-file-input { display: none; }
+
+    /* ── Error toast ── */
+    .ic-toast {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      background: var(--error);
+      color: #fff;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 1000;
+      box-shadow: var(--shadow-lg);
+      animation: ic-slide-up .2s ease;
+    }
+    .ic-toast--info { background: var(--primary); }
+    @keyframes ic-slide-up {
+      from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* ── Editor layout ── */
+    .ic-editor {
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .ic-editor--visible { display: flex; }
+
+    /* Toolbar */
+    .ic-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+    }
+    .ic-toolbar__label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      white-space: nowrap;
+    }
+    .ic-toolbar__sep {
+      width: 1px;
+      height: 20px;
+      background: var(--border);
+      margin: 0 4px;
+      flex-shrink: 0;
+    }
+    .ic-zoom-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .ic-zoom-btn {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      font-size: 15px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color .15s, color .15s;
+      padding: 0;
+    }
+    .ic-zoom-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .ic-zoom-val {
+      min-width: 44px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+    .ic-ratio-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .ic-ratio-btn {
+      padding: 5px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      font-family: Inter, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color .15s, background .15s, color .15s;
+    }
+    .ic-ratio-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .ic-ratio-btn--active {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* Main work area */
+    .ic-work-area {
+      display: grid;
+      grid-template-columns: 1fr 240px;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 768px) {
+      .ic-work-area { grid-template-columns: 1fr; }
+    }
+
+    /* Canvas panel */
+    .ic-canvas-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 16px;
+      overflow: hidden;
+    }
+    .ic-canvas-wrap {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #1e1e2e;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      min-height: 300px;
+    }
+    #ic-canvas {
+      display: block;
+      cursor: crosshair;
+      max-width: 100%;
+    }
+
+    /* Sidebar */
+    .ic-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Preview card */
+    .ic-preview-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 16px;
+    }
+    .ic-preview-card__title {
+      margin: 0 0 12px;
+      font-family: Outfit, Inter, sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .ic-preview-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: repeating-conic-gradient(#d1d5db 0% 25%, #f9fafb 0% 50%) 0 0 / 16px 16px;
+      border-radius: var(--radius-md);
+      min-height: 200px;
+      overflow: hidden;
+    }
+    #ic-preview {
+      display: block;
+      max-width: 200px;
+      max-height: 200px;
+    }
+    .ic-preview-size {
+      margin: 8px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* Download card */
+    .ic-download-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .ic-download-card__title {
+      margin: 0;
+      font-family: Outfit, Inter, sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .ic-format-group {
+      display: flex;
+      gap: 8px;
+    }
+    .ic-format-btn {
+      flex: 1;
+      padding: 7px 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      font-family: Inter, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color .15s, background .15s, color .15s;
+    }
+    .ic-format-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .ic-format-btn--active {
+      border-color: var(--primary);
+      background: rgba(79,70,229,.08);
+      color: var(--primary);
+    }
+    .ic-download-btn {
+      width: 100%;
+      padding: 10px 0;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: Inter, sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .18s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .ic-download-btn:hover { background: var(--primary-hover); }
+    .ic-download-btn:disabled {
+      background: var(--border);
+      color: var(--muted);
+      cursor: not-allowed;
+    }
+
+    /* Re-upload link */
+    .ic-reupload {
+      display: none;
+      background: none;
+      border: none;
+      font-family: Inter, sans-serif;
+      font-size: 13px;
+      color: var(--primary);
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+    }
+    .ic-reupload--visible { display: inline; }
+  </style>
+</head>
+<body>
+
+  <!-- Shared navbar mount -->
+  <div data-shared-navbar></div>
+
+  <!-- Main page -->
+  <main class="ic-page">
+    <h1 class="ic-heading">图片裁剪</h1>
+
+    <!-- Upload zone (visible when no image loaded) -->
+    <div class="ic-upload-zone" id="ic-upload-zone">
+      <svg class="ic-upload-zone__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+      <p class="ic-upload-zone__title">点击或拖拽图片到此处</p>
+      <p class="ic-upload-zone__hint">支持 JPEG、PNG、WebP、GIF，建议文件小于 10 MB</p>
+      <button class="ic-upload-zone__btn" type="button" id="ic-upload-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        选择图片
+      </button>
+      <input type="file" id="ic-file-input" accept="image/jpeg,image/png,image/webp,image/gif">
+    </div>
+
+    <!-- Editor (hidden until image loaded) -->
+    <div class="ic-editor" id="ic-editor">
+
+      <!-- Toolbar -->
+      <div class="ic-toolbar">
+        <span class="ic-toolbar__label">裁剪比例</span>
+        <div class="ic-ratio-group" id="ic-ratio-group">
+          <button class="ic-ratio-btn ic-ratio-btn--active" data-ratio="free" type="button">自由</button>
+          <button class="ic-ratio-btn" data-ratio="1:1" type="button">1:1</button>
+          <button class="ic-ratio-btn" data-ratio="4:3" type="button">4:3</button>
+          <button class="ic-ratio-btn" data-ratio="16:9" type="button">16:9</button>
+          <button class="ic-ratio-btn" data-ratio="3:4" type="button">3:4</button>
+        </div>
+        <span class="ic-toolbar__sep"></span>
+        <span class="ic-toolbar__label">选框</span>
+        <div class="ic-zoom-group">
+          <button class="ic-zoom-btn" id="ic-zoom-out" type="button" title="缩小选框 (滚轮向下)">－</button>
+          <span class="ic-zoom-val" id="ic-zoom-val">–</span>
+          <button class="ic-zoom-btn" id="ic-zoom-in" type="button" title="放大选框 (滚轮向上)">＋</button>
+          <button class="ic-zoom-btn" id="ic-zoom-reset" type="button" title="选框充满图片">⌂</button>
+        </div>
+        <button class="ic-reupload ic-reupload--visible" id="ic-reupload-btn" type="button">重新上传</button>
+      </div>
+
+      <!-- Work area: canvas + sidebar -->
+      <div class="ic-work-area">
+        <div class="ic-canvas-panel">
+          <div class="ic-canvas-wrap" id="ic-canvas-wrap">
+            <canvas id="ic-canvas"></canvas>
+          </div>
+        </div>
+
+        <div class="ic-sidebar">
+          <!-- Preview -->
+          <div class="ic-preview-card">
+            <p class="ic-preview-card__title">预览</p>
+            <div class="ic-preview-wrap">
+              <canvas id="ic-preview"></canvas>
+            </div>
+            <p class="ic-preview-size" id="ic-preview-size">—</p>
+          </div>
+
+          <!-- Download -->
+          <div class="ic-download-card">
+            <p class="ic-download-card__title">导出</p>
+            <div class="ic-format-group">
+              <button class="ic-format-btn ic-format-btn--active" data-fmt="png" type="button">PNG</button>
+              <button class="ic-format-btn" data-fmt="jpeg" type="button">JPEG</button>
+            </div>
+            <button class="ic-download-btn" id="ic-download-btn" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              下载
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast notification -->
+  <div class="ic-toast" id="ic-toast"></div>
+
+  <script>
+  (function () {
+    'use strict';
+
+    /* ── DOM refs ── */
+    var uploadZone  = document.getElementById('ic-upload-zone');
+    var fileInput   = document.getElementById('ic-file-input');
+    var uploadBtn   = document.getElementById('ic-upload-btn');
+    var editor      = document.getElementById('ic-editor');
+    var canvas      = document.getElementById('ic-canvas');
+    var ctx         = canvas.getContext('2d');
+    var preview     = document.getElementById('ic-preview');
+    var pctx        = preview.getContext('2d');
+    var previewSize = document.getElementById('ic-preview-size');
+    var ratioGroup  = document.getElementById('ic-ratio-group');
+    var downloadBtn = document.getElementById('ic-download-btn');
+    var toast       = document.getElementById('ic-toast');
+    var reuploadBtn = document.getElementById('ic-reupload-btn');
+
+    /* ── State ── */
+    var img       = null;   // HTMLImageElement
+    var imgW      = 0;      // displayed image width on canvas
+    var imgH      = 0;      // displayed image height on canvas
+    var imgOffX   = 0;      // offset of image within canvas
+    var imgOffY   = 0;
+    var scaleFactor = 1;    // canvas pixel : original pixel
+
+    var crop = { x: 0, y: 0, w: 0, h: 0 }; // in canvas pixels
+
+    var ratio = 0;          // locked w/h ratio (0 = free)
+    var fmt   = 'png';
+
+    /* Drag state */
+    var drag = {
+      active: false,
+      type: null,   // 'move' | 'nw'|'n'|'ne'|'e'|'se'|'s'|'sw'|'w'
+      startX: 0, startY: 0,
+      cropSnap: null
+    };
+
+    var HANDLE_SIZE = 8;
+    var MIN_DIM = 20;
+
+    /* ── Toast ── */
+    var _toastTimer = null;
+    function showToast(msg, isInfo) {
+      clearTimeout(_toastTimer);
+      toast.textContent = msg;
+      toast.className = 'ic-toast' + (isInfo ? ' ic-toast--info' : '');
+      toast.style.display = 'block';
+      _toastTimer = setTimeout(function () { toast.style.display = 'none'; }, 3000);
+    }
+
+    /* ── Upload zone drag-and-drop ── */
+    uploadZone.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      uploadZone.classList.add('ic-upload-zone--dragover');
+    });
+    uploadZone.addEventListener('dragleave', function () {
+      uploadZone.classList.remove('ic-upload-zone--dragover');
+    });
+    uploadZone.addEventListener('drop', function (e) {
+      e.preventDefault();
+      uploadZone.classList.remove('ic-upload-zone--dragover');
+      var file = e.dataTransfer && e.dataTransfer.files[0];
+      if (file) loadFile(file);
+    });
+
+    uploadBtn.addEventListener('click', function () { fileInput.click(); });
+    uploadZone.addEventListener('click', function (e) {
+      if (e.target !== uploadBtn) fileInput.click();
+    });
+    fileInput.addEventListener('change', function () {
+      if (fileInput.files[0]) loadFile(fileInput.files[0]);
+      fileInput.value = '';
+    });
+
+    reuploadBtn.addEventListener('click', function () {
+      img = null;
+      editor.classList.remove('ic-editor--visible');
+      uploadZone.style.display = '';
+      fileInput.click();
+    });
+
+    /* ── Load image file ── */
+    function loadFile(file) {
+      if (!file.type.startsWith('image/')) {
+        showToast('请上传图片文件（JPEG / PNG / WebP / GIF）');
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        var image = new Image();
+        image.onload = function () { initEditor(image); };
+        image.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    /* ── Init editor after image loaded ── */
+    function initEditor(image) {
+      img = image;
+
+      var wrap = document.getElementById('ic-canvas-wrap');
+      var maxH = Math.min(window.innerHeight * 0.55, 600);
+      var scaleW, scaleH;
+
+      /* Use fallback dimensions first (editor may still be hidden) */
+      var tmpW = (wrap.clientWidth - 32) > 0 ? (wrap.clientWidth - 32) : 700;
+      scaleW = tmpW / image.naturalWidth;
+      scaleH = maxH  / image.naturalHeight;
+      scaleFactor = Math.min(scaleW, scaleH, 1);
+
+      imgW = Math.round(image.naturalWidth  * scaleFactor);
+      imgH = Math.round(image.naturalHeight * scaleFactor);
+
+      canvas.width  = imgW;
+      canvas.height = imgH;
+      imgOffX = 0;
+      imgOffY = 0;
+
+      /* Initial crop: centre 80% */
+      var margin = 0.1;
+      crop = {
+        x: Math.round(imgW * margin),
+        y: Math.round(imgH * margin),
+        w: Math.round(imgW * (1 - 2 * margin)),
+        h: Math.round(imgH * (1 - 2 * margin))
+      };
+
+      /* Reset ratio */
+      ratio = 0;
+      setRatioBtn('free');
+
+      /* Show editor first so wrap has layout dimensions */
+      uploadZone.style.display = 'none';
+      editor.classList.add('ic-editor--visible');
+
+      /* Recalculate with actual layout now that editor is visible */
+      var maxW2 = wrap.clientWidth - 32;
+      if (maxW2 > 0) {
+        scaleW = maxW2 / image.naturalWidth;
+        scaleH = maxH  / image.naturalHeight;
+        scaleFactor = Math.min(scaleW, scaleH, 1);
+        imgW = Math.round(image.naturalWidth  * scaleFactor);
+        imgH = Math.round(image.naturalHeight * scaleFactor);
+        canvas.width  = imgW;
+        canvas.height = imgH;
+        var m = 0.1;
+        crop = {
+          x: Math.round(imgW * m),
+          y: Math.round(imgH * m),
+          w: Math.round(imgW * (1 - 2 * m)),
+          h: Math.round(imgH * (1 - 2 * m))
+        };
+      }
+
+      updateCropSizeLabel();
+      drawAll();
+      updatePreview();
+    }
+
+    /* ── Drawing ── */
+    function drawAll() {
+      if (!img) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      /* 1. Draw full image */
+      ctx.drawImage(img, 0, 0, imgW, imgH);
+
+      /* 2. Semi-transparent overlay over the whole canvas */
+      ctx.save();
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.restore();
+
+      /* 3. Redraw image inside crop window using correct source coords */
+      var sx = crop.x / scaleFactor;
+      var sy = crop.y / scaleFactor;
+      var sw = crop.w / scaleFactor;
+      var sh = crop.h / scaleFactor;
+      ctx.drawImage(img, sx, sy, sw, sh, crop.x, crop.y, crop.w, crop.h);
+
+      /* Crop border */
+      ctx.save();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(crop.x, crop.y, crop.w, crop.h);
+
+      /* Rule-of-thirds grid */
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      ctx.lineWidth = 0.75;
+      ctx.setLineDash([4, 4]);
+      for (var i = 1; i < 3; i++) {
+        var lx = crop.x + (crop.w / 3) * i;
+        var ly = crop.y + (crop.h / 3) * i;
+        ctx.beginPath(); ctx.moveTo(lx, crop.y); ctx.lineTo(lx, crop.y + crop.h); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(crop.x, ly); ctx.lineTo(crop.x + crop.w, ly); ctx.stroke();
+      }
+      ctx.setLineDash([]);
+      ctx.restore();
+
+      /* Handles */
+      drawHandles();
+    }
+
+    function drawHandles() {
+      var handles = getHandles();
+      ctx.save();
+      handles.forEach(function (h) {
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = var_primary();
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.rect(h.x - HANDLE_SIZE / 2, h.y - HANDLE_SIZE / 2, HANDLE_SIZE, HANDLE_SIZE);
+        ctx.fill();
+        ctx.stroke();
+      });
+      ctx.restore();
+    }
+
+    function var_primary() { return '#4f46e5'; }
+
+    /* Returns 8 handle centre points */
+    function getHandles() {
+      var x = crop.x, y = crop.y, w = crop.w, h = crop.h;
+      return [
+        { id: 'nw', x: x,         y: y         },
+        { id: 'n',  x: x + w / 2, y: y         },
+        { id: 'ne', x: x + w,     y: y         },
+        { id: 'e',  x: x + w,     y: y + h / 2 },
+        { id: 'se', x: x + w,     y: y + h     },
+        { id: 's',  x: x + w / 2, y: y + h     },
+        { id: 'sw', x: x,         y: y + h     },
+        { id: 'w',  x: x,         y: y + h / 2 }
+      ];
+    }
+
+    /* ── Preview update ── */
+    function updatePreview() {
+      if (!img) return;
+      var pw = Math.min(200, crop.w);
+      var ph = Math.round(pw * (crop.h / crop.w));
+      if (ph > 200) { ph = 200; pw = Math.round(ph * (crop.w / crop.h)); }
+
+      preview.width  = pw;
+      preview.height = ph;
+
+      /* Source coordinates in original image pixels */
+      var sx = crop.x / scaleFactor;
+      var sy = crop.y / scaleFactor;
+      var sw = crop.w / scaleFactor;
+      var sh = crop.h / scaleFactor;
+
+      pctx.clearRect(0, 0, pw, ph);
+      pctx.drawImage(img, sx, sy, sw, sh, 0, 0, pw, ph);
+
+      var ow = Math.round(crop.w / scaleFactor);
+      var oh = Math.round(crop.h / scaleFactor);
+      previewSize.textContent = ow + ' × ' + oh + ' px';
+    }
+
+    /* ── Mouse interaction ── */
+    canvas.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup',   onMouseUp);
+
+    function canvasPos(e) {
+      var rect = canvas.getBoundingClientRect();
+      return {
+        x: (e.clientX - rect.left) * (canvas.width  / rect.width),
+        y: (e.clientY - rect.top)  * (canvas.height / rect.height)
+      };
+    }
+
+    function hitHandle(pos) {
+      var handles = getHandles();
+      for (var i = 0; i < handles.length; i++) {
+        var h = handles[i];
+        if (Math.abs(pos.x - h.x) <= HANDLE_SIZE && Math.abs(pos.y - h.y) <= HANDLE_SIZE) {
+          return h.id;
+        }
+      }
+      return null;
+    }
+
+    function insideCrop(pos) {
+      return pos.x >= crop.x && pos.x <= crop.x + crop.w &&
+             pos.y >= crop.y && pos.y <= crop.y + crop.h;
+    }
+
+    function onMouseDown(e) {
+      if (!img) return;
+      var pos = canvasPos(e);
+      var handle = hitHandle(pos);
+      drag.startX = pos.x;
+      drag.startY = pos.y;
+      drag.cropSnap = { x: crop.x, y: crop.y, w: crop.w, h: crop.h };
+      if (handle) {
+        drag.active = true;
+        drag.type = handle;
+      } else if (insideCrop(pos)) {
+        drag.active = true;
+        drag.type = 'move';
+      }
+    }
+
+    function onMouseMove(e) {
+      if (!drag.active || !img) return;
+      var pos = canvasPos(e);
+      var dx = pos.x - drag.startX;
+      var dy = pos.y - drag.startY;
+      var snap = drag.cropSnap;
+
+      var nx = snap.x, ny = snap.y, nw = snap.w, nh = snap.h;
+
+      if (drag.type === 'move') {
+        nx = clamp(snap.x + dx, 0, imgW - snap.w);
+        ny = clamp(snap.y + dy, 0, imgH - snap.h);
+        nw = snap.w;
+        nh = snap.h;
+      } else {
+        /* Resize based on which handle */
+        var t = drag.type;
+        if (t === 'se') {
+          nw = Math.max(MIN_DIM, snap.w + dx);
+          nh = ratio ? nw / ratio : Math.max(MIN_DIM, snap.h + dy);
+        } else if (t === 'nw') {
+          var rw = Math.max(MIN_DIM, snap.w - dx);
+          var rh = ratio ? rw / ratio : Math.max(MIN_DIM, snap.h - dy);
+          nx = snap.x + snap.w - rw;
+          ny = snap.y + snap.h - rh;
+          nw = rw; nh = rh;
+        } else if (t === 'ne') {
+          nw = Math.max(MIN_DIM, snap.w + dx);
+          var rh2 = ratio ? nw / ratio : Math.max(MIN_DIM, snap.h - dy);
+          ny = snap.y + snap.h - rh2;
+          nh = rh2;
+        } else if (t === 'sw') {
+          var rw2 = Math.max(MIN_DIM, snap.w - dx);
+          nh = ratio ? rw2 / ratio : Math.max(MIN_DIM, snap.h + dy);
+          nx = snap.x + snap.w - rw2;
+          nw = rw2;
+        } else if (t === 'e') {
+          nw = Math.max(MIN_DIM, snap.w + dx);
+          if (ratio) nh = nw / ratio;
+        } else if (t === 'w') {
+          var rw3 = Math.max(MIN_DIM, snap.w - dx);
+          nx = snap.x + snap.w - rw3;
+          nw = rw3;
+          if (ratio) nh = nw / ratio;
+        } else if (t === 's') {
+          nh = Math.max(MIN_DIM, snap.h + dy);
+          if (ratio) nw = nh * ratio;
+        } else if (t === 'n') {
+          var rh3 = Math.max(MIN_DIM, snap.h - dy);
+          ny = snap.y + snap.h - rh3;
+          nh = rh3;
+          if (ratio) nw = nh * ratio;
+        }
+
+        /* Clamp to image bounds */
+        if (nx < 0) { nw += nx; nx = 0; }
+        if (ny < 0) { nh += ny; ny = 0; }
+        if (nx + nw > imgW) { nw = imgW - nx; }
+        if (ny + nh > imgH) { nh = imgH - ny; }
+        nw = Math.max(MIN_DIM, nw);
+        nh = Math.max(MIN_DIM, nh);
+      }
+
+      crop.x = nx; crop.y = ny; crop.w = nw; crop.h = nh;
+      drawAll();
+      updatePreview();
+    }
+
+    function onMouseUp() { drag.active = false; }
+
+    /* ── Crop-box scale (wheel + buttons) ── */
+    /* Scale the selection box from its centre, respecting ratio lock and image bounds */
+    canvas.addEventListener('wheel', function (e) {
+      if (!img) return;
+      e.preventDefault();
+      var factor = e.deltaY > 0 ? 0.9 : 1.1;   // scroll down = shrink, up = grow
+      scaleCropBox(factor);
+    }, { passive: false });
+
+    document.getElementById('ic-zoom-in').addEventListener('click',  function () { if (img) scaleCropBox(1.1); });
+    document.getElementById('ic-zoom-out').addEventListener('click', function () { if (img) scaleCropBox(0.9); });
+    document.getElementById('ic-zoom-reset').addEventListener('click', function () { if (img) fillCropToImage(); });
+
+    function scaleCropBox(factor) {
+      var cx = crop.x + crop.w / 2;  // centre stays fixed
+      var cy = crop.y + crop.h / 2;
+
+      var nw = crop.w * factor;
+      var nh = ratio ? nw / ratio : crop.h * factor;
+
+      /* Clamp to image bounds while keeping centre when possible */
+      nw = clamp(nw, MIN_DIM, imgW);
+      nh = clamp(nh, MIN_DIM, imgH);
+      if (ratio) { nw = Math.min(nw, imgW); nh = nw / ratio; if (nh > imgH) { nh = imgH; nw = nh * ratio; } }
+
+      var nx = cx - nw / 2;
+      var ny = cy - nh / 2;
+
+      /* Clamp position so box stays inside image */
+      nx = clamp(nx, 0, imgW - nw);
+      ny = clamp(ny, 0, imgH - nh);
+
+      crop.x = nx; crop.y = ny; crop.w = nw; crop.h = nh;
+      updateCropSizeLabel();
+      drawAll();
+      updatePreview();
+    }
+
+    function fillCropToImage() {
+      crop.x = 0; crop.y = 0;
+      if (ratio) {
+        var fw = imgW, fh = imgW / ratio;
+        if (fh > imgH) { fh = imgH; fw = fh * ratio; }
+        crop.w = fw; crop.h = fh;
+        crop.x = (imgW - fw) / 2;
+        crop.y = (imgH - fh) / 2;
+      } else {
+        crop.w = imgW; crop.h = imgH;
+      }
+      updateCropSizeLabel();
+      drawAll();
+      updatePreview();
+    }
+
+    function updateCropSizeLabel() {
+      var ow = Math.round(crop.w / scaleFactor);
+      var oh = Math.round(crop.h / scaleFactor);
+      document.getElementById('ic-zoom-val').textContent = ow + '×' + oh;
+    }
+
+    /* Cursor feedback */
+    canvas.addEventListener('mousemove', function (e) {
+      if (drag.active) return;
+      if (!img) return;
+      var pos = canvasPos(e);
+      var h = hitHandle(pos);
+      var cursors = {
+        nw: 'nw-resize', ne: 'ne-resize', se: 'se-resize', sw: 'sw-resize',
+        n: 'n-resize', s: 's-resize', e: 'e-resize', w: 'w-resize'
+      };
+      if (h) canvas.style.cursor = cursors[h] || 'crosshair';
+      else if (insideCrop(pos)) canvas.style.cursor = 'move';
+      else canvas.style.cursor = 'crosshair';
+    });
+
+    /* ── Ratio presets ── */
+    ratioGroup.addEventListener('click', function (e) {
+      var btn = e.target.closest('.ic-ratio-btn');
+      if (!btn) return;
+      var r = btn.dataset.ratio;
+      setRatioBtn(r);
+
+      if (r === 'free') {
+        ratio = 0;
+      } else {
+        var parts = r.split(':');
+        ratio = parseFloat(parts[0]) / parseFloat(parts[1]);
+        /* Adjust crop box to new ratio while preserving width */
+        var newH = crop.w / ratio;
+        if (crop.y + newH > imgH) {
+          newH = imgH - crop.y;
+          crop.w = newH * ratio;
+        }
+        crop.h = newH;
+      }
+      drawAll();
+      updatePreview();
+    });
+
+    function setRatioBtn(r) {
+      ratioGroup.querySelectorAll('.ic-ratio-btn').forEach(function (b) {
+        b.classList.toggle('ic-ratio-btn--active', b.dataset.ratio === r);
+      });
+    }
+
+    /* ── Format selection ── */
+    document.querySelector('.ic-format-group').addEventListener('click', function (e) {
+      var btn = e.target.closest('.ic-format-btn');
+      if (!btn) return;
+      fmt = btn.dataset.fmt;
+      document.querySelectorAll('.ic-format-btn').forEach(function (b) {
+        b.classList.toggle('ic-format-btn--active', b.dataset.fmt === fmt);
+      });
+    });
+
+    /* ── Download ── */
+    downloadBtn.addEventListener('click', function () {
+      if (!img) {
+        showToast('请先上传一张图片', true);
+        return;
+      }
+
+      var outW = Math.round(crop.w / scaleFactor);
+      var outH = Math.round(crop.h / scaleFactor);
+
+      var off = document.createElement('canvas');
+      off.width  = outW;
+      off.height = outH;
+      var octx = off.getContext('2d');
+
+      if (fmt === 'jpeg') {
+        octx.fillStyle = '#ffffff';
+        octx.fillRect(0, 0, outW, outH);
+      }
+
+      var sx = crop.x / scaleFactor;
+      var sy = crop.y / scaleFactor;
+      var sw = crop.w / scaleFactor;
+      var sh = crop.h / scaleFactor;
+      octx.drawImage(img, sx, sy, sw, sh, 0, 0, outW, outH);
+
+      var mimeType = fmt === 'jpeg' ? 'image/jpeg' : 'image/png';
+      var quality  = fmt === 'jpeg' ? 0.92 : undefined;
+
+      off.toBlob(function (blob) {
+        if (!blob) { showToast('导出失败，请重试'); return; }
+        var url  = URL.createObjectURL(blob);
+        var link = document.createElement('a');
+        link.href = url;
+        link.download = 'cropped.' + (fmt === 'jpeg' ? 'jpg' : 'png');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(function () { URL.revokeObjectURL(url); }, 10000);
+      }, mimeType, quality);
+    });
+
+    /* ── Helpers ── */
+    function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+  }());
+  </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "brand": {
+    "name": "工具箱",
+    "subtitle": "在线工具聚合平台",
+    "homePath": "/home/"
+  },
+  "items": [
+    { "slug": "image-crop", "label": "图片裁剪", "path": "/image-crop/" }
+  ],
+  "categories": [
+    {
+      "id": "image",
+      "label": "图片工具",
+      "description": "在线图片处理，无需安装，打开即用",
+      "items": [
+        {
+          "slug": "image-crop",
+          "label": "图片裁剪",
+          "path": "/image-crop/",
+          "description": "在线裁剪图片，支持自由裁剪与多种比例预设，结果即时下载"
+        }
+      ]
+    }
+  ]
+}
