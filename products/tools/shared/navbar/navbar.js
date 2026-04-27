@@ -67,6 +67,31 @@
       brandLink.appendChild(brandText);
       top.appendChild(brandLink);
 
+      var navItems = document.createElement('nav');
+      navItems.className = 'pp-nav-items';
+      navItems.setAttribute('aria-label', '工具导航');
+
+      var items = Array.isArray(config.items) ? config.items : [];
+      items.forEach(function (item) {
+        if (!item || !item.path || !item.label) {
+          return;
+        }
+
+        var link = document.createElement('a');
+        link.className = 'pp-nav-item';
+        if (item.slug && item.slug === pageConfig.currentSlug) {
+          link.className += ' pp-nav-item--active';
+          link.setAttribute('aria-current', 'page');
+        }
+        link.href = item.path;
+        link.textContent = item.label;
+        navItems.appendChild(link);
+      });
+
+      if (items.length) {
+        top.appendChild(navItems);
+      }
+
       inner.appendChild(top);
       shell.appendChild(inner);
       mount.appendChild(shell);

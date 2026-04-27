@@ -1,0 +1,909 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>图片压缩 - 工具箱</title>
+  <meta name="description" content="在线图片压缩工具，支持 JPEG、WebP、PNG 输出，实时对比压缩体积，图片仅在浏览器本地处理。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>window.ToolHubNav = { currentSlug: 'image-compress', mark: 'CP' };</script>
+  <script src="/shared/analytics/analytics.js" defer></script>
+  <script src="/shared/navbar/navbar.js" defer></script>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --secondary: #06b6d4;
+      --tertiary: #f97316;
+      --bg: #fafafa;
+      --surface: #ffffff;
+      --border: #e4e4e7;
+      --border-strong: #d4d4d8;
+      --text: #18181b;
+      --muted: #52525b;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --shadow-sm: 0 1px 3px rgba(24, 24, 27, .08), 0 1px 2px rgba(24, 24, 27, .06);
+      --shadow-md: 0 4px 6px -1px rgba(24, 24, 27, .07), 0 2px 4px -2px rgba(24, 24, 27, .05);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background: var(--bg);
+      font-family: Inter, "Segoe UI", sans-serif;
+    }
+
+    [data-shared-navbar] { position: sticky; top: 0; z-index: 100; }
+
+    .cp-page {
+      width: min(1160px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 64px;
+    }
+
+    .cp-heading {
+      margin: 0 0 24px;
+      font-family: Outfit, Inter, sans-serif;
+      font-size: clamp(24px, 4vw, 38px);
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: .015em;
+    }
+
+    .cp-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .cp-main,
+    .cp-side,
+    .cp-panel {
+      min-width: 0;
+    }
+
+    .cp-main,
+    .cp-side {
+      display: grid;
+      gap: 16px;
+    }
+
+    .cp-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .cp-upload {
+      display: grid;
+      place-items: center;
+      min-height: 252px;
+      padding: 32px 24px;
+      border: 2px dashed var(--border-strong);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .16s ease, background .16s ease;
+    }
+
+    .cp-upload:hover,
+    .cp-upload--dragover {
+      border-color: var(--primary);
+      background: rgba(79, 70, 229, .04);
+    }
+
+    .cp-upload__inner {
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+    }
+
+    .cp-upload__icon {
+      width: 48px;
+      height: 48px;
+      color: var(--primary);
+      opacity: .76;
+    }
+
+    .cp-upload__title {
+      margin: 0;
+      font-family: Outfit, Inter, sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .cp-upload__hint,
+    .cp-muted {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .cp-button {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: Inter, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1;
+      cursor: pointer;
+      transition: background .16s ease, border-color .16s ease, color .16s ease, opacity .16s ease;
+    }
+
+    .cp-button--primary {
+      color: #fff;
+      background: var(--primary);
+    }
+
+    .cp-button--primary:hover:not(:disabled) { background: var(--primary-hover); }
+
+    .cp-button--secondary {
+      color: var(--primary);
+      border-color: var(--primary);
+      background: transparent;
+    }
+
+    .cp-button--secondary:hover:not(:disabled) { background: #eef2ff; }
+
+    .cp-button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    #cp-file-input { display: none; }
+
+    .cp-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+    }
+
+    .cp-file-name {
+      min-width: 0;
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+
+    .cp-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .cp-preview {
+      overflow: hidden;
+    }
+
+    .cp-preview__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background: #ffffff;
+    }
+
+    .cp-preview__title {
+      margin: 0;
+      font-family: Outfit, Inter, sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .cp-preview__size {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .cp-preview__stage {
+      min-height: 330px;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      background: repeating-conic-gradient(#e5e7eb 0% 25%, #f8fafc 0% 50%) 0 0 / 18px 18px;
+    }
+
+    .cp-preview__img {
+      display: block;
+      max-width: 100%;
+      max-height: 360px;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-md);
+      background: #fff;
+    }
+
+    .cp-placeholder {
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.5;
+      padding: 24px;
+    }
+
+    .cp-form {
+      padding: 16px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .cp-field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .cp-field__top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .cp-label {
+      color: #3f3f46;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .cp-value {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .cp-segment {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .cp-segment__button {
+      min-height: 34px;
+      padding: 0 8px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      color: var(--muted);
+      font-family: Inter, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color .15s ease, color .15s ease, background .15s ease;
+    }
+
+    .cp-segment__button:hover:not(:disabled) {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .cp-segment__button--active {
+      border-color: var(--primary);
+      background: #eef2ff;
+      color: var(--primary);
+    }
+
+    .cp-range {
+      width: 100%;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .cp-range:disabled {
+      cursor: not-allowed;
+      opacity: .45;
+    }
+
+    .cp-result {
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .cp-metric {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f4f4f5;
+      font-size: 13px;
+    }
+
+    .cp-metric:last-child { border-bottom: 0; }
+
+    .cp-metric span:first-child { color: var(--muted); }
+
+    .cp-metric strong {
+      font-size: 14px;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+
+    .cp-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 22px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      background: #f4f4f5;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .cp-badge--good {
+      background: #f0fdf4;
+      color: #16a34a;
+    }
+
+    .cp-badge--warn {
+      background: #fff7ed;
+      color: #ea580c;
+    }
+
+    .cp-actions {
+      display: grid;
+      gap: 10px;
+      padding: 0 16px 16px;
+    }
+
+    .cp-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      z-index: 1000;
+      max-width: min(420px, calc(100% - 32px));
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      background: var(--error);
+      color: #fff;
+      box-shadow: 0 10px 15px -3px rgba(24, 24, 27, .16);
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.4;
+      transform: translateX(-50%);
+      display: none;
+      text-align: center;
+    }
+
+    .cp-toast--info { background: var(--primary); }
+
+    .cp-hidden { display: none !important; }
+
+    @media (max-width: 920px) {
+      .cp-shell { grid-template-columns: 1fr; }
+      .cp-side { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .cp-actions { align-self: end; }
+    }
+
+    @media (max-width: 720px) {
+      .cp-page {
+        width: calc(100% - 24px);
+        padding: 24px 0 48px;
+      }
+
+      .cp-preview-grid,
+      .cp-side {
+        grid-template-columns: 1fr;
+      }
+
+      .cp-preview__stage {
+        min-height: 240px;
+      }
+
+      .cp-toolbar {
+        align-items: stretch;
+      }
+
+      .cp-toolbar .cp-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div data-shared-navbar></div>
+
+  <main class="cp-page">
+    <h1 class="cp-heading">图片压缩</h1>
+
+    <input id="cp-file-input" type="file" accept="image/*">
+
+    <section id="cp-upload" class="cp-upload" role="button" tabindex="0" aria-label="上传图片">
+      <div class="cp-upload__inner">
+        <svg class="cp-upload__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        <p class="cp-upload__title">拖拽图片到这里</p>
+        <p class="cp-upload__hint">支持浏览器可读取的图片格式，处理过程仅在本地完成</p>
+        <button id="cp-upload-button" class="cp-button cp-button--primary" type="button">选择图片</button>
+      </div>
+    </section>
+
+    <section id="cp-workspace" class="cp-shell cp-hidden" aria-live="polite">
+      <div class="cp-main">
+        <div class="cp-card cp-toolbar">
+          <p id="cp-file-name" class="cp-file-name">未选择图片</p>
+          <button id="cp-change-file" class="cp-button cp-button--secondary" type="button">重新上传</button>
+        </div>
+
+        <div class="cp-preview-grid">
+          <article class="cp-card cp-preview">
+            <div class="cp-preview__head">
+              <p class="cp-preview__title">原图</p>
+              <p id="cp-original-size" class="cp-preview__size">-</p>
+            </div>
+            <div class="cp-preview__stage">
+              <img id="cp-original-img" class="cp-preview__img" alt="原图预览">
+            </div>
+          </article>
+
+          <article class="cp-card cp-preview">
+            <div class="cp-preview__head">
+              <p class="cp-preview__title">压缩后</p>
+              <p id="cp-output-size" class="cp-preview__size">-</p>
+            </div>
+            <div class="cp-preview__stage">
+              <img id="cp-output-img" class="cp-preview__img cp-hidden" alt="压缩结果预览">
+              <div id="cp-output-placeholder" class="cp-placeholder">等待生成结果</div>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <aside class="cp-side">
+        <section class="cp-card">
+          <div class="cp-form">
+            <div class="cp-field">
+              <div class="cp-field__top">
+                <label class="cp-label">输出格式</label>
+                <span id="cp-format-note" class="cp-value">JPEG</span>
+              </div>
+              <div class="cp-segment" role="group" aria-label="输出格式">
+                <button class="cp-segment__button cp-segment__button--active" data-format="image/jpeg" type="button">JPEG</button>
+                <button class="cp-segment__button" data-format="image/webp" type="button">WebP</button>
+                <button class="cp-segment__button" data-format="image/png" type="button">PNG</button>
+              </div>
+            </div>
+
+            <div class="cp-field">
+              <div class="cp-field__top">
+                <label class="cp-label" for="cp-quality">质量</label>
+                <span id="cp-quality-value" class="cp-value">80%</span>
+              </div>
+              <input id="cp-quality" class="cp-range" type="range" min="10" max="100" step="1" value="80">
+              <p id="cp-quality-help" class="cp-muted">质量越低，体积通常越小。</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="cp-card">
+          <div class="cp-result">
+            <div class="cp-metric">
+              <span>原始体积</span>
+              <strong id="cp-metric-original">-</strong>
+            </div>
+            <div class="cp-metric">
+              <span>输出体积</span>
+              <strong id="cp-metric-output">-</strong>
+            </div>
+            <div class="cp-metric">
+              <span>体积变化</span>
+              <strong id="cp-metric-saved">-</strong>
+            </div>
+            <div class="cp-metric">
+              <span>压缩率</span>
+              <span id="cp-ratio-badge" class="cp-badge">-</span>
+            </div>
+          </div>
+          <div class="cp-actions">
+            <button id="cp-download" class="cp-button cp-button--primary" type="button" disabled>下载图片</button>
+          </div>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <div id="cp-toast" class="cp-toast" role="alert" aria-live="assertive"></div>
+
+  <script>
+  (function () {
+    'use strict';
+
+    var upload = document.getElementById('cp-upload');
+    var fileInput = document.getElementById('cp-file-input');
+    var uploadButton = document.getElementById('cp-upload-button');
+    var changeFileButton = document.getElementById('cp-change-file');
+    var workspace = document.getElementById('cp-workspace');
+    var fileNameEl = document.getElementById('cp-file-name');
+    var originalImg = document.getElementById('cp-original-img');
+    var outputImg = document.getElementById('cp-output-img');
+    var outputPlaceholder = document.getElementById('cp-output-placeholder');
+    var originalSizeEl = document.getElementById('cp-original-size');
+    var outputSizeEl = document.getElementById('cp-output-size');
+    var metricOriginal = document.getElementById('cp-metric-original');
+    var metricOutput = document.getElementById('cp-metric-output');
+    var metricSaved = document.getElementById('cp-metric-saved');
+    var ratioBadge = document.getElementById('cp-ratio-badge');
+    var formatNote = document.getElementById('cp-format-note');
+    var quality = document.getElementById('cp-quality');
+    var qualityValue = document.getElementById('cp-quality-value');
+    var qualityHelp = document.getElementById('cp-quality-help');
+    var downloadButton = document.getElementById('cp-download');
+    var toast = document.getElementById('cp-toast');
+    var formatButtons = Array.prototype.slice.call(document.querySelectorAll('.cp-segment__button'));
+
+    var state = {
+      file: null,
+      image: null,
+      originalUrl: '',
+      outputUrl: '',
+      outputBlob: null,
+      outputType: 'image/jpeg',
+      requestedType: 'image/jpeg',
+      outputExt: 'jpg',
+      busy: false,
+      timer: 0,
+      toastTimer: 0
+    };
+
+    var MIME_EXT = {
+      'image/jpeg': 'jpg',
+      'image/webp': 'webp',
+      'image/png': 'png'
+    };
+
+    function showToast(message, isInfo) {
+      clearTimeout(state.toastTimer);
+      toast.textContent = message;
+      toast.className = 'cp-toast' + (isInfo ? ' cp-toast--info' : '');
+      toast.style.display = 'block';
+      state.toastTimer = setTimeout(function () {
+        toast.style.display = 'none';
+      }, 3200);
+    }
+
+    function formatBytes(bytes) {
+      if (!Number.isFinite(bytes)) return '-';
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+    }
+
+    function fileBaseName(name) {
+      return (name || 'image').replace(/\.[^/.]+$/, '') || 'image';
+    }
+
+    function revokeUrl(key) {
+      if (state[key]) {
+        URL.revokeObjectURL(state[key]);
+        state[key] = '';
+      }
+    }
+
+    function supportsMimeType(type) {
+      var canvas = document.createElement('canvas');
+      canvas.width = 1;
+      canvas.height = 1;
+      if (type === 'image/png') return true;
+      return canvas.toDataURL(type).indexOf(type) === 5;
+    }
+
+    function fallbackType(type) {
+      if (supportsMimeType(type)) return type;
+      if (supportsMimeType('image/jpeg')) return 'image/jpeg';
+      return 'image/png';
+    }
+
+    function setBusy(isBusy) {
+      state.busy = isBusy;
+      downloadButton.disabled = isBusy || !state.outputBlob;
+      outputPlaceholder.textContent = isBusy ? '正在生成结果' : '等待生成结果';
+    }
+
+    function clearOutput() {
+      revokeUrl('outputUrl');
+      state.outputBlob = null;
+      outputImg.removeAttribute('src');
+      outputImg.classList.add('cp-hidden');
+      outputPlaceholder.classList.remove('cp-hidden');
+      outputSizeEl.textContent = '-';
+      metricOutput.textContent = '-';
+      metricSaved.textContent = '-';
+      ratioBadge.textContent = '-';
+      ratioBadge.className = 'cp-badge';
+      downloadButton.disabled = true;
+    }
+
+    function resetAll() {
+      revokeUrl('originalUrl');
+      clearOutput();
+      state.file = null;
+      state.image = null;
+      originalImg.removeAttribute('src');
+      fileNameEl.textContent = '未选择图片';
+      originalSizeEl.textContent = '-';
+      metricOriginal.textContent = '-';
+      workspace.classList.add('cp-hidden');
+      upload.classList.remove('cp-hidden');
+    }
+
+    function loadFile(file) {
+      if (!file || !file.type || file.type.indexOf('image/') !== 0) {
+        showToast('请上传图片文件');
+        return;
+      }
+
+      revokeUrl('originalUrl');
+      clearOutput();
+
+      var url = URL.createObjectURL(file);
+      var image = new Image();
+
+      image.onload = function () {
+        state.file = file;
+        state.image = image;
+        state.originalUrl = url;
+        originalImg.src = url;
+        fileNameEl.textContent = file.name + ' · ' + image.naturalWidth + '×' + image.naturalHeight + ' px';
+        originalSizeEl.textContent = formatBytes(file.size);
+        metricOriginal.textContent = formatBytes(file.size);
+        upload.classList.add('cp-hidden');
+        workspace.classList.remove('cp-hidden');
+        scheduleCompress();
+      };
+
+      image.onerror = function () {
+        URL.revokeObjectURL(url);
+        showToast('图片读取失败，请换一张图片重试');
+      };
+
+      image.src = url;
+    }
+
+    function encodeCanvas(canvas, type, qualityValueNumber) {
+      return new Promise(function (resolve) {
+        canvas.toBlob(function (blob) {
+          resolve(blob);
+        }, type, qualityValueNumber);
+      });
+    }
+
+    function drawImageToCanvas(image, type) {
+      var canvas = document.createElement('canvas');
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+
+      var ctx = canvas.getContext('2d');
+      if (type === 'image/jpeg') {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+      ctx.drawImage(image, 0, 0);
+      return canvas;
+    }
+
+    function updateQualityUi() {
+      var isLossy = state.requestedType === 'image/jpeg' || state.requestedType === 'image/webp';
+      quality.disabled = !isLossy;
+      qualityValue.textContent = quality.value + '%';
+      qualityHelp.textContent = isLossy
+        ? '质量越低，体积通常越小。'
+        : 'PNG 为无损输出，质量滑块不会影响体积。';
+    }
+
+    function updateFormatUi(actualType) {
+      var label = (actualType || state.requestedType).replace('image/', '').toUpperCase();
+      if (actualType && actualType !== state.requestedType) {
+        label += ' fallback';
+      }
+      formatNote.textContent = label;
+      formatButtons.forEach(function (button) {
+        button.classList.toggle('cp-segment__button--active', button.dataset.format === state.requestedType);
+      });
+    }
+
+    async function compressNow() {
+      if (!state.image || state.busy) return;
+      setBusy(true);
+
+      try {
+        var actualType = fallbackType(state.requestedType);
+        var canvas = drawImageToCanvas(state.image, actualType);
+        var qualityNumber = (actualType === 'image/jpeg' || actualType === 'image/webp')
+          ? Number(quality.value) / 100
+          : undefined;
+        var blob = await encodeCanvas(canvas, actualType, qualityNumber);
+
+        if (!blob && actualType !== 'image/png') {
+          actualType = 'image/png';
+          canvas = drawImageToCanvas(state.image, actualType);
+          blob = await encodeCanvas(canvas, actualType);
+        }
+
+        if (!blob) {
+          throw new Error('浏览器无法生成该图片');
+        }
+
+        revokeUrl('outputUrl');
+        state.outputBlob = blob;
+        state.outputType = actualType;
+        state.outputExt = MIME_EXT[actualType] || 'png';
+        state.outputUrl = URL.createObjectURL(blob);
+        outputImg.src = state.outputUrl;
+        outputImg.classList.remove('cp-hidden');
+        outputPlaceholder.classList.add('cp-hidden');
+        updateResultMetrics();
+        updateFormatUi(actualType);
+
+        if (actualType !== state.requestedType) {
+          showToast('当前浏览器不支持所选格式，已使用可用格式输出', true);
+        }
+      } catch (err) {
+        clearOutput();
+        showToast(err && err.message ? err.message : '压缩失败，请重试');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    function scheduleCompress() {
+      clearTimeout(state.timer);
+      clearOutput();
+      updateQualityUi();
+      updateFormatUi();
+      if (!state.image) return;
+      state.timer = setTimeout(compressNow, 120);
+    }
+
+    function updateResultMetrics() {
+      var originalSize = state.file ? state.file.size : 0;
+      var outputSize = state.outputBlob ? state.outputBlob.size : 0;
+      var diff = originalSize - outputSize;
+      var ratio = originalSize > 0 ? diff / originalSize : 0;
+
+      outputSizeEl.textContent = formatBytes(outputSize);
+      metricOutput.textContent = formatBytes(outputSize);
+
+      if (diff > 0) {
+        metricSaved.textContent = formatBytes(diff);
+        ratioBadge.textContent = '-' + Math.round(ratio * 100) + '%';
+        ratioBadge.className = 'cp-badge cp-badge--good';
+      } else {
+        metricSaved.textContent = '+' + formatBytes(Math.abs(diff));
+        ratioBadge.textContent = '未减小';
+        ratioBadge.className = 'cp-badge cp-badge--warn';
+      }
+
+      downloadButton.disabled = false;
+    }
+
+    function openFilePicker() {
+      fileInput.click();
+    }
+
+    upload.addEventListener('click', function (event) {
+      if (event.target === uploadButton || uploadButton.contains(event.target)) return;
+      openFilePicker();
+    });
+
+    upload.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openFilePicker();
+      }
+    });
+
+    uploadButton.addEventListener('click', function (event) {
+      event.stopPropagation();
+      openFilePicker();
+    });
+
+    changeFileButton.addEventListener('click', openFilePicker);
+
+    fileInput.addEventListener('change', function () {
+      if (fileInput.files && fileInput.files[0]) {
+        loadFile(fileInput.files[0]);
+      }
+      fileInput.value = '';
+    });
+
+    upload.addEventListener('dragover', function (event) {
+      event.preventDefault();
+      upload.classList.add('cp-upload--dragover');
+    });
+
+    upload.addEventListener('dragleave', function () {
+      upload.classList.remove('cp-upload--dragover');
+    });
+
+    upload.addEventListener('drop', function (event) {
+      event.preventDefault();
+      upload.classList.remove('cp-upload--dragover');
+      var file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+      if (file) loadFile(file);
+    });
+
+    formatButtons.forEach(function (button) {
+      button.disabled = !supportsMimeType(button.dataset.format);
+      button.addEventListener('click', function () {
+        if (button.disabled) return;
+        state.requestedType = button.dataset.format;
+        scheduleCompress();
+      });
+    });
+
+    quality.addEventListener('input', function () {
+      qualityValue.textContent = quality.value + '%';
+      scheduleCompress();
+    });
+
+    downloadButton.addEventListener('click', function () {
+      if (!state.outputBlob) {
+        showToast('请先上传图片并生成压缩结果', true);
+        return;
+      }
+
+      var url = URL.createObjectURL(state.outputBlob);
+      var link = document.createElement('a');
+      link.href = url;
+      link.download = fileBaseName(state.file && state.file.name) + '-compressed.' + state.outputExt;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(function () {
+        URL.revokeObjectURL(url);
+      }, 1000);
+    });
+
+    window.addEventListener('beforeunload', function () {
+      revokeUrl('originalUrl');
+      revokeUrl('outputUrl');
+    });
+
+    resetAll();
+    state.requestedType = supportsMimeType('image/jpeg') ? 'image/jpeg' : 'image/png';
+    updateQualityUi();
+    updateFormatUi();
+  }());
+  </script>
+</body>
+</html>
