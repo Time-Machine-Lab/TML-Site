@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   deploy:
-    uses: Time-Machine-Lab/TML-Github_Actions/.github/workflows/deploy-static-sites.yml@main
+    uses: Time-Machine-Lab/TML_Github_Actions/.github/workflows/deploy-static-sites.yml@main
     with:
       force_deploy: ${{ github.event.inputs.force_deploy == 'true' }}
     secrets:
