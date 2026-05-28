@@ -1,0 +1,1027 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>在线图片格式转换工具 - JPG/PNG/WebP/AVIF 转换 | 工具箱</title>
+  <meta name="description" content="免费在线图片格式转换工具，支持在浏览器本地将图片转换为 JPG、PNG、WebP、AVIF 等常见格式，可预览结果、查看文件体积和尺寸，无需上传服务器。">
+  <meta name="keywords" content="图片格式转换,在线图片转换,JPG转PNG,PNG转JPG,WebP转换,AVIF转换,图片转WebP,图片转AVIF,本地图片工具">
+  <script>window.ToolHubNav = { currentSlug: 'image-format-converter', mark: 'FC' };</script>
+  <script src="/shared/analytics/analytics.js" defer></script>
+  <script src="/shared/navbar/navbar.js" defer></script>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --secondary: #06b6d4;
+      --tertiary: #f97316;
+      --bg: #fafafa;
+      --surface: #ffffff;
+      --border: #e4e4e7;
+      --border-strong: #d4d4d8;
+      --text: #18181b;
+      --muted: #52525b;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --shadow-sm: 0 1px 3px rgba(24, 24, 27, .08), 0 1px 2px rgba(24, 24, 27, .06);
+      --shadow-md: 0 4px 6px -1px rgba(24, 24, 27, .07), 0 2px 4px -2px rgba(24, 24, 27, .05);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background: var(--bg);
+      font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+    }
+
+    [data-shared-navbar] { position: sticky; top: 0; z-index: 100; }
+
+    .fc-page {
+      width: min(1160px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 64px;
+    }
+
+    .fc-heading {
+      margin: 0 0 24px;
+      font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      font-size: clamp(24px, 4vw, 38px);
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: .01em;
+    }
+
+    .fc-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .fc-main,
+    .fc-side,
+    .fc-panel {
+      min-width: 0;
+    }
+
+    .fc-main,
+    .fc-side {
+      display: grid;
+      gap: 16px;
+    }
+
+    .fc-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .fc-upload {
+      display: grid;
+      place-items: center;
+      min-height: 260px;
+      padding: 32px 24px;
+      border: 2px dashed var(--border-strong);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .16s ease, background .16s ease;
+    }
+
+    .fc-upload:hover,
+    .fc-upload--dragover {
+      border-color: var(--primary);
+      background: rgba(79, 70, 229, .04);
+    }
+
+    .fc-upload__inner {
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+    }
+
+    .fc-upload__icon {
+      width: 48px;
+      height: 48px;
+      color: var(--primary);
+      opacity: .78;
+    }
+
+    .fc-upload__title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .fc-upload__hint,
+    .fc-muted {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .fc-button {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1;
+      cursor: pointer;
+      transition: background .16s ease, border-color .16s ease, color .16s ease, opacity .16s ease;
+    }
+
+    .fc-button--primary {
+      color: #fff;
+      background: var(--primary);
+    }
+
+    .fc-button--primary:hover:not(.fc-button--disabled) { background: var(--primary-hover); }
+
+    .fc-button--secondary {
+      color: var(--primary);
+      border-color: var(--primary);
+      background: transparent;
+    }
+
+    .fc-button--secondary:hover { background: #eef2ff; }
+
+    .fc-button--disabled {
+      opacity: .48;
+      cursor: not-allowed;
+    }
+
+    #fc-file-input { display: none; }
+
+    .fc-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+    }
+
+    .fc-file-name {
+      min-width: 0;
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+
+    .fc-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .fc-preview {
+      overflow: hidden;
+    }
+
+    .fc-preview__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background: #ffffff;
+    }
+
+    .fc-preview__title {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .fc-preview__meta {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .fc-preview__stage {
+      min-height: 330px;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      background: repeating-conic-gradient(#e5e7eb 0% 25%, #f8fafc 0% 50%) 0 0 / 18px 18px;
+    }
+
+    .fc-preview__img {
+      display: block;
+      max-width: 100%;
+      max-height: 360px;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-md);
+      background: #fff;
+    }
+
+    .fc-placeholder {
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.5;
+      padding: 24px;
+    }
+
+    .fc-form {
+      padding: 16px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .fc-field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .fc-field__top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .fc-label {
+      color: #3f3f46;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .fc-value {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .fc-segment {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(68px, 1fr));
+      gap: 6px;
+    }
+
+    .fc-segment__button {
+      min-height: 34px;
+      padding: 0 8px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      color: var(--muted);
+      font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color .15s ease, color .15s ease, background .15s ease;
+    }
+
+    .fc-segment__button:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .fc-segment__button--active {
+      border-color: var(--primary);
+      background: #eef2ff;
+      color: var(--primary);
+    }
+
+    .fc-range {
+      width: 100%;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .fc-range:disabled {
+      cursor: not-allowed;
+      opacity: .45;
+    }
+
+    .fc-color-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .fc-color {
+      width: 42px;
+      height: 34px;
+      padding: 2px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      cursor: pointer;
+    }
+
+    .fc-notice {
+      display: none;
+      padding: 10px 12px;
+      border: 1px solid #fed7aa;
+      border-radius: var(--radius-md);
+      background: #fff7ed;
+      color: #9a3412;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .fc-notice--show { display: block; }
+
+    .fc-result {
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .fc-metric {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f4f4f5;
+      font-size: 13px;
+    }
+
+    .fc-metric:last-child { border-bottom: 0; }
+
+    .fc-metric span:first-child { color: var(--muted); }
+
+    .fc-metric strong {
+      font-size: 14px;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      overflow-wrap: anywhere;
+    }
+
+    .fc-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 22px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      background: #f4f4f5;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .fc-badge--good {
+      background: #f0fdf4;
+      color: #16a34a;
+    }
+
+    .fc-badge--warn {
+      background: #fff7ed;
+      color: #ea580c;
+    }
+
+    .fc-actions {
+      display: grid;
+      gap: 10px;
+      padding: 0 16px 16px;
+    }
+
+    .fc-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      z-index: 1000;
+      max-width: min(420px, calc(100% - 32px));
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      background: var(--error);
+      color: #fff;
+      box-shadow: 0 10px 15px -3px rgba(24, 24, 27, .16);
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.4;
+      transform: translateX(-50%);
+      display: none;
+      text-align: center;
+    }
+
+    .fc-toast--info { background: var(--primary); }
+
+    .fc-hidden { display: none !important; }
+
+    @media (max-width: 940px) {
+      .fc-shell { grid-template-columns: 1fr; }
+      .fc-side { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .fc-actions { align-self: end; }
+    }
+
+    @media (max-width: 720px) {
+      .fc-page {
+        width: calc(100% - 24px);
+        padding: 24px 0 48px;
+      }
+
+      .fc-preview-grid,
+      .fc-side {
+        grid-template-columns: 1fr;
+      }
+
+      .fc-preview__stage {
+        min-height: 240px;
+      }
+
+      .fc-toolbar {
+        align-items: stretch;
+      }
+
+      .fc-toolbar .fc-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div data-shared-navbar></div>
+
+  <main class="fc-page">
+    <h1 class="fc-heading">图片格式转换</h1>
+
+    <input id="fc-file-input" type="file" accept="image/*">
+
+    <section id="fc-upload" class="fc-upload" role="button" tabindex="0" aria-label="上传图片">
+      <div class="fc-upload__inner">
+        <svg class="fc-upload__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        <p class="fc-upload__title">拖拽图片到这里</p>
+        <p class="fc-upload__hint">支持浏览器可读取的图片格式，转换过程仅在本地完成</p>
+        <button id="fc-upload-button" class="fc-button fc-button--primary" type="button">选择图片</button>
+      </div>
+    </section>
+
+    <section id="fc-workspace" class="fc-shell" aria-live="polite">
+      <div class="fc-main">
+        <div class="fc-card fc-toolbar">
+          <p id="fc-file-name" class="fc-file-name">未选择图片</p>
+          <button id="fc-change-file" class="fc-button fc-button--secondary" type="button">重新上传</button>
+        </div>
+
+        <div class="fc-preview-grid">
+          <article class="fc-card fc-preview">
+            <div class="fc-preview__head">
+              <p class="fc-preview__title">源图</p>
+              <p id="fc-source-meta" class="fc-preview__meta">-</p>
+            </div>
+            <div class="fc-preview__stage">
+              <img id="fc-source-img" class="fc-preview__img fc-hidden" alt="源图预览">
+              <div id="fc-source-placeholder" class="fc-placeholder">请先上传图片</div>
+            </div>
+          </article>
+
+          <article class="fc-card fc-preview">
+            <div class="fc-preview__head">
+              <p class="fc-preview__title">转换后</p>
+              <p id="fc-output-meta" class="fc-preview__meta">-</p>
+            </div>
+            <div class="fc-preview__stage">
+              <img id="fc-output-img" class="fc-preview__img fc-hidden" alt="转换结果预览">
+              <div id="fc-output-placeholder" class="fc-placeholder">等待生成结果</div>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <aside class="fc-side">
+        <section class="fc-card">
+          <div class="fc-form">
+            <div class="fc-field">
+              <div class="fc-field__top">
+                <label class="fc-label">输出格式</label>
+                <span id="fc-format-note" class="fc-value">检测中</span>
+              </div>
+              <div id="fc-format-list" class="fc-segment" role="group" aria-label="输出格式"></div>
+              <p id="fc-format-help" class="fc-muted">仅显示当前浏览器支持导出的格式。</p>
+            </div>
+
+            <div class="fc-field">
+              <div class="fc-field__top">
+                <label class="fc-label" for="fc-quality">质量</label>
+                <span id="fc-quality-value" class="fc-value">90%</span>
+              </div>
+              <input id="fc-quality" class="fc-range" type="range" min="10" max="100" step="1" value="90">
+              <p id="fc-quality-help" class="fc-muted">JPEG、WebP、AVIF 会尝试应用质量参数。</p>
+            </div>
+
+            <div id="fc-bg-field" class="fc-field fc-hidden">
+              <div class="fc-field__top">
+                <label class="fc-label" for="fc-bg-color">JPEG 背景色</label>
+                <span id="fc-bg-value" class="fc-value">#ffffff</span>
+              </div>
+              <div class="fc-color-row">
+                <input id="fc-bg-color" class="fc-color" type="color" value="#ffffff">
+                <p class="fc-muted">透明区域会被平铺为该颜色。</p>
+              </div>
+            </div>
+
+            <div id="fc-transparency-note" class="fc-notice">JPEG 不支持透明度，透明区域会被平铺为背景色。</div>
+          </div>
+        </section>
+
+        <section class="fc-card">
+          <div class="fc-result">
+            <div class="fc-metric">
+              <span>源图格式</span>
+              <strong id="fc-metric-source-format">-</strong>
+            </div>
+            <div class="fc-metric">
+              <span>源图尺寸</span>
+              <strong id="fc-metric-source-size">-</strong>
+            </div>
+            <div class="fc-metric">
+              <span>源文件体积</span>
+              <strong id="fc-metric-source-bytes">-</strong>
+            </div>
+            <div class="fc-metric">
+              <span>输出格式</span>
+              <strong id="fc-metric-output-format">-</strong>
+            </div>
+            <div class="fc-metric">
+              <span>输出尺寸</span>
+              <strong id="fc-metric-output-size">-</strong>
+            </div>
+            <div class="fc-metric">
+              <span>输出体积</span>
+              <strong id="fc-metric-output-bytes">-</strong>
+            </div>
+            <div class="fc-metric">
+              <span>体积变化</span>
+              <span id="fc-change-badge" class="fc-badge">-</span>
+            </div>
+          </div>
+          <div class="fc-actions">
+            <button id="fc-download" class="fc-button fc-button--primary fc-button--disabled" type="button">下载图片</button>
+          </div>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <div id="fc-toast" class="fc-toast" role="alert" aria-live="assertive"></div>
+
+  <script>
+  (function () {
+    'use strict';
+
+    var upload = document.getElementById('fc-upload');
+    var fileInput = document.getElementById('fc-file-input');
+    var uploadButton = document.getElementById('fc-upload-button');
+    var changeFileButton = document.getElementById('fc-change-file');
+    var workspace = document.getElementById('fc-workspace');
+    var fileNameEl = document.getElementById('fc-file-name');
+    var sourceImg = document.getElementById('fc-source-img');
+    var sourcePlaceholder = document.getElementById('fc-source-placeholder');
+    var outputImg = document.getElementById('fc-output-img');
+    var outputPlaceholder = document.getElementById('fc-output-placeholder');
+    var sourceMeta = document.getElementById('fc-source-meta');
+    var outputMeta = document.getElementById('fc-output-meta');
+    var formatList = document.getElementById('fc-format-list');
+    var formatNote = document.getElementById('fc-format-note');
+    var formatHelp = document.getElementById('fc-format-help');
+    var quality = document.getElementById('fc-quality');
+    var qualityValue = document.getElementById('fc-quality-value');
+    var qualityHelp = document.getElementById('fc-quality-help');
+    var bgField = document.getElementById('fc-bg-field');
+    var bgColor = document.getElementById('fc-bg-color');
+    var bgValue = document.getElementById('fc-bg-value');
+    var transparencyNote = document.getElementById('fc-transparency-note');
+    var metricSourceFormat = document.getElementById('fc-metric-source-format');
+    var metricSourceSize = document.getElementById('fc-metric-source-size');
+    var metricSourceBytes = document.getElementById('fc-metric-source-bytes');
+    var metricOutputFormat = document.getElementById('fc-metric-output-format');
+    var metricOutputSize = document.getElementById('fc-metric-output-size');
+    var metricOutputBytes = document.getElementById('fc-metric-output-bytes');
+    var changeBadge = document.getElementById('fc-change-badge');
+    var downloadButton = document.getElementById('fc-download');
+    var toast = document.getElementById('fc-toast');
+
+    var FORMATS = [
+      { type: 'image/jpeg', label: 'JPEG', ext: 'jpg', lossy: true, alpha: false },
+      { type: 'image/png', label: 'PNG', ext: 'png', lossy: false, alpha: true },
+      { type: 'image/webp', label: 'WebP', ext: 'webp', lossy: true, alpha: true },
+      { type: 'image/avif', label: 'AVIF', ext: 'avif', lossy: true, alpha: true }
+    ];
+
+    var state = {
+      file: null,
+      image: null,
+      sourceUrl: '',
+      outputUrl: '',
+      outputBlob: null,
+      selectedType: 'image/jpeg',
+      actualType: 'image/jpeg',
+      timer: 0,
+      toastTimer: 0,
+      supportedFormats: []
+    };
+
+    function showToast(message, isInfo) {
+      clearTimeout(state.toastTimer);
+      toast.textContent = message;
+      toast.className = 'fc-toast' + (isInfo ? ' fc-toast--info' : '');
+      toast.style.display = 'block';
+      state.toastTimer = setTimeout(function () {
+        toast.style.display = 'none';
+      }, 3200);
+    }
+
+    function formatBytes(bytes) {
+      if (!Number.isFinite(bytes)) return '-';
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+    }
+
+    function formatFromMime(type, fallbackName) {
+      if (type) {
+        var found = FORMATS.find(function (item) { return item.type === type; });
+        if (found) return found.label;
+        if (type.indexOf('image/') === 0) return type.replace('image/', '').toUpperCase();
+      }
+
+      var ext = (fallbackName || '').split('.').pop();
+      return ext && ext !== fallbackName ? ext.toUpperCase() : '未知';
+    }
+
+    function fileBaseName(name) {
+      return (name || 'image').replace(/\.[^/.]+$/, '') || 'image';
+    }
+
+    function getFormat(type) {
+      return FORMATS.find(function (item) { return item.type === type; }) || FORMATS[0];
+    }
+
+    function revokeUrl(key) {
+      if (state[key]) {
+        URL.revokeObjectURL(state[key]);
+        state[key] = '';
+      }
+    }
+
+    function supportsMimeType(type) {
+      if (type === 'image/png') return true;
+
+      var canvas = document.createElement('canvas');
+      canvas.width = 2;
+      canvas.height = 2;
+      try {
+        return canvas.toDataURL(type).indexOf(type) === 5;
+      } catch (err) {
+        return false;
+      }
+    }
+
+    function detectSupportedFormats() {
+      state.supportedFormats = FORMATS.filter(function (format) {
+        return supportsMimeType(format.type);
+      });
+
+      if (!state.supportedFormats.length) {
+        state.supportedFormats = [FORMATS[1]];
+      }
+
+      if (!state.supportedFormats.some(function (format) { return format.type === state.selectedType; })) {
+        state.selectedType = state.supportedFormats[0].type;
+      }
+    }
+
+    function setDownloadReady(isReady) {
+      downloadButton.classList.toggle('fc-button--disabled', !isReady);
+      downloadButton.dataset.ready = isReady ? 'true' : 'false';
+    }
+
+    function clearOutput() {
+      revokeUrl('outputUrl');
+      state.outputBlob = null;
+      outputImg.removeAttribute('src');
+      outputImg.classList.add('fc-hidden');
+      outputPlaceholder.classList.remove('fc-hidden');
+      outputPlaceholder.textContent = state.image ? '等待生成结果' : '请先上传图片';
+      outputMeta.textContent = '-';
+      metricOutputFormat.textContent = '-';
+      metricOutputSize.textContent = '-';
+      metricOutputBytes.textContent = '-';
+      changeBadge.textContent = '-';
+      changeBadge.className = 'fc-badge';
+      setDownloadReady(false);
+    }
+
+    function resetAll() {
+      revokeUrl('sourceUrl');
+      clearOutput();
+      state.file = null;
+      state.image = null;
+      sourceImg.removeAttribute('src');
+      sourceImg.classList.add('fc-hidden');
+      sourcePlaceholder.classList.remove('fc-hidden');
+      fileNameEl.textContent = '未选择图片';
+      sourceMeta.textContent = '-';
+      metricSourceFormat.textContent = '-';
+      metricSourceSize.textContent = '-';
+      metricSourceBytes.textContent = '-';
+      upload.classList.remove('fc-hidden');
+    }
+
+    function renderFormats() {
+      formatList.innerHTML = '';
+
+      state.supportedFormats.forEach(function (format) {
+        var button = document.createElement('button');
+        button.className = 'fc-segment__button';
+        button.type = 'button';
+        button.dataset.format = format.type;
+        button.textContent = format.label;
+        button.addEventListener('click', function () {
+          if (state.selectedType === format.type) return;
+          state.selectedType = format.type;
+          scheduleConvert();
+        });
+        formatList.appendChild(button);
+      });
+
+      var unsupported = FORMATS.filter(function (format) {
+        return !state.supportedFormats.some(function (item) { return item.type === format.type; });
+      }).map(function (format) {
+        return format.label;
+      });
+
+      formatHelp.textContent = unsupported.length
+        ? '当前浏览器暂不支持导出：' + unsupported.join('、') + '。'
+        : '当前浏览器支持全部目标格式导出。';
+    }
+
+    function updateControls() {
+      var current = getFormat(state.selectedType);
+      var isLossy = current.lossy;
+      var isJpeg = current.type === 'image/jpeg';
+      var formatButtons = Array.prototype.slice.call(formatList.querySelectorAll('.fc-segment__button'));
+
+      formatButtons.forEach(function (button) {
+        button.classList.toggle('fc-segment__button--active', button.dataset.format === state.selectedType);
+      });
+
+      formatNote.textContent = current.label;
+      quality.disabled = !isLossy;
+      qualityValue.textContent = quality.value + '%';
+      qualityHelp.textContent = isLossy
+        ? current.label + ' 会尝试应用质量参数，实际效果取决于浏览器编码器。'
+        : 'PNG 为无损输出，质量滑块不会影响体积。';
+      bgField.classList.toggle('fc-hidden', !isJpeg);
+      transparencyNote.classList.toggle('fc-notice--show', isJpeg);
+      bgValue.textContent = bgColor.value;
+    }
+
+    function loadFile(file) {
+      if (!file || !file.type || file.type.indexOf('image/') !== 0) {
+        showToast('请上传图片文件');
+        return;
+      }
+
+      var url = URL.createObjectURL(file);
+      var image = new Image();
+
+      image.onload = function () {
+        revokeUrl('sourceUrl');
+        clearOutput();
+
+        state.file = file;
+        state.image = image;
+        state.sourceUrl = url;
+        sourceImg.src = url;
+        sourceImg.classList.remove('fc-hidden');
+        sourcePlaceholder.classList.add('fc-hidden');
+
+        fileNameEl.textContent = file.name + ' · ' + image.naturalWidth + '×' + image.naturalHeight + ' px';
+        sourceMeta.textContent = formatFromMime(file.type, file.name) + ' · ' + formatBytes(file.size);
+        metricSourceFormat.textContent = formatFromMime(file.type, file.name);
+        metricSourceSize.textContent = image.naturalWidth + '×' + image.naturalHeight + ' px';
+        metricSourceBytes.textContent = formatBytes(file.size);
+
+        upload.classList.add('fc-hidden');
+        workspace.classList.remove('fc-hidden');
+        scheduleConvert();
+      };
+
+      image.onerror = function () {
+        URL.revokeObjectURL(url);
+        showToast('图片读取失败，请换一张图片重试');
+      };
+
+      image.src = url;
+    }
+
+    function encodeCanvas(canvas, type, qualityValueNumber) {
+      return new Promise(function (resolve) {
+        canvas.toBlob(function (blob) {
+          resolve(blob);
+        }, type, qualityValueNumber);
+      });
+    }
+
+    function drawImageToCanvas(image, format) {
+      var canvas = document.createElement('canvas');
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+
+      var ctx = canvas.getContext('2d');
+      if (!ctx) {
+        throw new Error('浏览器无法创建图片画布');
+      }
+
+      if (!format.alpha) {
+        ctx.fillStyle = bgColor.value || '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      ctx.drawImage(image, 0, 0);
+      return canvas;
+    }
+
+    async function convertNow() {
+      if (!state.image) return;
+
+      outputPlaceholder.textContent = '正在生成结果';
+      setDownloadReady(false);
+
+      try {
+        var format = getFormat(state.selectedType);
+        var canvas = drawImageToCanvas(state.image, format);
+        var qualityNumber = format.lossy ? Number(quality.value) / 100 : undefined;
+        var blob = await encodeCanvas(canvas, format.type, qualityNumber);
+
+        if (!blob) {
+          throw new Error('浏览器无法生成该格式图片');
+        }
+
+        revokeUrl('outputUrl');
+        state.outputBlob = blob;
+        state.actualType = format.type;
+        state.outputUrl = URL.createObjectURL(blob);
+
+        outputImg.src = state.outputUrl;
+        outputImg.classList.remove('fc-hidden');
+        outputPlaceholder.classList.add('fc-hidden');
+        outputMeta.textContent = format.label + ' · ' + formatBytes(blob.size);
+        metricOutputFormat.textContent = format.label;
+        metricOutputSize.textContent = state.image.naturalWidth + '×' + state.image.naturalHeight + ' px';
+        metricOutputBytes.textContent = formatBytes(blob.size);
+        updateChangeBadge(blob.size);
+        setDownloadReady(true);
+      } catch (err) {
+        clearOutput();
+        showToast(err && err.message ? err.message : '转换失败，请重试');
+      }
+    }
+
+    function updateChangeBadge(outputSize) {
+      var originalSize = state.file ? state.file.size : 0;
+      var diff = outputSize - originalSize;
+
+      if (diff < 0) {
+        changeBadge.textContent = '减小 ' + formatBytes(Math.abs(diff));
+        changeBadge.className = 'fc-badge fc-badge--good';
+        return;
+      }
+
+      if (diff > 0) {
+        changeBadge.textContent = '增大 ' + formatBytes(diff);
+        changeBadge.className = 'fc-badge fc-badge--warn';
+        return;
+      }
+
+      changeBadge.textContent = '无变化';
+      changeBadge.className = 'fc-badge';
+    }
+
+    function scheduleConvert() {
+      clearTimeout(state.timer);
+      clearOutput();
+      updateControls();
+      if (!state.image) return;
+      state.timer = setTimeout(convertNow, 120);
+    }
+
+    function openFilePicker() {
+      fileInput.click();
+    }
+
+    upload.addEventListener('click', function (event) {
+      if (event.target === uploadButton || uploadButton.contains(event.target)) return;
+      openFilePicker();
+    });
+
+    upload.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openFilePicker();
+      }
+    });
+
+    uploadButton.addEventListener('click', function (event) {
+      event.stopPropagation();
+      openFilePicker();
+    });
+
+    changeFileButton.addEventListener('click', openFilePicker);
+
+    fileInput.addEventListener('change', function () {
+      if (fileInput.files && fileInput.files[0]) {
+        loadFile(fileInput.files[0]);
+      }
+      fileInput.value = '';
+    });
+
+    upload.addEventListener('dragover', function (event) {
+      event.preventDefault();
+      upload.classList.add('fc-upload--dragover');
+    });
+
+    upload.addEventListener('dragleave', function () {
+      upload.classList.remove('fc-upload--dragover');
+    });
+
+    upload.addEventListener('drop', function (event) {
+      event.preventDefault();
+      upload.classList.remove('fc-upload--dragover');
+      var file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+      if (file) loadFile(file);
+    });
+
+    quality.addEventListener('input', function () {
+      qualityValue.textContent = quality.value + '%';
+      scheduleConvert();
+    });
+
+    bgColor.addEventListener('input', function () {
+      bgValue.textContent = bgColor.value;
+      scheduleConvert();
+    });
+
+    downloadButton.addEventListener('click', function () {
+      if (!state.outputBlob) {
+        showToast('请先上传图片并生成转换结果', true);
+        return;
+      }
+
+      var format = getFormat(state.actualType);
+      var url = URL.createObjectURL(state.outputBlob);
+      var link = document.createElement('a');
+      link.href = url;
+      link.download = fileBaseName(state.file && state.file.name) + '-converted.' + format.ext;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(function () {
+        URL.revokeObjectURL(url);
+      }, 1000);
+    });
+
+    window.addEventListener('beforeunload', function () {
+      revokeUrl('sourceUrl');
+      revokeUrl('outputUrl');
+    });
+
+    detectSupportedFormats();
+    renderFormats();
+    resetAll();
+    updateControls();
+  }());
+  </script>
+</body>
+</html>

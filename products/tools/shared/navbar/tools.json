@@ -7,7 +7,8 @@
   "items": [
     { "slug": "image-crop", "label": "图片裁剪", "path": "/image-crop/" },
     { "slug": "remove-bg", "label": "透明图制作", "path": "/remove-bg/" },
-    { "slug": "image-compress", "label": "图片压缩", "path": "/image-compress/" }
+    { "slug": "image-compress", "label": "图片压缩", "path": "/image-compress/" },
+    { "slug": "image-format-converter", "label": "图片格式转换", "path": "/image-format-converter/" }
   ],
   "categories": [
     {
@@ -32,6 +33,12 @@
           "label": "图片压缩",
           "path": "/image-compress/",
           "description": "在线压缩图片，支持 JPEG、WebP 与 PNG 输出，实时对比体积变化"
+        },
+        {
+          "slug": "image-format-converter",
+          "label": "图片格式转换",
+          "path": "/image-format-converter/",
+          "description": "在线转换图片格式，支持 JPG、PNG、WebP、AVIF 等浏览器可导出的常见格式"
         }
       ]
     }
