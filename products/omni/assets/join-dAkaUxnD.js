@@ -1,0 +1,1 @@
+import{O as o}from"./OmniLandingPage-Dyg3yYt8.js";import{d as e,c as a,o as n}from"./index-CUxGU2as.js";import"./omni-Caen20R-.js";const i=e({__name:"join",setup(r){return(t,c)=>(n(),a(o,{locale:"zh"}))}});export{i as default};
