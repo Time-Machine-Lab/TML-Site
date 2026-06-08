@@ -1,0 +1,1 @@
+import{O as e}from"./OmniLandingPage-CcwPukBA.js";import{d as o,c as r,o as a}from"./index-CWv5InTi.js";import"./omni-Caen20R-.js";const i=o({__name:"mcp-server-for-ai",setup(n){return(t,c)=>(a(),r(e,{locale:"zh"}))}});export{i as default};

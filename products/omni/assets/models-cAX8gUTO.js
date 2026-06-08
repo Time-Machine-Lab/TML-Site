@@ -1,0 +1,1 @@
+import{O as e}from"./OmniLandingPage-CcwPukBA.js";import{d as o,c as a,o as n}from"./index-CWv5InTi.js";import"./omni-Caen20R-.js";const _=o({__name:"models",setup(r){return(t,c)=>(n(),a(e,{locale:"zh"}))}});export{_ as default};

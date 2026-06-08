@@ -1,1 +1,0 @@
-import{O as e}from"./OmniLandingPage-CnnZvYtQ.js";import{d as o,c as a,o as t}from"./index-BYa63KeN.js";import"./omni-jk8sMD0r.js";const i=o({__name:"quick-start",setup(r){return(n,c)=>(t(),a(e,{locale:"zh"}))}});export{i as default};

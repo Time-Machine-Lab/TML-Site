@@ -1,1 +1,0 @@
-import{O as e}from"./OmniLandingPage-CnnZvYtQ.js";import{d as o,c as n,o as a}from"./index-BYa63KeN.js";import"./omni-jk8sMD0r.js";const s=o({__name:"pricing",setup(r){return(t,c)=>(a(),n(e,{locale:"en"}))}});export{s as default};

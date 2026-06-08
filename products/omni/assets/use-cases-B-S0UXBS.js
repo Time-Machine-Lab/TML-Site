@@ -1,1 +1,0 @@
-import{O as e}from"./OmniLandingPage-CnnZvYtQ.js";import{d as o,c as a,o as n}from"./index-BYa63KeN.js";import"./omni-jk8sMD0r.js";const _=o({__name:"use-cases",setup(r){return(s,t)=>(n(),a(e,{locale:"en"}))}});export{_ as default};
