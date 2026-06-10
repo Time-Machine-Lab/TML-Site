@@ -1,1 +1,0 @@
-import{O as e}from"./OmniLandingPage-Dyg3yYt8.js";import{d as o,c as a,o as n}from"./index-CUxGU2as.js";import"./omni-Caen20R-.js";const _=o({__name:"changelog",setup(r){return(t,c)=>(n(),a(e,{locale:"en"}))}});export{_ as default};
