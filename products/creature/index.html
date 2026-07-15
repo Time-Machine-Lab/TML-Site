@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta id="theme-color" name="theme-color" content="#f1ead8" />
+    <meta id="meta-description" name="description" content="选一条生活路线，亲手把一只怪东西养出七个错误器官。" />
+    <title>怪东西观察站</title>
+    <link rel="icon" href="./assets/creature-stage.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <main
+      id="demo"
+      class="demo"
+      data-stage="selecting-pack"
+      data-phase="neutral"
+      data-branch="none"
+      data-effect="none"
+      data-mutations=""
+    >
+      <header class="lab-header">
+        <a id="brand-home" class="lab-mark" href="./" aria-label="怪东西观察站，重新开始">
+          <span id="brand-mark" class="lab-mark__stamp" aria-hidden="true">怪</span>
+          <span>
+            <b id="brand-name">怪东西观察站</b>
+            <small id="brand-tagline" hidden></small>
+          </span>
+        </a>
+
+        <button
+          id="mute-button"
+          class="sound-button"
+          type="button"
+          aria-label="声音"
+          aria-pressed="false"
+        >
+          <span class="sound-button__icon" aria-hidden="true">◖)))</span>
+          <span class="sound-button__text">有声</span>
+        </button>
+      </header>
+
+      <section class="experiment" aria-labelledby="selector-title">
+        <div class="specimen-column">
+          <div class="specimen-stage">
+            <span class="measure measure--left" aria-hidden="true"></span>
+            <span class="measure measure--right" aria-hidden="true"></span>
+            <div id="creature-mount" class="creature-mount" aria-busy="true">
+              <span class="loading-note">正在把怪东西搬上桌…</span>
+            </div>
+            <div class="creature-feedback">
+              <div id="mutation-callout" class="mutation-callout" hidden>
+                <b>新器官 +1</b>
+                <span><strong id="mutation-name"></strong></span>
+              </div>
+              <p id="reaction" class="reaction" role="status" aria-live="polite"></p>
+            </div>
+            <span class="hide-thought" aria-hidden="true">🫣</span>
+            <span class="desk-scribble" aria-hidden="true">器官装反也算进化 →</span>
+          </div>
+        </div>
+
+        <div class="decision-column">
+          <section id="pack-selector" class="pack-selector" aria-labelledby="selector-title">
+            <p class="selector-kicker">先选今天是哪种活法</p>
+            <h1 id="selector-title" tabindex="-1">它准备长歪了</h1>
+            <p class="selector-note">不用留名，点一下就开养。</p>
+            <div class="pack-options" aria-label="选择生活路线">
+              <button type="button" data-pack-id="work" disabled>
+                <span>工位续命</span>
+                <small>消息、需求和下班红点</small>
+              </button>
+              <button type="button" data-pack-id="study" disabled>
+                <span>课表追杀</span>
+                <small>小组、作业和宿舍夜刷</small>
+              </button>
+              <button type="button" data-pack-id="general" disabled>
+                <span>随便活着</span>
+                <small>手机、外卖和最后亿条</small>
+              </button>
+            </div>
+            <p id="asset-status" class="asset-status" role="status" aria-live="polite">正在检查本地角色…</p>
+          </section>
+
+          <ol id="mutation-progress" class="mutation-progress" aria-label="错误进化进度" hidden></ol>
+
+          <section id="question-panel" aria-labelledby="question" hidden>
+            <p class="question-number">
+              <b id="question-number">第 1 题 / 7</b>
+            </p>
+            <h2 id="question" class="question-title" tabindex="-1">选好路线后，第一题会从这里开始。</h2>
+            <p class="question-note">选一下。它会把答案长在身体上。</p>
+
+            <div class="answers" aria-label="选择你的饲养方式">
+              <button
+                class="answer answer--a"
+                type="button"
+                data-answer-slot="0"
+                aria-pressed="false"
+                disabled
+              >
+                <span>选项 A</span>
+                <small>正在装题目</small>
+                <i aria-hidden="true">A</i>
+              </button>
+              <button
+                class="answer answer--b"
+                type="button"
+                data-answer-slot="1"
+                aria-pressed="false"
+                disabled
+              >
+                <span>选项 B</span>
+                <small>正在装题目</small>
+                <i aria-hidden="true">B</i>
+              </button>
+            </div>
+          </section>
+
+          <section id="result-panel" class="result-panel" aria-labelledby="result-title" hidden>
+            <div class="result-identity">
+              <p id="result-kicker" class="result-kicker">我亲手养坏的东西</p>
+              <div class="result-name-line">
+                <h2 id="result-title" tabindex="-1"></h2>
+                <button
+                  id="rename-toggle-button"
+                  class="rename-toggle-button"
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="rename-controls"
+                >给它改名</button>
+              </div>
+              <div id="rename-controls" class="rename-controls" hidden>
+                <label for="result-name-input">新名字</label>
+                <div class="rename-input-row">
+                  <input
+                    id="result-name-input"
+                    type="text"
+                    autocomplete="off"
+                    spellcheck="false"
+                    aria-describedby="rename-help rename-error"
+                  />
+                  <button id="rename-save-button" type="button">保存名字</button>
+                </div>
+                <p id="rename-help">最多 12 个 Unicode 字符，空名字会保留原名。</p>
+                <p id="rename-error" role="status" aria-live="polite"></p>
+              </div>
+              <p id="result-species-form" class="result-species-form"></p>
+              <p id="result-diagnosis" class="result-diagnosis"></p>
+            </div>
+
+            <div
+              id="result-preview"
+              class="result-preview"
+              data-preview-status="pending"
+              aria-labelledby="result-preview-title"
+            >
+              <span class="result-preview__card" aria-hidden="true">PNG</span>
+              <span class="result-preview__copy">
+                <b id="result-preview-title">结果卡预览</b>
+                <span id="result-preview-status" role="status" aria-live="polite">正在准备这只怪东西的结果卡…</span>
+              </span>
+            </div>
+
+            <div class="result-actions" aria-label="分享、保存或重新饲养">
+              <button id="share-button" type="button" disabled>打开系统分享</button>
+              <button id="copy-button" type="button">复制结果文案</button>
+              <button id="save-button" type="button" disabled>保存结果图</button>
+              <button id="replay-button" class="reset-button" type="button">再养一只 <span aria-hidden="true">↺</span></button>
+              <p id="share-status" class="share-status" role="status" aria-live="polite"></p>
+              <div id="manual-copy" class="manual-copy" hidden>
+                <label for="manual-copy-text">自动复制没成功，长按选中下面这段：</label>
+                <textarea id="manual-copy-text" rows="5" readonly></textarea>
+              </div>
+            </div>
+
+            <div class="result-history-block">
+              <h3 id="result-history-title">它怎么长歪的</h3>
+              <p class="result-history-note">上下移动查看每次选择长出的真实器官。</p>
+              <ol id="result-history" class="result-history" aria-labelledby="result-history-title"></ol>
+            </div>
+
+            <span id="result-species" hidden></span>
+            <span id="result-observation" hidden></span>
+            <span id="result-warning" hidden></span>
+            <span id="result-organs" hidden></span>
+            <span id="result-evidence" hidden></span>
+          </section>
+        </div>
+      </section>
+
+      <footer class="lab-footer">
+        <span id="brand-site-url" hidden></span>
+        <span id="brand-credit" hidden></span>
+      </footer>
+    </main>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

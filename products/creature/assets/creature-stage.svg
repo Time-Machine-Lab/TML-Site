@@ -1,0 +1,343 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 480 420"
+  role="img"
+  aria-labelledby="creature-title creature-description"
+>
+  <title id="creature-title">一只等待变异的瓷白桌宠</title>
+  <desc id="creature-description">墨线勾勒的不对称软体生物站在桌面阴影上，互动会让便签伪装、手机以及插头脐带、电池背囊、键盘手、收到舌、倒计时角、终稿尾、电梯腿、沙发吸盘、热点鳃、摘要喙、下划眼和枕头脑等错误器官逐一长出，并在结局形成八种轮廓组合。</desc>
+
+  <defs>
+    <linearGradient id="body-porcelain" x1="116" y1="112" x2="350" y2="331" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fffdf2" />
+      <stop offset="0.58" stop-color="#f4efdc" />
+      <stop offset="1" stop-color="#d8d0b8" />
+    </linearGradient>
+    <linearGradient id="paper-lime" x1="129" y1="197" x2="350" y2="316" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#eeff9a" />
+      <stop offset="1" stop-color="#c9e84d" />
+    </linearGradient>
+    <radialGradient id="cheek-warmth" cx="0" cy="0" r="1" gradientTransform="translate(145 248) rotate(4) scale(34 21)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ff796b" stop-opacity="0.48" />
+      <stop offset="1" stop-color="#ff796b" stop-opacity="0" />
+    </radialGradient>
+    <filter id="shadow-soften" x="54" y="314" width="370" height="74" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="8" />
+    </filter>
+    <filter id="spark-glow" x="338" y="109" width="103" height="137" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2.4" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <g id="pet-shadow" aria-hidden="true">
+    <ellipse cx="241" cy="349" rx="160" ry="19" fill="#20211d" opacity="0.2" filter="url(#shadow-soften)" />
+    <ellipse cx="241" cy="345" rx="137" ry="12" fill="#20211d" opacity="0.18" />
+  </g>
+
+  <g id="pet-character">
+    <g id="pet-species-shell" aria-hidden="true" opacity="0" visibility="hidden">
+      <path d="M60 294C43 245 55 178 91 129C128 78 181 59 241 67C306 55 366 83 402 137C432 181 438 249 416 298C380 276 342 268 306 272C263 248 207 247 165 273C128 266 91 274 60 294Z" fill="#f4efdc" stroke="#20211d" stroke-width="9" stroke-linejoin="round" />
+      <path d="M83 257C92 198 128 141 179 106M397 258C388 196 353 141 301 105M122 270C135 199 178 127 231 80M359 270C347 199 304 127 251 79" fill="none" stroke="#20211d" stroke-width="6" stroke-linecap="round" opacity="0.58" />
+      <path d="M70 292C116 278 153 278 184 292C220 274 264 274 299 292C336 278 374 281 414 298" fill="none" stroke="#d9ff58" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M70 292C116 278 153 278 184 292C220 274 264 274 299 292C336 278 374 281 414 298" fill="none" stroke="#20211d" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M104 158L132 173L118 200M374 159L347 173L362 200" fill="none" stroke="#ff6f61" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+
+    <g id="pet-species-tentacle-ink" aria-hidden="true" opacity="0" visibility="hidden">
+      <path d="M130 291C94 297 79 320 70 346C62 371 41 388 19 376C44 371 48 351 43 333C38 314 50 294 78 285Z" fill="#ff6f61" stroke="#20211d" stroke-width="8" stroke-linejoin="round" />
+      <path d="M350 291C388 297 403 319 411 346C418 371 439 390 462 377C437 372 432 351 438 331C443 313 429 294 401 284Z" fill="#d9ff58" stroke="#20211d" stroke-width="8" stroke-linejoin="round" />
+      <path d="M103 314C78 324 88 350 73 366C61 379 43 384 30 377M377 315C402 325 392 350 407 367C419 381 438 385 451 378" fill="none" stroke="#fffdf2" stroke-width="6" stroke-linecap="round" opacity="0.72" />
+      <path d="M102 347C83 358 94 389 69 405M378 348C397 359 386 389 411 406" fill="none" stroke="#20211d" stroke-width="18" stroke-linecap="round" />
+      <path d="M102 347C83 358 94 389 69 405M378 348C397 359 386 389 411 406" fill="none" stroke="#ff6f61" stroke-width="10" stroke-linecap="round" />
+      <path d="M216 344C226 330 255 329 267 344L284 371L265 365L251 391L238 369L215 388L214 363L190 367Z" fill="#20211d" />
+      <circle cx="205" cy="388" r="7" fill="#20211d" />
+      <circle cx="287" cy="394" r="5" fill="#20211d" />
+    </g>
+
+    <g id="pet-species-intake" aria-hidden="true" opacity="0" visibility="hidden">
+      <path d="M111 188L82 168L31 158C20 184 22 242 37 274L85 260L116 227Z" fill="#d9ff58" stroke="#20211d" stroke-width="9" stroke-linejoin="round" />
+      <path d="M369 188L400 167L451 157C462 185 459 243 444 275L396 259L365 227Z" fill="#ff6f61" stroke="#20211d" stroke-width="9" stroke-linejoin="round" />
+      <ellipse cx="39" cy="216" rx="19" ry="52" fill="#fffdf2" stroke="#20211d" stroke-width="7" />
+      <ellipse cx="442" cy="216" rx="19" ry="52" fill="#fffdf2" stroke="#20211d" stroke-width="7" />
+      <path d="M49 182C68 191 77 208 79 230C81 244 88 253 101 259M431 181C412 191 403 208 401 229C399 244 392 253 379 259" fill="none" stroke="#20211d" stroke-width="6" stroke-linecap="round" />
+      <path d="M55 205L92 207M54 226L92 225M425 205L388 207M426 226L389 225" fill="none" stroke="#718323" stroke-width="5" stroke-linecap="round" />
+      <path d="M35 288L61 273L84 294L55 310ZM445 288L419 273L396 294L425 310Z" fill="#f4efdc" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+    </g>
+
+    <g id="pet-species-horn-broadcast" aria-hidden="true" opacity="0" visibility="hidden">
+      <path d="M169 144C145 128 117 102 99 62C92 47 101 36 115 45C147 66 168 93 181 123Z" fill="#d9ff58" stroke="#20211d" stroke-width="9" stroke-linejoin="round" />
+      <path d="M311 143C335 127 363 102 381 61C388 46 379 35 365 44C334 65 312 92 299 122Z" fill="#ff6f61" stroke="#20211d" stroke-width="9" stroke-linejoin="round" />
+      <path d="M179 119L153 96L132 64M301 118L327 95L349 63" fill="none" stroke="#20211d" stroke-width="5" stroke-linecap="round" />
+      <path d="M144 135C122 121 102 120 84 128C101 138 103 149 88 160C111 163 133 155 151 145ZM336 134C358 120 378 119 396 127C379 137 377 148 392 159C369 162 347 154 329 144Z" fill="#f4efdc" stroke="#20211d" stroke-width="8" stroke-linejoin="round" />
+      <path d="M104 111C88 100 72 98 58 104M113 91C94 75 74 70 56 76M376 110C392 99 408 97 422 103M367 90C386 74 406 69 424 75" fill="none" stroke="#ff6f61" stroke-width="7" stroke-linecap="round" />
+      <circle cx="58" cy="104" r="6" fill="#d9ff58" stroke="#20211d" stroke-width="4" />
+      <circle cx="422" cy="103" r="6" fill="#d9ff58" stroke="#20211d" stroke-width="4" />
+    </g>
+
+    <g id="pet-form-slow" aria-hidden="true" opacity="0" visibility="hidden">
+      <path d="M107 351C130 331 164 332 187 345C219 330 260 331 290 347C319 333 354 337 372 357L367 389C340 411 303 410 276 396C240 413 201 411 172 397C144 410 113 398 106 377Z" fill="#f4efdc" stroke="#20211d" stroke-width="9" stroke-linejoin="round" />
+      <path d="M125 371C157 358 188 362 210 378M265 377C294 357 330 360 353 374" fill="none" stroke="#718323" stroke-width="7" stroke-linecap="round" />
+      <path d="M129 399C153 393 176 396 191 407M288 405C310 393 337 395 353 405" fill="none" stroke="#ff6f61" stroke-width="7" stroke-linecap="round" />
+      <circle cx="233" cy="386" r="11" fill="#d9ff58" stroke="#20211d" stroke-width="5" />
+    </g>
+
+    <g id="pet-form-fast" aria-hidden="true" opacity="0" visibility="hidden">
+      <path d="M73 114C50 131 38 157 40 185C41 207 31 227 17 240C41 239 59 225 66 205C74 183 72 156 88 137Z" fill="#d9ff58" stroke="#20211d" stroke-width="8" stroke-linejoin="round" />
+      <path d="M407 113C430 130 442 156 440 184C439 206 449 226 463 239C439 238 421 224 414 204C406 182 408 155 392 136Z" fill="#ff6f61" stroke="#20211d" stroke-width="8" stroke-linejoin="round" />
+      <path d="M58 243L26 266L51 274L24 298L67 280L56 267L83 250ZM422 242L454 265L429 273L456 297L413 279L424 266L397 249Z" fill="#ff6f61" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+      <path d="M59 137C44 154 43 181 51 199M421 136C436 153 437 180 429 198" fill="none" stroke="#fffdf2" stroke-width="5" stroke-linecap="round" />
+      <path d="M70 105L48 83M410 104L432 82" fill="none" stroke="#20211d" stroke-width="8" stroke-linecap="round" />
+    </g>
+
+    <g id="pet-antenna" aria-hidden="true" opacity="0" visibility="hidden">
+      <path d="M248 136C246 107 254 77 270 55" fill="none" stroke="#20211d" stroke-width="8" stroke-linecap="round" />
+      <path d="M278 137C285 104 302 82 323 66" fill="none" stroke="#20211d" stroke-width="8" stroke-linecap="round" />
+      <circle cx="271" cy="52" r="14" fill="#d9ff58" stroke="#20211d" stroke-width="7" />
+      <path d="M271 45V52L277 56" fill="none" stroke="#20211d" stroke-width="4" stroke-linecap="round" />
+      <circle cx="326" cy="64" r="13" fill="#ff6f61" stroke="#20211d" stroke-width="7" />
+      <circle cx="322" cy="60" r="3.5" fill="#fffdf2" />
+      <path d="M254 96C263 100 270 105 276 113M288 98C296 104 301 112 304 121" fill="none" stroke="#d9ff58" stroke-width="5" stroke-linecap="round" />
+    </g>
+
+    <g id="pet-mutations-ground">
+      <g id="pet-elevator-legs" aria-hidden="true" opacity="0" visibility="hidden">
+        <path d="M140 290C151 281 180 283 191 292L194 379C184 390 147 390 136 379Z" fill="#f4efdc" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+        <path d="M289 292C300 282 329 282 340 291L345 380C335 390 299 391 289 381Z" fill="#eee8d3" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+        <path id="pet-elevator-door-seams" d="M165 313V383M317 313V384" fill="none" stroke="#20211d" stroke-width="5" stroke-linecap="round" />
+        <path id="pet-elevator-direction-arrows" d="M144 348L151 340L158 348M144 360L151 368L158 360M324 348L331 340L338 348M324 360L331 368L338 360" fill="none" stroke="#ff6f61" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+        <g id="pet-elevator-floor-panels">
+          <rect x="174" y="341" width="13" height="31" rx="4" fill="#20211d" />
+          <circle cx="180.5" cy="350" r="3" fill="#d9ff58" />
+          <circle cx="180.5" cy="363" r="3" fill="#ff6f61" />
+          <rect x="296" y="341" width="13" height="31" rx="4" fill="#20211d" />
+          <circle cx="302.5" cy="350" r="3" fill="#d9ff58" />
+          <circle cx="302.5" cy="363" r="3" fill="#ff6f61" />
+        </g>
+        <path d="M137 382C151 373 177 375 190 387L185 402H132C128 394 130 387 137 382Z" fill="#d9ff58" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+        <path d="M296 383C311 373 337 374 351 388L347 403H290C287 395 289 388 296 383Z" fill="#ff6f61" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+        <path d="M149 391H174M307 392H337" fill="none" stroke="#20211d" stroke-width="4" stroke-linecap="round" opacity="0.52" />
+      </g>
+    </g>
+
+    <g id="pet-mutations-back">
+      <g id="pet-countdown-horns" aria-hidden="true" opacity="0" visibility="hidden">
+        <path d="M112 187L76 157L43 158L51 181L91 198Z" fill="#d9ff58" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+        <path d="M108 205L72 230L39 226L50 205L91 193Z" fill="#ff6f61" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+        <circle cx="83" cy="194" r="27" fill="#fffdf2" stroke="#20211d" stroke-width="7" />
+        <path d="M83 177V194L94 201" fill="none" stroke="#20211d" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M67 174L59 165M99 174L108 164M64 212L55 220M101 211L110 220" fill="none" stroke="#20211d" stroke-width="5" stroke-linecap="round" />
+        <circle cx="83" cy="194" r="4" fill="#ff6f61" />
+      </g>
+
+      <g id="pet-final-final-tail" aria-hidden="true" opacity="0" visibility="hidden">
+        <path d="M113 205C86 198 94 174 70 171C44 168 30 190 42 211C54 231 82 231 99 218" fill="none" stroke="#20211d" stroke-width="18" stroke-linecap="round" />
+        <path d="M113 205C86 198 94 174 70 171C44 168 30 190 42 211C54 231 82 231 99 218" fill="none" stroke="#ff6f61" stroke-width="10" stroke-linecap="round" />
+        <path d="M31 174L52 165L64 184L45 193Z" fill="#fffdf2" stroke="#20211d" stroke-width="6" stroke-linejoin="round" />
+        <path d="M52 201L78 197L83 218L56 222Z" fill="#d9ff58" stroke="#20211d" stroke-width="6" stroke-linejoin="round" />
+        <path d="M37 179L51 175M59 207L75 205" fill="none" stroke="#20211d" stroke-width="4" stroke-linecap="round" />
+        <path d="M93 209L112 205L101 222Z" fill="#f4efdc" stroke="#20211d" stroke-width="5" stroke-linejoin="round" />
+      </g>
+
+      <g id="pet-battery-sac" aria-hidden="true" opacity="0" visibility="hidden">
+        <path d="M322 151C333 111 372 91 405 111C435 131 445 186 431 231C423 259 395 273 369 257C340 239 325 205 322 151Z" fill="#d9ff58" fill-opacity="0.68" stroke="#20211d" stroke-width="8" stroke-linejoin="round" />
+        <path d="M374 102L408 104L411 121L373 119Z" fill="#f4efdc" stroke="#20211d" stroke-width="6" stroke-linejoin="round" />
+        <rect x="370" y="135" width="55" height="91" rx="13" fill="#fffdf2" fill-opacity="0.76" stroke="#20211d" stroke-width="6" />
+        <rect x="378" y="198" width="39" height="20" rx="5" fill="#ff6f61" stroke="#20211d" stroke-width="4" />
+        <path d="M344 143L335 151M345 169L335 177M347 195L337 204M421 145L433 152M423 173L436 181M420 205L431 214" fill="none" stroke="#20211d" stroke-width="4" stroke-linecap="round" />
+        <circle cx="398" cy="162" r="5" fill="#20211d" opacity="0.28" />
+      </g>
+
+      <g id="pet-sofa-suction" aria-hidden="true" opacity="0" visibility="hidden">
+        <path id="pet-sofa-backrest" d="M70 318C48 300 49 252 72 230C91 212 119 218 137 243C184 226 294 227 342 245C360 219 390 214 409 232C432 254 435 300 412 319L399 352H79Z" fill="#ff6f61" stroke="#20211d" stroke-width="8" stroke-linejoin="round" />
+        <path id="pet-sofa-arm-left" d="M78 274C61 285 64 319 85 329L121 337L126 301C116 278 94 267 78 274Z" fill="#f4efdc" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+        <path id="pet-sofa-arm-right" d="M400 274C417 284 418 316 397 329L360 338L355 302C366 279 385 267 400 274Z" fill="#f4efdc" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+        <path d="M109 315C137 302 189 304 218 319L214 354H107ZM255 319C285 303 339 302 369 316L372 353H258Z" fill="#d9ff58" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+        <path d="M120 321C145 315 177 318 198 329M270 330C292 316 332 315 355 324M65 252C80 244 96 247 107 259M63 278C77 271 91 274 101 286M414 254C399 246 383 249 372 262M420 281C405 273 390 277 380 289M87 290C95 299 99 311 98 321M389 290C380 301 378 313 380 323" fill="none" stroke="#20211d" stroke-width="4" stroke-linecap="round" opacity="0.58" />
+        <g id="pet-sofa-suckers">
+          <path d="M138 348C135 357 135 365 138 372M231 349C226 358 226 366 230 374M324 348C319 357 320 365 323 372" fill="none" stroke="#ff6f61" stroke-width="10" stroke-linecap="round" />
+          <path d="M120 372C127 362 148 361 156 372C153 387 124 389 120 372Z" fill="#fffdf2" stroke="#20211d" stroke-width="6" stroke-linejoin="round" />
+          <path d="M213 374C221 363 242 363 249 374C246 389 217 390 213 374Z" fill="#fffdf2" stroke="#20211d" stroke-width="6" stroke-linejoin="round" />
+          <path d="M305 372C313 362 334 362 342 373C338 388 309 389 305 372Z" fill="#fffdf2" stroke="#20211d" stroke-width="6" stroke-linejoin="round" />
+          <path d="M128 373C135 378 143 378 149 372M221 375C228 380 237 379 243 374M313 373C320 378 329 378 336 373" fill="none" stroke="#ff6f61" stroke-width="4" stroke-linecap="round" />
+        </g>
+      </g>
+    </g>
+
+    <g id="pet-body">
+      <path
+        id="pet-body-shell"
+        d="M91 281C80 250 87 217 111 190C128 171 127 137 156 116C179 99 207 111 228 96C254 78 281 95 295 119C324 104 351 119 356 147C382 157 396 180 391 211C416 237 410 272 386 297C360 323 322 330 286 323C261 344 222 340 194 323C158 340 111 326 91 281Z"
+        fill="url(#body-porcelain)"
+        stroke="#20211d"
+        stroke-width="8"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M112 280C101 247 111 215 135 190C151 173 149 145 171 128"
+        fill="none"
+        stroke="#fffdf2"
+        stroke-width="12"
+        stroke-linecap="round"
+        opacity="0.78"
+      />
+      <path
+        d="M191 323C213 313 231 311 252 316C269 320 276 324 286 323"
+        fill="none"
+        stroke="#bab29b"
+        stroke-width="5"
+        stroke-linecap="round"
+        opacity="0.64"
+      />
+      <path d="M105 244C84 246 71 258 73 276C75 292 89 299 107 294" fill="#eee8d3" stroke="#20211d" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M372 232C399 229 413 241 410 259C408 274 394 283 377 278" fill="#e2dac3" stroke="#20211d" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+      <ellipse cx="142" cy="250" rx="35" ry="22" fill="url(#cheek-warmth)" />
+      <path d="M321 128L326 143L337 149" fill="none" stroke="#bbb39b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M328 271C342 267 354 270 363 279" fill="none" stroke="#bbb39b" stroke-width="4" stroke-linecap="round" />
+      <circle cx="137" cy="292" r="3.5" fill="#b9b199" />
+      <circle cx="164" cy="302" r="2.5" fill="#b9b199" />
+      <circle cx="345" cy="296" r="3" fill="#b9b199" />
+    </g>
+
+    <g id="pet-face">
+      <g id="pet-eye-left">
+        <ellipse cx="181" cy="196" rx="35" ry="42" fill="#fffdf2" stroke="#20211d" stroke-width="7" transform="rotate(-5 181 196)" />
+        <g id="pet-pupil-left">
+          <ellipse cx="188" cy="205" rx="14" ry="20" fill="#20211d" transform="rotate(-4 188 205)" />
+          <ellipse cx="183" cy="197" rx="4.5" ry="6" fill="#fffdf2" />
+        </g>
+        <path id="pet-lid-left" d="M149 191C166 177 192 174 213 188" fill="#eee8d5" stroke="#20211d" stroke-width="7" stroke-linecap="round" opacity="0" />
+      </g>
+
+      <g id="pet-eye-right">
+        <ellipse cx="290" cy="187" rx="40" ry="48" fill="#fffdf2" stroke="#20211d" stroke-width="7" transform="rotate(7 290 187)" />
+        <g id="pet-pupil-right">
+          <ellipse cx="279" cy="198" rx="16" ry="23" fill="#20211d" transform="rotate(6 279 198)" />
+          <ellipse cx="274" cy="188" rx="5" ry="7" fill="#fffdf2" />
+        </g>
+        <path id="pet-lid-right" d="M252 181C272 164 305 163 329 181" fill="#ece5d1" stroke="#20211d" stroke-width="7" stroke-linecap="round" opacity="0" />
+      </g>
+
+      <path d="M155 143C168 136 184 135 197 141" fill="none" stroke="#20211d" stroke-width="6" stroke-linecap="round" />
+      <path d="M268 131C286 124 307 128 319 139" fill="none" stroke="#20211d" stroke-width="6" stroke-linecap="round" />
+      <path d="M229 231C235 238 242 238 248 230" fill="none" stroke="#20211d" stroke-width="5" stroke-linecap="round" />
+      <path d="M207 263C225 274 251 271 263 256C267 268 260 281 245 286C225 291 208 281 207 263Z" fill="#20211d" />
+      <path d="M225 278C237 274 248 276 253 282C244 288 232 290 222 284Z" fill="#ff6f61" />
+      <path d="M193 248L187 257M292 243L300 251" fill="none" stroke="#b8b097" stroke-width="4" stroke-linecap="round" />
+    </g>
+
+    <g id="pet-camo" aria-hidden="true" opacity="0" visibility="hidden">
+      <path
+        d="M112 219L132 195L171 202L195 188L231 201L263 190L290 204L324 195L363 219L356 304C330 323 299 326 271 317C249 335 215 334 190 317C159 328 127 316 116 292Z"
+        fill="url(#paper-lime)"
+        stroke="#20211d"
+        stroke-width="8"
+        stroke-linejoin="round"
+      />
+      <path d="M132 195L145 218L169 202L187 225L213 197L235 224L263 190L283 223L324 195L325 229L363 219" fill="none" stroke="#718323" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.68" />
+      <path d="M157 253L181 241L202 256L226 241L249 258L276 240L302 256L331 240" fill="none" stroke="#718323" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity="0.66" />
+      <path d="M177 292L200 279L225 297L251 281L279 296L307 279" fill="none" stroke="#718323" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.58" />
+      <path d="M321 285L356 270L356 304L325 315Z" fill="#fff6b8" stroke="#20211d" stroke-width="5" stroke-linejoin="round" />
+      <path d="M223 199L238 181L266 188L263 206Z" fill="#ffefad" stroke="#20211d" stroke-width="5" stroke-linejoin="round" />
+      <path d="M147 226C160 218 177 219 187 226M274 223C290 215 309 217 319 226" fill="none" stroke="#20211d" stroke-width="7" stroke-linecap="round" />
+      <circle cx="169" cy="224" r="5" fill="#20211d" />
+      <circle cx="299" cy="221" r="5" fill="#20211d" />
+    </g>
+
+    <g id="pet-phone" aria-hidden="true" opacity="0" visibility="hidden">
+      <path d="M331 265C346 254 363 257 371 271C377 281 373 293 364 301" fill="#eee8d3" stroke="#20211d" stroke-width="8" stroke-linecap="round" />
+      <g transform="rotate(8 348 244)">
+        <rect x="318" y="194" width="65" height="104" rx="14" fill="#20211d" stroke="#20211d" stroke-width="7" />
+        <rect x="326" y="206" width="49" height="71" rx="7" fill="#d9ff58" />
+        <path d="M338 221H363M338 233H355M338 245H367M338 257H351" fill="none" stroke="#20211d" stroke-width="5" stroke-linecap="round" />
+        <circle cx="350" cy="288" r="4" fill="#fffdf2" />
+        <circle cx="373" cy="199" r="12" fill="#ff6f61" stroke="#20211d" stroke-width="5" />
+        <path d="M370 194V202" stroke="#fffdf2" stroke-width="4" stroke-linecap="round" />
+      </g>
+    </g>
+
+    <g id="pet-mutations-front">
+      <g id="pet-plug-umbilical" aria-hidden="true" opacity="0" visibility="hidden">
+        <path d="M116 262C90 260 89 286 73 294C58 302 44 291 48 276C51 263 63 255 72 262" fill="none" stroke="#20211d" stroke-width="16" stroke-linecap="round" />
+        <path d="M116 262C90 260 89 286 73 294C58 302 44 291 48 276C51 263 63 255 72 262" fill="none" stroke="#ff6f61" stroke-width="9" stroke-linecap="round" />
+        <path d="M107 253C114 255 120 261 121 269M94 258C100 264 102 271 100 279" fill="none" stroke="#20211d" stroke-width="4" stroke-linecap="round" />
+        <path d="M27 252L59 253L68 268L52 287L26 282C15 274 15 260 27 252Z" fill="#d9ff58" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+        <path d="M28 252L27 234M48 253L50 234" fill="none" stroke="#20211d" stroke-width="8" stroke-linecap="round" />
+        <path d="M28 279C37 269 49 268 58 277" fill="none" stroke="#718323" stroke-width="4" stroke-linecap="round" />
+      </g>
+
+      <g id="pet-keyboard-hands" aria-hidden="true" opacity="0" visibility="hidden">
+        <path d="M126 270C108 272 98 286 108 300C119 314 138 313 151 300L164 287L153 273L137 283C134 275 131 271 126 270Z" fill="#f4efdc" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+        <path d="M351 270C368 271 378 285 370 299C361 314 341 313 327 301L314 288L325 273L341 284C342 276 346 272 351 270Z" fill="#eee8d3" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+        <path id="pet-keyboard-deck-left" d="M91 282L191 291L187 349L82 335Z" fill="#d9ff58" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+        <path id="pet-keyboard-deck-right" d="M288 292L388 280L399 334L293 349Z" fill="#d9ff58" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+        <rect x="99" y="294" width="18" height="12" rx="3" fill="#fffdf2" stroke="#20211d" stroke-width="3" />
+        <rect x="125" y="296" width="18" height="12" rx="3" fill="#fffdf2" stroke="#20211d" stroke-width="3" />
+        <rect x="151" y="298" width="18" height="12" rx="3" fill="#ff6f61" stroke="#20211d" stroke-width="3" />
+        <rect x="96" y="314" width="18" height="12" rx="3" fill="#fffdf2" stroke="#20211d" stroke-width="3" />
+        <rect x="122" y="316" width="18" height="12" rx="3" fill="#fffdf2" stroke="#20211d" stroke-width="3" />
+        <rect x="148" y="318" width="18" height="12" rx="3" fill="#fffdf2" stroke="#20211d" stroke-width="3" />
+        <rect id="pet-keyboard-space-left" x="111" y="333" width="59" height="10" rx="4" fill="#20211d" />
+        <rect x="304" y="300" width="18" height="12" rx="3" fill="#fffdf2" stroke="#20211d" stroke-width="3" />
+        <rect x="330" y="297" width="18" height="12" rx="3" fill="#ff6f61" stroke="#20211d" stroke-width="3" />
+        <rect x="356" y="294" width="18" height="12" rx="3" fill="#fffdf2" stroke="#20211d" stroke-width="3" />
+        <rect x="308" y="319" width="18" height="12" rx="3" fill="#fffdf2" stroke="#20211d" stroke-width="3" />
+        <rect x="334" y="316" width="18" height="12" rx="3" fill="#fffdf2" stroke="#20211d" stroke-width="3" />
+        <rect x="360" y="313" width="18" height="12" rx="3" fill="#fffdf2" stroke="#20211d" stroke-width="3" />
+        <rect id="pet-keyboard-space-right" x="309" y="333" width="59" height="10" rx="4" fill="#20211d" />
+      </g>
+
+      <g id="pet-receipt-tongue" aria-hidden="true" opacity="0" visibility="hidden">
+        <path d="M222 273C225 297 214 316 220 336C226 357 247 350 254 367C261 383 246 395 228 386L218 376L208 386L197 374L187 382L184 292Z" fill="#fffdf2" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+        <path d="M204 303H229M202 319H225M207 335H236M211 351H239" fill="none" stroke="#20211d" stroke-width="5" stroke-linecap="round" opacity="0.72" />
+        <path d="M216 364L224 372L240 356" fill="none" stroke="#ff6f61" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M184 293C194 282 208 279 222 273" fill="none" stroke="#ff6f61" stroke-width="6" stroke-linecap="round" />
+      </g>
+
+      <g id="pet-infinite-scroll-eye" aria-hidden="true" opacity="0" visibility="hidden">
+        <path d="M216 111C226 96 251 93 264 106L269 160C259 177 228 179 215 162Z" fill="#d9ff58" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+        <ellipse cx="241" cy="133" rx="20" ry="16" fill="#fffdf2" stroke="#20211d" stroke-width="6" />
+        <circle cx="241" cy="134" r="8" fill="#20211d" />
+        <circle cx="238" cy="130" r="2.5" fill="#fffdf2" />
+        <path d="M255 157C270 153 280 164 276 177C274 185 269 192 269 201L251 197C249 184 244 177 242 170C239 162 246 157 255 157Z" fill="#ff6f61" stroke="#20211d" stroke-width="6" stroke-linejoin="round" />
+        <path d="M260 168V187M253 181L260 188L267 181" fill="none" stroke="#fffdf2" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M224 111C234 118 251 118 262 108M221 157C234 150 252 151 266 161" fill="none" stroke="#718323" stroke-width="4" stroke-linecap="round" />
+      </g>
+
+      <g id="pet-pillow-brain" aria-hidden="true" opacity="0" visibility="hidden">
+        <path id="pet-pillow-shell" d="M76 104Q96 112 115 101Q133 111 160 103Q153 128 162 157Q137 150 117 166Q99 151 75 159Q84 132 76 104Z" fill="#ff6f61" stroke="#20211d" stroke-width="8" stroke-linejoin="round" />
+        <path id="pet-pillow-edge-seam" d="M88 115Q102 120 115 112Q131 120 148 114Q143 130 150 147Q134 143 117 153Q103 143 88 148Q94 132 88 115Z" fill="none" stroke="#fffdf2" stroke-width="4" stroke-linejoin="round" stroke-dasharray="6 6" opacity="0.86" />
+        <path d="M96 123C105 117 116 120 119 128C122 136 130 139 139 134M94 143C104 148 113 143 116 136M138 117C144 124 143 133 137 139" fill="none" stroke="#20211d" stroke-width="4" stroke-linecap="round" opacity="0.62" />
+        <path id="pet-pillow-sleep-vent" d="M101 126H116L103 139H120" fill="none" stroke="#d9ff58" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M158 139C173 140 181 146 187 157" fill="none" stroke="#20211d" stroke-width="8" stroke-linecap="round" />
+        <circle cx="160" cy="140" r="7" fill="#d9ff58" stroke="#20211d" stroke-width="4" />
+      </g>
+
+      <g id="pet-hotspot-gills" aria-hidden="true" opacity="0" visibility="hidden">
+        <path d="M149 176C129 177 113 187 106 201C121 204 132 211 139 223C151 212 157 193 149 176Z" fill="#d9ff58" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+        <path d="M142 183C128 188 119 196 115 205M145 196C133 201 126 210 123 219M147 210C138 215 133 222 132 230" fill="none" stroke="#ff6f61" stroke-width="7" stroke-linecap="round" />
+        <path d="M111 191L101 185M108 207L96 208M119 222L108 230" fill="none" stroke="#20211d" stroke-width="5" stroke-linecap="round" />
+        <circle cx="145" cy="190" r="5" fill="#fffdf2" stroke="#20211d" stroke-width="3" />
+      </g>
+
+      <g id="pet-summary-beak" aria-hidden="true" opacity="0" visibility="hidden">
+        <path d="M199 239C220 224 249 221 281 232L248 250L207 252Z" fill="#d9ff58" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+        <path d="M207 252L248 250L276 263C249 273 221 270 201 259Z" fill="#ff6f61" stroke="#20211d" stroke-width="7" stroke-linejoin="round" />
+        <path d="M220 239L250 237M217 259L247 260" fill="none" stroke="#20211d" stroke-width="4" stroke-linecap="round" opacity="0.62" />
+        <path d="M274 234L287 232L279 242ZM271 261L284 265L276 253Z" fill="#fffdf2" stroke="#20211d" stroke-width="4" stroke-linejoin="round" />
+      </g>
+    </g>
+
+    <g id="pet-sparks" aria-hidden="true" opacity="0" visibility="hidden" filter="url(#spark-glow)">
+      <path d="M376 167L390 145L393 166L412 154" fill="none" stroke="#d9ff58" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M391 198L420 194" fill="none" stroke="#ff6f61" stroke-width="8" stroke-linecap="round" />
+      <path d="M363 143L367 120" fill="none" stroke="#ff6f61" stroke-width="8" stroke-linecap="round" />
+      <circle cx="421" cy="173" r="6" fill="#d9ff58" stroke="#20211d" stroke-width="4" />
+      <circle cx="351" cy="119" r="5" fill="#d9ff58" />
+      <path d="M401 223L413 237" stroke="#d9ff58" stroke-width="7" stroke-linecap="round" />
+    </g>
+  </g>
+</svg>
