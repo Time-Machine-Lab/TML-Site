@@ -3,88 +3,145 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0a241a" />
-    <meta name="description" content="你和奶蛙交换一天人生。今天，它替你上班。" />
-    <title>奶蛙交换计划</title>
+    <meta name="theme-color" content="#080704" />
+    <meta
+      name="description"
+      content="欢迎来到《奶蛙交换计划》：亲手揭晓两位交换一天的嘉宾。"
+    />
+    <title>奶蛙交换计划：嘉宾揭晓</title>
     <link rel="icon" href="./assets/naiwa-icon.png" type="image/png" />
-    <link rel="stylesheet" href="./src/life-swap/slice.css" />
+    <link rel="stylesheet" href="./src/life-swap/intro.css" />
   </head>
   <body>
-    <main class="show-shell">
-      <header class="show-bar">
-        <a class="show-brand" href="./" aria-label="奶蛙交换计划，重新开始">
-          <img src="./assets/naiwa-icon.png" alt="" width="38" height="38" />
-          <span data-copy="show-name">奶蛙交换计划</span>
-        </a>
-      </header>
+    <main class="intro-shell" data-active-screen="welcome">
+      <section class="intro-screen intro-screen--show" data-screen="show" aria-labelledby="show-title" data-show-phase="welcome" aria-busy="true">
+        <div class="intro-show-stage" aria-describedby="show-premise intro-live">
+          <header class="intro-show-copy">
+            <p class="intro-show-kicker">人生交换实验 · 嘉宾揭晓</p>
+            <h1 id="show-title" data-show-title data-screen-focus data-intro-copy="title"></h1>
+            <p id="show-premise" data-intro-copy="premise"></p>
+          </header>
 
-      <section class="screen home-screen" data-screen="home" aria-labelledby="home-title">
-        <article class="home-panel">
-          <h1 id="home-title" data-copy="home-title">别人养龙虾，你养奶蛙。</h1>
-          <p class="home-intro" data-copy="home-intro">
-            今天互换人生：它替你上班，你替它回老板。你的班味，先让它尝尝。
-          </p>
-          <button class="primary-action" type="button" data-action="start">
-            <span>把班味喂给它</span><span aria-hidden="true">→</span>
-          </button>
-        </article>
+          <div class="intro-guest-grid" aria-label="本期两位交换嘉宾" data-reveal-visual>
+            <article class="intro-guest-card intro-guest-card--human" data-guest-card data-guest="human">
+              <figure class="intro-reveal-visual" data-guest-visual aria-hidden="true">
+                <img
+                  src="./assets/life-swap/intro/guest-reveal.png"
+                  data-opening-image
+                  alt="暖暗的节目舞台上，一把空折叠椅正等待人类嘉宾入座。"
+                />
+              </figure>
+              <div class="intro-guest-card__stage" aria-hidden="true">
+                <span class="intro-seat-number">01</span>
+                <span class="intro-human-shadow"></span>
+              </div>
+              <div class="intro-guest-card__cover" aria-hidden="true">
+                <span>?</span>
+                <small>交换嘉宾</small>
+              </div>
+              <div class="intro-guest-card__reveal" data-guest-reveal aria-hidden="true">
+                <p class="intro-guest-card__role">人类嘉宾</p>
+                <h2 data-intro-copy="humanName"></h2>
+                <p data-intro-copy="humanStatus"></p>
+              </div>
+            </article>
 
-        <figure class="hero-visual home-visual">
-          <img
-            src="./assets/life-swap/hero-office-v2.png"
-            alt="奶蛙穿着不合身的深绿色西装坐在你的工位上，一手举着手机，一手拿着红色大印章。"
-          />
-        </figure>
-      </section>
+            <article class="intro-guest-card intro-guest-card--naiwa" data-guest-card data-guest="naiwa">
+              <figure class="intro-reveal-visual" data-guest-visual aria-hidden="true">
+                <img
+                  src="./assets/life-swap/intro/guest-reveal.png"
+                  data-opening-image
+                  alt="奶蛙一本正经地坐在过小的黑色折叠椅上，领带略歪，手里的节目手卡拿反。"
+                />
+              </figure>
+              <div class="intro-guest-card__cover" aria-hidden="true">
+                <span>?</span>
+                <small>交换嘉宾</small>
+              </div>
+              <div class="intro-guest-card__reveal" data-guest-reveal aria-hidden="true">
+                <p class="intro-guest-card__role">非人类嘉宾</p>
+                <h2 data-intro-copy="naiwaName"></h2>
+                <p data-intro-copy="naiwaStatus"></p>
+              </div>
+            </article>
+          </div>
 
-      <section class="screen question-screen" data-screen="question" aria-labelledby="question-title" hidden>
-        <article class="question-panel">
-          <p class="eyebrow" data-copy="question-eyebrow">周五 09:13 · 你的工位</p>
-          <h1 id="question-title" data-copy="question">老板在群里说：周末大家自愿来一下。</h1>
+          <button class="intro-skip" type="button" data-action="skip"><span data-intro-copy="skipAction"></span></button>
 
-          <div class="choice-stack" aria-label="选择奶蛙的行动">
-            <button class="choice-row" type="button" data-choice="ignore">
-              <span class="choice-key">A</span><span class="choice-label">装没看见</span><span class="choice-arrow" aria-hidden="true">→</span>
+          <div class="intro-show-action">
+            <p class="intro-punchline" data-punchline data-intro-copy="punchline" hidden></p>
+            <p class="intro-action-cue" data-opening-cue aria-hidden="true"></p>
+            <button class="intro-primary" type="button" data-action="reveal" disabled>
+              <span data-intro-copy="revealAction"></span><span aria-hidden="true">→</span>
             </button>
-            <button class="choice-row" type="button" data-choice="overtime">
-              <span class="choice-key">B</span><span class="choice-label">问有没有加班费</span><span class="choice-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="choice-row" type="button" data-choice="later">
-              <span class="choice-key">C</span><span class="choice-label">先答应，到时候再说</span><span class="choice-arrow" aria-hidden="true">→</span>
-            </button>
-            <button class="choice-row choice-row--naiwa" type="button" data-choice="weekend">
-              <span class="choice-key">D</span><span class="choice-label">向周末本人请假</span><span class="choice-arrow" aria-hidden="true">↗</span>
+            <button class="intro-primary" type="button" data-action="enter" hidden>
+              <span data-intro-copy="enterAction"></span><span aria-hidden="true">→</span>
             </button>
           </div>
-        </article>
-
-        <figure class="hero-visual question-visual">
-          <img
-            src="./assets/life-swap/hero-office-v2.png"
-            alt="奶蛙穿着不合身的深绿色西装坐在你的工位上，一手举着手机，一手拿着红色大印章。"
-          />
-        </figure>
+        </div>
       </section>
 
-      <section class="screen outcome-screen" data-screen="outcome" aria-labelledby="outcome-title" hidden>
-        <figure class="outcome-visual">
-          <img data-outcome-image src="./assets/naiwa-original.png" alt="" />
-        </figure>
-
-        <article class="outcome-panel">
-          <p class="eyebrow" data-outcome-choice>选择结果</p>
-          <h1 id="outcome-title" data-outcome-title>星期六批准了。</h1>
-          <p class="outcome-punchline" data-outcome-punchline>奶蛙向周末本人递交了请假条。</p>
-          <p class="outcome-consequence" data-outcome-consequence>星期六同意。老板暂时没找到可以反对的主体。</p>
-          <p class="route-chip" data-outcome-route>人生偏移：超现实劳动仲裁员 +1</p>
-
-          <button class="replay-action" type="button" data-action="replay">
-            <span>再选一次</span><span aria-hidden="true">↩</span>
+      <section class="intro-screen intro-screen--choosing" data-screen="choosing" data-active-preview="work" aria-labelledby="choosing-title" hidden>
+        <header class="intro-flashback-heading">
+          <p>节目组调出四段回放</p>
+          <h2 id="choosing-title" data-screen-focus>哪一幕，最近刚发生过？</h2>
+        </header>
+        <div class="intro-flashback-strip" aria-label="选择一段最近发生过的生活片段">
+          <button class="intro-flashback" type="button" data-route="work">
+            <img data-flashback-image alt="" />
+            <span class="intro-flashback__shade" aria-hidden="true"></span>
+            <span class="intro-flashback__copy">
+              <span class="intro-flashback__time" data-route-time></span>
+              <span class="intro-flashback__line" data-route-line></span>
+              <span class="intro-flashback__note" data-route-note></span>
+              <span class="intro-flashback__action" aria-hidden="true">交给奶蛙 <b>→</b></span>
+            </span>
           </button>
+          <button class="intro-flashback" type="button" data-route="message">
+            <img data-flashback-image alt="" />
+            <span class="intro-flashback__shade" aria-hidden="true"></span>
+            <span class="intro-flashback__copy">
+              <span class="intro-flashback__time" data-route-time></span>
+              <span class="intro-flashback__line" data-route-line></span>
+              <span class="intro-flashback__note" data-route-note></span>
+              <span class="intro-flashback__action" aria-hidden="true">交给奶蛙 <b>→</b></span>
+            </span>
+          </button>
+          <button class="intro-flashback" type="button" data-route="spotlight">
+            <img data-flashback-image alt="" />
+            <span class="intro-flashback__shade" aria-hidden="true"></span>
+            <span class="intro-flashback__copy">
+              <span class="intro-flashback__time" data-route-time></span>
+              <span class="intro-flashback__line" data-route-line></span>
+              <span class="intro-flashback__note" data-route-note></span>
+              <span class="intro-flashback__action" aria-hidden="true">交给奶蛙 <b>→</b></span>
+            </span>
+          </button>
+          <button class="intro-flashback" type="button" data-route="absurd">
+            <img data-flashback-image alt="" />
+            <span class="intro-flashback__shade" aria-hidden="true"></span>
+            <span class="intro-flashback__copy">
+              <span class="intro-flashback__time" data-route-time></span>
+              <span class="intro-flashback__line" data-route-line></span>
+              <span class="intro-flashback__note" data-route-note></span>
+              <span class="intro-flashback__action" aria-hidden="true">交给奶蛙 <b>→</b></span>
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <section class="intro-screen intro-screen--route" data-screen="route" aria-labelledby="route-title" hidden>
+        <figure class="intro-frame intro-frame--route">
+          <img alt="" data-route-image />
+        </figure>
+        <div class="intro-vignette" aria-hidden="true"></div>
+        <article class="intro-route-copy" aria-describedby="intro-live">
+          <h2 id="route-title" data-screen-focus data-route-copy></h2>
+          <button class="intro-backstage" type="button" data-action="backstage"><span aria-hidden="true">←</span><span>再看一幕</span></button>
         </article>
       </section>
     </main>
-
-    <script type="module" src="./src/life-swap/app.js"></script>
+    <p id="intro-live" class="visually-hidden" aria-live="polite" aria-atomic="true" data-live-region></p>
+    <script type="module" src="./src/life-swap/intro-app.js"></script>
   </body>
 </html>
