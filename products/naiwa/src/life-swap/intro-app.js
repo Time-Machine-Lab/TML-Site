@@ -1,4 +1,4 @@
-import { INTRO_PROMPT, INTRO_REVEAL_CUES, INTRO_ROUTES, INTRO_SHOW_COPY } from "./intro-content.js";
+import { INTRO_PROMPT, INTRO_REVEAL_CUES, INTRO_ROUTES, INTRO_SHOW_COPY } from "./intro-content.js?v=20260720-family-dinner-v2";
 import {
   chooseIntroRoute,
   createIntroState,
@@ -7,7 +7,7 @@ import {
   replayIntro,
   revealIntroGuests,
   skipIntroReveal,
-} from "./intro-state.js";
+} from "./intro-state.js?v=20260720-family-dinner-v2";
 
 const screens = new Map(
   [...document.querySelectorAll("[data-screen]")].map((element) => [element.dataset.screen, element]),

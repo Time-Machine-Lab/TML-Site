@@ -1,4 +1,4 @@
-import { ROUTE_IDS } from "./intro-content.js";
+import { ROUTE_IDS } from "./intro-content.js?v=20260720-family-dinner-v2";
 
 export function createIntroState() {
   return { screen: "welcome", routeId: null };
