@@ -1,13 +1,15 @@
-import { INTRO_PROMPT, INTRO_REVEAL_CUES, INTRO_ROUTES, INTRO_SHOW_COPY } from "./intro-content.js?v=20260720-family-dinner-v2";
+import { INTRO_PROMPT, INTRO_REVEAL_CUES, INTRO_ROUTES, INTRO_SHOW_COPY } from "./merged-intro-content.mjs";
 import {
+  buildScenarioHref,
   chooseIntroRoute,
   createIntroState,
   enterIntroChoices,
+  PLAYABLE_SCENARIO_IDS,
   readyIntroReveal,
   replayIntro,
   revealIntroGuests,
   skipIntroReveal,
-} from "./intro-state.js?v=20260720-family-dinner-v2";
+} from "./merged-intro-state.mjs";
 
 const screens = new Map(
   [...document.querySelectorAll("[data-screen]")].map((element) => [element.dataset.screen, element]),
@@ -35,7 +37,7 @@ const openingAssetTimeoutMs = 1800;
 let state = createIntroState();
 let revealReadyRun = 0;
 let routeCopyTimer = null;
-let activePreviewId = "work";
+let activePreviewId = "late-work";
 
 for (const target of document.querySelectorAll("[data-intro-copy]")) {
   const copy = INTRO_SHOW_COPY[target.dataset.introCopy];
@@ -230,8 +232,14 @@ for (const button of routeButtons) {
   button.addEventListener("pointerenter", () => setActivePreview(button.dataset.route));
   button.addEventListener("focus", () => setActivePreview(button.dataset.route, { announce: true, scroll: true }));
   button.addEventListener("click", () => {
-    setActivePreview(button.dataset.route);
-    state = chooseIntroRoute(state, button.dataset.route);
+    const routeId = button.dataset.route;
+    if (PLAYABLE_SCENARIO_IDS.includes(routeId)) {
+      window.location.assign(buildScenarioHref(routeId));
+      return;
+    }
+
+    setActivePreview(routeId);
+    state = chooseIntroRoute(state, routeId);
     render({ focusTarget: screens.get("route").querySelector("[data-screen-focus]") });
   });
 }

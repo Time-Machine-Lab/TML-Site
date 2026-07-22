@@ -19,15 +19,15 @@ export const INTRO_REVEAL_CUES = Object.freeze({
 
 export const INTRO_PROMPT = "哪一幕，最近刚发生过？";
 
-export const ROUTE_IDS = Object.freeze(["work", "message", "spotlight", "absurd"]);
+export const ROUTE_IDS = Object.freeze(["late-work", "revived-friend", "family-care", "group-assignment"]);
 
 export const INTRO_ROUTES = Object.freeze({
-  work: Object.freeze({
-    id: "work",
-    label: "“这个不急，明早给我就行。”",
-    previewTime: "22:48",
-    previewLine: "“这个不急，明早给我就行。”",
-    previewNote: "班味突然加重",
+  "late-work": Object.freeze({
+    id: "late-work",
+    label: "临近下班突然加活",
+    previewTime: "周五 17:43",
+    previewLine: "“周末有空把这份 PPT 弄一下。”",
+    previewNote: "电脑已经准备关了",
     previewHero: "./assets/life-swap/intro/flashbacks/work-night.png",
     previewAlt: "深夜工位上摊着改了多次的方案和冷掉的外卖，手机在键盘旁亮起。",
     firstSceneTitle: "你的工位，正在被它重新理解。",
@@ -35,12 +35,12 @@ export const INTRO_ROUTES = Object.freeze({
     hero: "./assets/life-swap/hero-office-v2.png",
     alt: "奶蛙坐在办公室工位前，拿着手机并穿着深色外套和红色领带。",
   }),
-  message: Object.freeze({
-    id: "message",
-    label: "“在吗？有件事想跟你说。”",
-    previewTime: "00:17",
-    previewLine: "“在吗？有件事想跟你说。”",
-    previewNote: "已读之前，世界还算和平",
+  "revived-friend": Object.freeze({
+    id: "revived-friend",
+    label: "熟人突然复活",
+    previewTime: "三年没联系",
+    previewLine: "“这家还开吗？”",
+    previewNote: "旧朋友圈突然有了动静",
     previewHero: "./assets/life-swap/intro/flashbacks/message-midnight.png",
     previewAlt: "熄灯后的床边，手机照亮枕头和一只犹豫着是否点开的手。",
     firstSceneTitle: "这条消息，先由奶蛙来读。",
@@ -48,12 +48,12 @@ export const INTRO_ROUTES = Object.freeze({
     hero: "./assets/life-swap/intro/route-message.png",
     alt: "奶蛙在生活化室内拿着亮起的手机，屏幕上出现一条让人犹豫的消息。",
   }),
-  spotlight: Object.freeze({
-    id: "spotlight",
-    label: "“有对象了吗？”",
-    previewTime: "年夜饭下半场",
-    previewLine: "“有对象了吗？”",
-    previewNote: "下一问通常是：“什么时候结婚？”",
+  "family-care": Object.freeze({
+    id: "family-care",
+    label: "家里人开始关心你",
+    previewTime: "周日家族群",
+    previewLine: "“回来吃饭，你爸菜都买了。”",
+    previewNote: "你姑也来",
     previewHero: "./assets/life-swap/intro/flashbacks/family-dinner-question-v2.png",
     previewAlt: "年夜饭桌前，几位亲戚停下筷子同时看向玩家的位置，等着玩家回答有没有对象。",
     firstSceneTitle: "它把你的嘉宾牌摆上了桌。",
@@ -61,17 +61,17 @@ export const INTRO_ROUTES = Object.freeze({
     hero: "./assets/life-swap/intro/route-family-dinner-v2.png",
     alt: "奶蛙坐在年夜饭桌前，把节目嘉宾牌摆到桌上，亲戚们看向它和镜头。",
   }),
-  absurd: Object.freeze({
-    id: "absurd",
-    label: "本来想从从容容，睁眼已经连滚带爬。",
-    previewTime: "周一 07:59",
-    previewLine: "本来想从从容容，睁眼已经连滚带爬。",
-    previewNote: "今天不宜做人",
-    previewHero: "./assets/life-swap/intro/flashbacks/absurd-monday.png",
-    previewAlt: "周一早晨的房间一片忙乱，闹钟、钥匙、早餐和分散的两只鞋让人来不及收拾。",
-    firstSceneTitle: "它已经出门了，你的另一只鞋还没有。",
-    directorResponse: "周一交给它。人类先撤离现场。",
-    hero: "./assets/life-swap/intro/route-absurd-monday-v2.png",
-    alt: "奶蛙站在混乱的周一早晨房间里，一只鞋穿反，另一只鞋还在床下。",
+  "group-assignment": Object.freeze({
+    id: "group-assignment",
+    label: "作业到底是谁做的",
+    previewTime: "周日 23:59 截止",
+    previewLine: "“五人一组，15 页 PPT＋数据表。”",
+    previewNote: "共享文档里到底有几个活人",
+    previewHero: "./assets/life-swap/intro/backstage-choices.png",
+    previewAlt: "节目后台摆着四张生活事故选择卡，等待玩家挑选。",
+    firstSceneTitle: "共享文档已经打开，真正的作者还没上线。",
+    directorResponse: "五个人的作业，先确认有几个活人。",
+    hero: "./assets/life-swap/intro/backstage-choices.png",
+    alt: "节目后台摆着等待选择的生活事故卡片。",
   }),
 });

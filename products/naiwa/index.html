@@ -10,7 +10,7 @@
     />
     <title>奶蛙交换计划：嘉宾揭晓</title>
     <link rel="icon" href="./assets/naiwa-icon.png" type="image/png" />
-    <link rel="stylesheet" href="./src/life-swap/intro.css" />
+    <link rel="stylesheet" href="./src/visual/intro.css" />
   </head>
   <body>
     <main class="intro-shell" data-active-screen="welcome">
@@ -87,7 +87,7 @@
           <h2 id="choosing-title" data-screen-focus>哪一幕，最近刚发生过？</h2>
         </header>
         <div class="intro-flashback-strip" aria-label="选择一段最近发生过的生活片段">
-          <button class="intro-flashback" type="button" data-route="work">
+          <button class="intro-flashback" type="button" data-route="late-work">
             <img data-flashback-image alt="" />
             <span class="intro-flashback__shade" aria-hidden="true"></span>
             <span class="intro-flashback__copy">
@@ -97,7 +97,7 @@
               <span class="intro-flashback__action" aria-hidden="true">交给奶蛙 <b>→</b></span>
             </span>
           </button>
-          <button class="intro-flashback" type="button" data-route="message">
+          <button class="intro-flashback" type="button" data-route="revived-friend">
             <img data-flashback-image alt="" />
             <span class="intro-flashback__shade" aria-hidden="true"></span>
             <span class="intro-flashback__copy">
@@ -107,7 +107,7 @@
               <span class="intro-flashback__action" aria-hidden="true">交给奶蛙 <b>→</b></span>
             </span>
           </button>
-          <button class="intro-flashback" type="button" data-route="spotlight">
+          <button class="intro-flashback" type="button" data-route="family-care">
             <img data-flashback-image alt="" />
             <span class="intro-flashback__shade" aria-hidden="true"></span>
             <span class="intro-flashback__copy">
@@ -117,7 +117,7 @@
               <span class="intro-flashback__action" aria-hidden="true">交给奶蛙 <b>→</b></span>
             </span>
           </button>
-          <button class="intro-flashback" type="button" data-route="absurd">
+          <button class="intro-flashback" type="button" data-route="group-assignment">
             <img data-flashback-image alt="" />
             <span class="intro-flashback__shade" aria-hidden="true"></span>
             <span class="intro-flashback__copy">
@@ -142,6 +142,6 @@
       </section>
     </main>
     <p id="intro-live" class="visually-hidden" aria-live="polite" aria-atomic="true" data-live-region></p>
-    <script type="module" src="./src/life-swap/intro-app.js?v=20260720-family-dinner-v2"></script>
+    <script type="module" src="./src/merged-intro.mjs"></script>
   </body>
 </html>

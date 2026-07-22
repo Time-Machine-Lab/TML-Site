@@ -1,4 +1,14 @@
-import { ROUTE_IDS } from "./intro-content.js?v=20260720-family-dinner-v2";
+import { ROUTE_IDS } from "./merged-intro-content.mjs";
+
+export const PLAYABLE_SCENARIO_IDS = ROUTE_IDS;
+
+export function buildScenarioHref(routeId) {
+  if (!PLAYABLE_SCENARIO_IDS.includes(routeId)) {
+    throw new RangeError(`unavailable life-swap scenario: ${routeId}`);
+  }
+
+  return `./play.html?route=${routeId}`;
+}
 
 export function createIntroState() {
   return { screen: "welcome", routeId: null };

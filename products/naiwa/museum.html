@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#102b20" />
+    <meta name="description" content="奶蛙交换计划的个人与访客博物馆。" />
+    <title>奶蛙交换计划 · 个人博物馆</title>
+    <link rel="stylesheet" href="./src/visual/museum.css" />
+  </head>
+  <body>
+    <main id="museum-root" class="museum-shell" aria-live="polite">
+      <p class="museum-loading">正在打开个人博物馆…</p>
+    </main>
+    <dialog class="museum-dialog" data-exhibit-dialog aria-labelledby="exhibit-dialog-title">
+      <button class="museum-dialog__close" type="button" data-action="close-exhibit-dialog" aria-label="关闭馆藏详情">×</button>
+      <p class="museum-dialog__kicker" data-dialog-catalog></p>
+      <h2 id="exhibit-dialog-title" class="museum-dialog__title" data-dialog-title></h2>
+      <p class="museum-dialog__conclusion" data-dialog-conclusion></p>
+      <dl class="museum-dialog__facts" data-dialog-facts></dl>
+    </dialog>
+    <noscript>
+      <p class="museum-noscript">需要启用 JavaScript 才能读取这台设备上的个人馆藏。</p>
+    </noscript>
+
+    <script type="module" src="./src/merged-museum.mjs"></script>
+  </body>
+</html>

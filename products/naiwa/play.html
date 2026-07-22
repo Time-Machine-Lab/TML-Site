@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0a241a" />
+    <meta name="description" content="奶蛙交换计划的事故入口。" />
+    <title>奶蛙交换计划</title>
+    <link rel="stylesheet" href="./src/visual/slice.css" />
+  </head>
+  <body>
+    <main class="show-shell">
+      <header class="show-bar">
+        <a class="show-brand" href="./index.html" aria-label="返回事故选择">
+          <img src="./assets/naiwa-icon.png" alt="" width="38" height="38" />
+          <span>返回事故选择</span>
+        </a>
+      </header>
+
+      <section class="screen question-screen" data-screen="invalid-scenario" aria-labelledby="invalid-scenario-title" hidden>
+        <article class="question-panel">
+          <p class="eyebrow">本地路由未命中</p>
+          <h1 id="invalid-scenario-title">没有可直接进入的事故。</h1>
+          <p class="home-intro">请从事故选择重新进入；系统不会猜测要替你打开哪一幕。</p>
+          <a class="primary-action" href="./index.html"><span>返回事故选择</span><span aria-hidden="true">←</span></a>
+        </article>
+      </section>
+
+      <section class="screen question-screen" data-screen="question" aria-labelledby="question-title" hidden>
+        <article class="question-panel">
+          <p class="eyebrow" data-scenario-status>本期事故</p>
+          <h1 id="question-title" data-scenario-title>临时加活</h1>
+          <div class="source-message" data-scenario-source>
+            <p class="source-message__label" data-scenario-source-label></p>
+            <blockquote class="source-message__copy" data-scenario-source-message></blockquote>
+          </div>
+          <p class="scenario-question" data-scenario-question></p>
+
+          <div class="choice-stack" aria-label="选择你的回复" data-choice-stack></div>
+        </article>
+
+        <figure class="hero-visual question-visual">
+          <img
+            data-scenario-hero
+            src="./assets/life-swap/hero-office-v2.png"
+            alt="奶蛙穿着不合身的深绿色西装坐在你的工位上，一手举着手机，一手拿着红色大印章。"
+          />
+        </figure>
+      </section>
+
+      <section class="screen question-screen" data-screen="content-pending" aria-labelledby="content-pending-title" hidden>
+        <article class="question-panel">
+          <p class="eyebrow">结局暂不可展示</p>
+          <h1 id="content-pending-title">这张结局暂时不能揭晓</h1>
+          <p class="home-intro" data-pending-copy></p>
+          <button class="replay-action" type="button" data-action="replay">
+            <span>返回这起事故</span><span aria-hidden="true">↩</span>
+          </button>
+          <a class="primary-action" href="./index.html"><span>返回事故选择</span><span aria-hidden="true">←</span></a>
+        </article>
+      </section>
+
+      <section class="screen outcome-screen" data-screen="outcome" aria-labelledby="outcome-title" hidden>
+        <figure class="outcome-visual">
+          <img data-outcome-image alt="" />
+        </figure>
+        <article class="outcome-summary" aria-label="奶蛙执行结果">
+          <p class="eyebrow">奶蛙行动演出</p>
+          <h1 id="outcome-title">这一幕，已经发生。</h1>
+          <p class="outcome-beat outcome-beat--action" data-outcome-action></p>
+          <p class="outcome-beat outcome-beat--consequence" data-outcome-consequence></p>
+          <p class="outcome-archive-note">这一幕将被封存为一张结局卡。</p>
+          <button class="outcome-seal-action" type="button" data-action="seal-outcome">
+            <span>封存为结局卡</span><span aria-hidden="true">→</span>
+          </button>
+        </article>
+      </section>
+
+      <section class="screen card-screen" data-screen="card-reveal" aria-labelledby="ending-card-title" hidden>
+        <article class="ending-card" data-ending-card>
+          <p class="ending-card__eyebrow">奶蛙结局卡</p>
+          <h1 id="ending-card-title" class="ending-card__title" data-ending-card-title>密封结局卡</h1>
+
+          <div class="ending-card__sealed" data-card-stage="sealed">
+            <p class="ending-card__seal">结局已封存</p>
+            <button class="ending-card__reveal-action" type="button" data-action="reveal-ending-card">点击揭晓</button>
+          </div>
+
+          <div class="ending-card__revealed" data-card-stage="revealed" hidden>
+            <img class="ending-card__image" data-ending-card-image alt="" />
+            <p class="ending-card__level" data-ending-card-level></p>
+            <p class="ending-card__conclusion" data-ending-card-conclusion></p>
+            <p class="ending-card__acquisition" data-ending-card-acquisition></p>
+            <p class="ending-card__storage-status" data-ending-card-storage-status aria-live="polite" hidden></p>
+            <div class="ending-card__actions">
+              <a class="primary-action ending-card__museum-action" href="./museum.html" data-action="open-museum" hidden>进入个人博物馆</a>
+              <button class="replay-action ending-card__share-action" type="button" data-action="share-ending-card" hidden>分享这张结局卡</button>
+              <button class="replay-action" type="button" data-action="replay">再选一次</button>
+            </div>
+            <textarea class="share-fallback" data-share-fallback readonly hidden aria-label="可复制的分享文字"></textarea>
+          </div>
+
+          <div class="ending-card__handoff" data-reveal-handoff hidden>
+            <span class="ending-card__handoff-line" aria-hidden="true"></span>
+            <p class="ending-card__handoff-kicker">馆藏档案 · <span data-reveal-catalog-number>001</span></p>
+            <strong>新藏品已确认</strong>
+            <p data-reveal-handoff-status aria-live="polite">即将进入夜间珍藏馆</p>
+            <button type="button" data-action="skip-museum-reveal">跳过动效</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="screen card-screen" data-screen="shared-card" aria-labelledby="shared-card-title" hidden>
+        <article class="ending-card ending-card--shared">
+          <p class="ending-card__eyebrow">来自蛙友的展品</p>
+          <img class="ending-card__image" data-shared-card-image alt="" />
+          <h1 id="shared-card-title" class="ending-card__title" data-shared-card-title></h1>
+          <p class="ending-card__level" data-shared-card-level></p>
+          <p class="ending-card__conclusion" data-shared-card-conclusion></p>
+          <p class="ending-card__acquisition" data-shared-card-edition></p>
+          <button class="replay-action ending-card__share-action" type="button" data-action="share-shared-card">分享这张结局卡</button>
+          <p class="ending-card__storage-status" data-shared-card-status aria-live="polite" hidden></p>
+          <textarea class="share-fallback" data-shared-card-fallback readonly hidden aria-label="可复制的分享文字"></textarea>
+        </article>
+      </section>
+
+      <section class="screen question-screen" data-screen="invalid-shared-card" aria-labelledby="invalid-shared-card-title" hidden>
+        <article class="question-panel">
+          <p class="eyebrow">本地分享校验</p>
+          <h1 id="invalid-shared-card-title">这张结局卡尚未公开。</h1>
+          <p class="home-intro">链接无效，或对应内容尚未公开；系统不会展示未批准的卡牌。</p>
+          <a class="primary-action" href="./index.html"><span>返回事故选择</span><span aria-hidden="true">←</span></a>
+        </article>
+      </section>
+    </main>
+
+    <script type="module" src="./src/merged-play.mjs"></script>
+  </body>
+</html>

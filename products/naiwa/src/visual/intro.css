@@ -575,15 +575,13 @@ button:focus-visible {
 
 [data-active-preview="work"] .intro-flashback[data-route="work"],
 [data-active-preview="message"] .intro-flashback[data-route="message"],
-[data-active-preview="spotlight"] .intro-flashback[data-route="spotlight"],
-[data-active-preview="absurd"] .intro-flashback[data-route="absurd"] {
+[data-active-preview="spotlight"] .intro-flashback[data-route="spotlight"] {
   flex-grow: 2.15;
 }
 
 [data-active-preview="work"] .intro-flashback[data-route="work"] > img,
 [data-active-preview="message"] .intro-flashback[data-route="message"] > img,
 [data-active-preview="spotlight"] .intro-flashback[data-route="spotlight"] > img,
-[data-active-preview="absurd"] .intro-flashback[data-route="absurd"] > img,
 .intro-flashback:focus-visible > img {
   opacity: 1;
   filter: grayscale(0) saturate(1.04) brightness(0.96);
@@ -593,7 +591,6 @@ button:focus-visible {
 [data-active-preview="work"] .intro-flashback[data-route="work"] .intro-flashback__action,
 [data-active-preview="message"] .intro-flashback[data-route="message"] .intro-flashback__action,
 [data-active-preview="spotlight"] .intro-flashback[data-route="spotlight"] .intro-flashback__action,
-[data-active-preview="absurd"] .intro-flashback[data-route="absurd"] .intro-flashback__action,
 .intro-flashback:focus-visible .intro-flashback__action {
   opacity: 1;
   transform: translateY(0);
@@ -602,7 +599,6 @@ button:focus-visible {
 [data-active-preview="work"] .intro-flashback[data-route="work"] .intro-flashback__note,
 [data-active-preview="message"] .intro-flashback[data-route="message"] .intro-flashback__note,
 [data-active-preview="spotlight"] .intro-flashback[data-route="spotlight"] .intro-flashback__note,
-[data-active-preview="absurd"] .intro-flashback[data-route="absurd"] .intro-flashback__note,
 .intro-flashback:focus-visible .intro-flashback__note {
   opacity: 1;
   transform: translateY(0);
@@ -896,10 +892,8 @@ button:focus-visible {
   *::before,
   *::after {
     scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    transition-delay: 0ms !important;
+    animation: none !important;
+    transition: none !important;
   }
 
   [data-show-phase="reveal-ready"] .intro-guest-card__cover {
