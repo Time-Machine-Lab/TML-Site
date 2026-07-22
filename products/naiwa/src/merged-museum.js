@@ -1,6 +1,6 @@
-import { loadCollectionBundle } from "./collection-store.mjs";
-import { PREVIEW_RESULT_CARDS } from "./result-cards.mjs";
-import { renderMuseumView } from "./merged-museum-view.mjs";
+import { loadCollectionBundle } from "./collection-store.js";
+import { PREVIEW_RESULT_CARDS } from "./result-cards.js";
+import { renderMuseumView } from "./merged-museum-view.js";
 
 const root = document.querySelector("#museum-root");
 if (!root) throw new Error("museum root is missing");

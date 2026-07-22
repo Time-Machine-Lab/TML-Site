@@ -1,4 +1,4 @@
-import { ROUTE_IDS } from "./merged-intro-content.mjs";
+import { ROUTE_IDS } from "./merged-intro-content.js";
 
 export const PLAYABLE_SCENARIO_IDS = ROUTE_IDS;
 

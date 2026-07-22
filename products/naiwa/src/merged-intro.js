@@ -1,4 +1,4 @@
-import { INTRO_PROMPT, INTRO_REVEAL_CUES, INTRO_ROUTES, INTRO_SHOW_COPY } from "./merged-intro-content.mjs";
+import { INTRO_PROMPT, INTRO_REVEAL_CUES, INTRO_ROUTES, INTRO_SHOW_COPY } from "./merged-intro-content.js";
 import {
   buildScenarioHref,
   chooseIntroRoute,
@@ -9,7 +9,7 @@ import {
   replayIntro,
   revealIntroGuests,
   skipIntroReveal,
-} from "./merged-intro-state.mjs";
+} from "./merged-intro-state.js";
 
 const screens = new Map(
   [...document.querySelectorAll("[data-screen]")].map((element) => [element.dataset.screen, element]),

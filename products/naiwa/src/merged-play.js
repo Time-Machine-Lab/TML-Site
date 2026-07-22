@@ -1,7 +1,7 @@
-import { createPreviewController } from "./app-controller.mjs";
-import { ROUTES } from "./content.mjs";
-import { PREVIEW_RESULT_CARDS } from "./result-cards.mjs";
-import { buildConsequenceModel, buildQuestionModel, buildResultModel } from "./renderer.mjs";
+import { createPreviewController } from "./app-controller.js";
+import { ROUTES } from "./content.js";
+import { PREVIEW_RESULT_CARDS } from "./result-cards.js";
+import { buildConsequenceModel, buildQuestionModel, buildResultModel } from "./renderer.js";
 
 const ROUTE_HERO = Object.freeze({
   "late-work": "./assets/life-swap/hero-office-v2.png",

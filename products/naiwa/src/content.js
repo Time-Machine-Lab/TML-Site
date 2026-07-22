@@ -1,4 +1,4 @@
-import { GENERATED_ROUTE_DATA } from "./content.generated.mjs";
+import { GENERATED_ROUTE_DATA } from "./content.generated.js";
 
 export const ROUTE_IDS = Object.freeze([
   "late-work",

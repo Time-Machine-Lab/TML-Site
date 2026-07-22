@@ -2,15 +2,15 @@ import {
   loadCollectionBundle,
   registerResult,
   saveV2Collection,
-} from "./collection-store.mjs";
+} from "./collection-store.js";
 import {
   acknowledgeConsequence,
   chooseOption,
   createPlayState,
   restorePlayState,
   rewindOneDecision,
-} from "./play-state.mjs";
-import { resolvePlayResult } from "./result-resolver.mjs";
+} from "./play-state.js";
+import { resolvePlayResult } from "./result-resolver.js";
 
 export const PREVIEW_SESSION_KEY = "naiwa-life-swap:preview-session:v2";
 const SESSION_SCHEMA_VERSION = 1;

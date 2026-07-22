@@ -1,4 +1,4 @@
-import { CARD_MANIFEST } from "./card-manifest.mjs";
+import { CARD_MANIFEST } from "./card-manifest.js";
 
 const CONTENT_VERSION = "2026-07-22.preview.v1";
 

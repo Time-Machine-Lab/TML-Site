@@ -1,12 +1,12 @@
-import { createPreviewController } from "./app-controller.mjs";
-import { ROUTES } from "./content.mjs";
-import { PREVIEW_RESULT_CARDS } from "./result-cards.mjs";
+import { createPreviewController } from "./app-controller.js";
+import { ROUTES } from "./content.js";
+import { PREVIEW_RESULT_CARDS } from "./result-cards.js";
 import {
   buildConsequenceModel,
   buildQuestionModel,
   buildResultModel,
   buildRouteSelectorModel,
-} from "./renderer.mjs";
+} from "./renderer.js";
 
 const root = document.querySelector("[data-app]");
 if (!root) throw new Error("preview app root is missing");
