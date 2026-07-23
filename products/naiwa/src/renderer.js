@@ -27,18 +27,52 @@ export function buildQuestionModel(state, route) {
   });
 }
 
+function consequenceDisplayText(value) {
+  return String(value ?? "")
+    .trim()
+    .replace(/`([^`]+)`/gu, "“$1”");
+}
+
+function removeShownCopy(value, shownValues) {
+  let remainder = value;
+  for (const shown of shownValues) {
+    if (shown) remainder = remainder.replaceAll(shown, " ");
+  }
+  return remainder.replace(/^[\s，。；：:]+|[\s]+$/gu, "");
+}
+
 export function buildConsequenceModel(state) {
   if (state.screen !== "consequence" || !state.pendingConsequence) {
     throw new RangeError("consequence model requires a pending visible consequence");
   }
   const consequence = state.pendingConsequence;
+  const action = consequenceDisplayText(consequence.action);
+  const reaction = consequenceDisplayText(consequence.npcReaction);
+  const visibleStateChange = consequenceDisplayText(consequence.visibleStateChange);
+  const remainingStateChange = removeShownCopy(visibleStateChange, [action, reaction]);
+  const distinctReaction = reaction
+    && !action.includes(reaction)
+    && !reaction.includes(action)
+    ? reaction
+    : "";
+  const summaryParts = distinctReaction ? [distinctReaction] : [];
+  if (
+    remainingStateChange
+    && !summaryParts.some((part) => (
+      part.includes(remainingStateChange) || remainingStateChange.includes(part)
+    ))
+  ) {
+    summaryParts.push(remainingStateChange);
+  }
+  const summary = summaryParts.join(" ");
   return Object.freeze({
     id: consequence.id,
     heading: "选择已经长进现场",
-    action: consequence.action,
-    reaction: consequence.npcReaction,
-    visibleStateChange: consequence.visibleStateChange,
-    body: `${consequence.action} ${consequence.npcReaction} ${consequence.visibleStateChange}`,
+    action,
+    reaction,
+    visibleStateChange,
+    summary,
+    body: `${action} ${summary}`.trim(),
   });
 }
 

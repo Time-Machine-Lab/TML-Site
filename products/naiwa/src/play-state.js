@@ -1,14 +1,16 @@
-const PLAY_STATE_SCHEMA_VERSION = 2;
+import { resolveNextNodeId } from "./route-transition.js";
+
+const PLAY_STATE_SCHEMA_VERSION = 3;
 
 function initialProgress() {
   return Object.freeze({ completed: 0, current: 1, target: 6 });
 }
 
-function progressFor(historyLength, screen) {
+function progressFor(historyLength, screen, target = 6) {
   return Object.freeze({
     completed: historyLength,
-    current: screen === "result-ready" ? historyLength : Math.min(historyLength + 1, 7),
-    target: 6,
+    current: screen === "result-ready" ? historyLength : Math.min(historyLength + 1, target),
+    target,
   });
 }
 
@@ -30,12 +32,16 @@ function requireMatchingState(state, route) {
   }
 }
 
-export function createPlayState(route) {
+export function createPlayState(route, { runSeed = `${route.id}:${route.contentVersion}:default` } = {}) {
   requireRoute(route);
+  if (typeof runSeed !== "string" || runSeed.trim() === "") {
+    throw new RangeError("play state requires a non-empty run seed");
+  }
   return Object.freeze({
     schemaVersion: PLAY_STATE_SCHEMA_VERSION,
     routeId: route.id,
     contentVersion: route.contentVersion,
+    runSeed,
     screen: "question",
     currentQuestionId: route.startNodeId,
     history: Object.freeze([]),
@@ -74,7 +80,7 @@ export function chooseOption(state, route, optionId) {
     screen: "consequence",
     history,
     pendingConsequence: Object.freeze({ ...option.consequence }),
-    progress: progressFor(history.length, "consequence"),
+    progress: progressFor(history.length, "consequence", state.progress.target),
   });
 }
 
@@ -84,14 +90,21 @@ export function acknowledgeConsequence(state, route) {
     throw new Error("there is no visible consequence to acknowledge");
   }
 
-  const nextQuestionId = state.pendingConsequence.nextNodeId;
+  const nextQuestionId = resolveNextNodeId(route, {
+    history: state.history,
+    defaultNextNodeId: state.pendingConsequence.nextNodeId,
+    runSeed: state.runSeed,
+  });
+  const target = nextQuestionId === "late-work.q.ai-delivery-check"
+    ? 7
+    : state.progress.target;
   if (nextQuestionId === "result") {
     return Object.freeze({
       ...state,
       screen: "result-ready",
       currentQuestionId: null,
       pendingConsequence: null,
-      progress: progressFor(state.history.length, "result-ready"),
+      progress: progressFor(state.history.length, "result-ready", target),
     });
   }
   if (!route.questions[nextQuestionId]) throw new RangeError(`dangling next question ${nextQuestionId}`);
@@ -101,13 +114,13 @@ export function acknowledgeConsequence(state, route) {
     screen: "question",
     currentQuestionId: nextQuestionId,
     pendingConsequence: null,
-    progress: progressFor(state.history.length, "question"),
+    progress: progressFor(state.history.length, "question", target),
   });
 }
 
 export function rewindOneDecision(state, route) {
   requireMatchingState(state, route);
-  if (state.history.length === 0) return createPlayState(route);
+  if (state.history.length === 0) return createPlayState(route, { runSeed: state.runSeed });
 
   if (state.screen === "consequence") {
     const currentEntry = state.history.at(-1);
@@ -118,7 +131,7 @@ export function rewindOneDecision(state, route) {
       currentQuestionId: currentEntry.questionId,
       history,
       pendingConsequence: null,
-      progress: progressFor(history.length, "question"),
+      progress: progressFor(history.length, "question", state.progress.target),
     });
   }
 
@@ -130,7 +143,7 @@ export function rewindOneDecision(state, route) {
     currentQuestionId: previousEntry.questionId,
     history,
     pendingConsequence: null,
-    progress: progressFor(history.length, "question"),
+    progress: progressFor(history.length, "question", state.progress.target),
   });
 }
 
@@ -139,14 +152,14 @@ export function serializePlayState(state) {
 }
 
 export function restorePlayState(raw, route) {
-  const initial = createPlayState(route);
-  if (typeof raw !== "string" || raw.length > 128 * 1024) return initial;
+  const fallback = createPlayState(route);
+  if (typeof raw !== "string" || raw.length > 128 * 1024) return fallback;
 
   let candidate;
   try {
     candidate = JSON.parse(raw);
   } catch {
-    return initial;
+    return fallback;
   }
   if (
     !candidate
@@ -155,21 +168,21 @@ export function restorePlayState(raw, route) {
     || !Array.isArray(candidate.history)
     || !["question", "consequence", "result-ready"].includes(candidate.screen)
   ) {
-    return initial;
+    return fallback;
   }
 
   try {
-    let rebuilt = initial;
+    let rebuilt = createPlayState(route, { runSeed: candidate.runSeed });
     for (let index = 0; index < candidate.history.length; index += 1) {
       const storedEntry = candidate.history[index];
       rebuilt = chooseOption(rebuilt, route, storedEntry.optionId);
       const isLastPending = candidate.screen === "consequence" && index === candidate.history.length - 1;
       if (!isLastPending) rebuilt = acknowledgeConsequence(rebuilt, route);
     }
-    if (rebuilt.screen !== candidate.screen) return initial;
-    if (rebuilt.currentQuestionId !== (candidate.currentQuestionId ?? null)) return initial;
+    if (rebuilt.screen !== candidate.screen) return fallback;
+    if (rebuilt.currentQuestionId !== (candidate.currentQuestionId ?? null)) return fallback;
     return rebuilt;
   } catch {
-    return initial;
+    return fallback;
   }
 }

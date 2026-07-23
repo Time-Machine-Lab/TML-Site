@@ -1,3 +1,5 @@
+import { seededPercent } from "./seeded-choice.js";
+
 const ASSET_SLOT_VERSION = 1;
 
 function requireText(value, label) {
@@ -31,6 +33,34 @@ function matchesRare(card, history, optionIds) {
   const required = card.requiredOptionIds ?? [];
   return signatureMatchCount(history, signatures) >= minimum
     && required.every((optionId) => optionIds.includes(optionId));
+}
+
+function historyFlags(history) {
+  return new Set(history.flatMap((entry) => [
+    ...(entry.signatureFlags ?? []),
+    ...(entry.stateTags ?? []),
+  ]));
+}
+
+function matchesHidden(card, history, optionIds, resolutionSeed) {
+  if (card.tier !== "hidden") return false;
+  const signatures = card.signatures ?? [];
+  const minimum = card.minimumSignatureMatches ?? signatures.length;
+  const required = card.requiredOptionIds ?? [];
+  const flags = historyFlags(history);
+  if (!required.every((optionId) => optionIds.includes(optionId))) return false;
+  if ((card.forbiddenSignatureFlags ?? []).some((flag) => flags.has(flag))) return false;
+  if (signatureMatchCount(history, signatures) < minimum) return false;
+  if (card.seedProbability !== null && card.seedProbability !== undefined) {
+    return seededPercent(resolutionSeed, card.seedSalt ?? card.id) < card.seedProbability;
+  }
+  return true;
+}
+
+function matchesSelfOutsourced(card, optionIds) {
+  return card.resolutionMode === "self-outsourced"
+    && optionIds.includes("late-work.q.monday-share.option.full-disclose")
+    && optionIds.includes("late-work.q.method-request.option.full-handover");
 }
 
 function resolveOrdinary(cards, history) {
@@ -67,8 +97,22 @@ function resolveOrdinary(cards, history) {
   return ranked[0].card;
 }
 
-function evidenceFromHistory(history) {
-  const indexes = [...new Set([0, Math.floor(history.length / 2), history.length - 1])];
+function evidenceFromHistory(history, card) {
+  const importantOptionIds = card.resolutionMode === "self-outsourced"
+    ? [
+      "late-work.q.monday-share.option.full-disclose",
+      "late-work.q.method-request.option.full-handover",
+    ]
+    : card.requiredOptionIds ?? [];
+  const importantIndexes = importantOptionIds
+    .map((optionId) => history.findIndex((entry) => entry.optionId === optionId))
+    .filter((index) => index >= 0);
+  const indexes = [...new Set([
+    ...importantIndexes,
+    0,
+    Math.floor(history.length / 2),
+    history.length - 1,
+  ])];
   return Object.freeze(indexes.slice(0, 4).map((index) => {
     const entry = history[index];
     return Object.freeze({
@@ -91,9 +135,11 @@ export function resolvePlayResult({
   history,
   manifest,
   playInstanceId,
+  resolutionSeed = playInstanceId,
   acquiredAt,
 }) {
   requireText(playInstanceId, "play instance id");
+  requireText(resolutionSeed, "resolution seed");
   requireText(acquiredAt, "acquired time");
   if (!route || !Array.isArray(history) || history.length < 5 || history.length > 7) {
     throw new RangeError("result requires a valid 5–7 decision path");
@@ -104,9 +150,30 @@ export function resolvePlayResult({
     card.routeId === route.id && card.renderable === true
   ));
   const optionIds = history.map(({ optionId }) => optionId);
+  const nPlusOneMatches = cards.filter((card) => (
+    card.resolutionMode === "n-plus-one"
+    && matchesHidden(card, history, optionIds, resolutionSeed)
+  ));
+  if (nPlusOneMatches.length > 1) throw new RangeError("multiple N+1 hidden cards matched one path");
+
+  const selfOutsourcedMatches = cards.filter((card) => matchesSelfOutsourced(card, optionIds));
+  if (selfOutsourcedMatches.length > 1) {
+    throw new RangeError("multiple self-outsourced cards matched one path");
+  }
+
+  const otherHiddenMatches = cards
+    .filter((card) => card.resolutionMode !== "n-plus-one")
+    .filter((card) => matchesHidden(card, history, optionIds, resolutionSeed))
+    .sort((left, right) => left.hiddenPriority - right.hiddenPriority);
+  if (otherHiddenMatches.length > 1) throw new RangeError("multiple hidden cards matched one path");
+
   const rareMatches = cards.filter((card) => matchesRare(card, history, optionIds));
   if (rareMatches.length > 1) throw new RangeError("multiple rare cards matched one path");
-  const card = rareMatches[0] ?? resolveOrdinary(cards, history);
+  const card = nPlusOneMatches[0]
+    ?? selfOutsourcedMatches[0]
+    ?? otherHiddenMatches[0]
+    ?? rareMatches[0]
+    ?? resolveOrdinary(cards, history);
   validateCardCopy(card);
 
   return Object.freeze({
@@ -121,7 +188,7 @@ export function resolvePlayResult({
     cardRevisionId: card.revisionId,
     tier: card.tier,
     acquiredAt,
-    evidence: evidenceFromHistory(history),
+    evidence: evidenceFromHistory(history, card),
     copy: Object.freeze({
       title: card.title,
       conclusion: card.conclusion,

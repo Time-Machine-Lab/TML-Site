@@ -1,4 +1,4 @@
-export const MUSEUM_CARD_TOTAL = 20;
+export const MUSEUM_CARD_TOTAL = 22;
 
 const COMMON_SERIES = Object.freeze([
   Object.freeze({ id: "work", title: "临时加活", totalCount: 4 }),
@@ -281,18 +281,24 @@ function renderResponsiveCharacter(document, front, {
   const picture = createElement(document, "picture", pictureClass);
   picture.style.setProperty("--character-offset-x", `${front.characterOffsetX ?? 0}%`);
   picture.style.setProperty("--character-offset-y", `${front.characterOffsetY ?? 0}%`);
-  const avif = createElement(document, "source");
-  avif.srcset = front.characterAvif;
-  avif.type = "image/avif";
-  const source = createElement(document, "source");
-  source.srcset = front.characterWebp;
-  source.type = "image/webp";
   const image = createElement(document, "img", imageClass);
   image.src = front.characterImage;
   image.alt = alt;
   image.loading = loading;
   image.decoding = "async";
-  picture.append(avif, source, image);
+  if (front.characterAvif) {
+    const avif = createElement(document, "source");
+    avif.srcset = front.characterAvif;
+    avif.type = "image/avif";
+    picture.append(avif);
+  }
+  if (front.characterWebp) {
+    const source = createElement(document, "source");
+    source.srcset = front.characterWebp;
+    source.type = "image/webp";
+    picture.append(source);
+  }
+  picture.append(image);
   return picture;
 }
 
@@ -339,7 +345,7 @@ function renderCard(document, card, { loading = "lazy" } = {}) {
     return article;
   }
 
-  if (card.front.characterImage && card.front.characterWebp && card.front.characterAvif) {
+  if (card.front.characterImage) {
     article.append(renderCharacterMedia(document, card.front, loading));
   } else {
     const image = createElement(document, "img", "museum-card__image");
@@ -414,12 +420,13 @@ function selectedGalleryIndex(cards, initialCardId = null) {
 
 function renderRailImage(document, card) {
   if (!card.front.image) return null;
+  const source = card.front.thumbnailImage ?? card.front.image;
   const image = createElement(
     document,
     "img",
     `museum-gallery__rail-image${card.isUnlocked ? "" : " museum-gallery__rail-image--locked"}`,
   );
-  applyResponsiveSources(image, card.front.image, "98px");
+  applyResponsiveSources(image, source, "98px");
   image.alt = "";
   image.loading = "lazy";
   image.setAttribute("aria-hidden", "true");
@@ -504,50 +511,38 @@ function renderGallery(document, model, { initialCardId = null } = {}) {
   stage.append(plinth);
 
   const preview = createElement(document, "aside", "museum-gallery__preview");
-  preview.setAttribute("aria-label", "下一件馆藏");
+  preview.setAttribute("aria-label", "本件馆藏剧情");
   for (const [index, card] of cards.entries()) {
-    const nextCard = cards[(index + 1) % cards.length];
-    if (!nextCard) continue;
+    const storyCard = selectedStoryCard(cards, index);
+    if (!storyCard) continue;
     const frame = createElement(document, "div", "museum-gallery__preview-frame");
     frame.dataset.exhibitPreview = card.id;
-    frame.dataset.nextUnlocked = String(nextCard.isUnlocked);
+    frame.dataset.storyUnlocked = String(storyCard.isUnlocked);
     frame.hidden = index !== selectedIndex;
-    if (
-      nextCard.isUnlocked
-      && nextCard.front.characterImage
-      && nextCard.front.characterWebp
-      && nextCard.front.characterAvif
-    ) {
-      frame.append(renderResponsiveCharacter(document, nextCard.front, {
-        pictureClass: "museum-gallery__preview-media",
-        imageClass: "museum-gallery__preview-image",
-        loading: "lazy",
-        alt: `下一件馆藏：${nextCard.front.identity}`,
-      }));
-    } else if (nextCard.front.image) {
+    if (storyCard.front.image) {
       const image = createElement(
         document,
         "img",
-        `museum-gallery__preview-image${nextCard.isUnlocked ? "" : " museum-gallery__preview-image--locked"}`,
+        `museum-gallery__preview-image${storyCard.isUnlocked ? "" : " museum-gallery__preview-image--locked"}`,
       );
-      applyResponsiveSources(image, nextCard.front.image);
-      image.alt = nextCard.isUnlocked ? `下一件馆藏：${nextCard.front.identity}` : "";
+      applyResponsiveSources(image, storyCard.front.image);
+      image.alt = storyCard.isUnlocked ? `馆藏剧情：${storyCard.front.identity}` : "";
       image.loading = "lazy";
-      if (!nextCard.isUnlocked) image.setAttribute("aria-hidden", "true");
+      if (!storyCard.isUnlocked) image.setAttribute("aria-hidden", "true");
       frame.append(image);
     }
     const previewPlaque = createElement(document, "div", "museum-gallery__preview-plaque");
     previewPlaque.append(
-      createElement(document, "span", "museum-gallery__preview-number", `目录 ${nextCard.catalogNumber}`),
+      createElement(document, "span", "museum-gallery__preview-number", `目录 ${storyCard.catalogNumber}`),
       createElement(
         document,
         "span",
         "museum-gallery__lock-status",
-        nextCard.isUnlocked ? "下一件藏品 · 可查看" : "下一件藏品 · 尚未解锁",
+        storyCard.isUnlocked ? "本件剧情 · 已收录" : "本件剧情 · 尚未解锁",
       ),
     );
     frame.append(
-      nextCard.isUnlocked
+      storyCard.isUnlocked
         ? createElement(document, "span", "museum-gallery__unlocked-mark", "已解锁")
         : renderIcon(document, ICONS.lock, "museum-gallery__lock-icon"),
       previewPlaque,
@@ -622,6 +617,11 @@ function renderGallery(document, model, { initialCardId = null } = {}) {
   railShell.append(previous, rail, next);
   gallery.append(railShell);
   return gallery;
+}
+
+export function selectedStoryCard(cards, selectedIndex) {
+  if (!Array.isArray(cards)) return null;
+  return cards[selectedIndex] ?? null;
 }
 
 function bindGalleryInteractions(gallery, cards) {

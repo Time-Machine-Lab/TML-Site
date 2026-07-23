@@ -108,7 +108,8 @@ export function createPreviewController({
         route: route(),
         history: playState.history,
         manifest,
-        playInstanceId: makePlayId(activeRouteId),
+        playInstanceId: playState.runSeed,
+        resolutionSeed: playState.runSeed,
         acquiredAt: now(),
       });
     }
@@ -120,7 +121,7 @@ export function createPreviewController({
     const checkpoint = checkpoints[routeId];
     playState = checkpoint?.playState
       ? restorePlayState(JSON.stringify(checkpoint.playState), selected)
-      : createPlayState(selected);
+      : createPlayState(selected, { runSeed: makePlayId(routeId) });
     result = validStoredResult(checkpoint?.result, selected, playState)
       ? checkpoint.result
       : null;
@@ -183,7 +184,7 @@ export function createPreviewController({
 
     replay() {
       if (!activeRouteId) throw new Error("select a route before replaying");
-      playState = createPlayState(route());
+      playState = createPlayState(route(), { runSeed: makePlayId(activeRouteId) });
       result = null;
       persist();
     },

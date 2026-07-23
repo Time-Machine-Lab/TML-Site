@@ -42,6 +42,8 @@ function normalizeRoutes() {
     }
     routes[routeId] = {
       ...sourceRoute,
+      transitionPolicy: routeId === "late-work" ? "late-work-v2" : null,
+      optionContract: routeId === "late-work" ? "flexible-2-to-6" : "balanced-four",
       questions,
     };
   }

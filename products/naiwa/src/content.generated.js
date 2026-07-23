@@ -3,23 +3,25 @@ export const GENERATED_ROUTE_DATA = {
   "late-work": {
     "id": "late-work",
     "title": "临近下班突然加活",
-    "subtitle": "周五 17:43，电脑都要关了，周末 PPT 来了。",
-    "contentVersion": "late-work.graph.preview.2026-07-22.v1",
-    "startNodeId": "late-work.q.open-1743",
+    "subtitle": "周五要开黑，领导、周末和 AI 数字分身同时来抢人。",
+    "contentVersion": "late-work.graph.preview.2026-07-23.v2",
+    "startNodeId": "late-work.q.friday-request",
     "allowedSceneObjects": [
-      "预算表",
-      "PPT 版本",
-      "数据口径",
-      "群聊确认",
-      "附件",
-      "工时记录"
+      "好友群",
+      "奶茶红包",
+      "项目群通知",
+      "游戏战损",
+      "AI 数字分身",
+      "交付说明",
+      "绩效承诺",
+      "招聘需求"
     ],
     "questions": {
-      "late-work.q.open-1743": {
-        "id": "late-work.q.open-1743",
+      "late-work.q.friday-request": {
+        "id": "late-work.q.friday-request",
         "routeId": "late-work",
         "stage": 1,
-        "prompt": "周五 17:43，奶蛙已经把充电线绕好，屏幕正在倒数关机。领导发来：客户周一要看，你周末有空把这份 PPT 弄一下？ 你怎么回？",
+        "prompt": "周五 17:36，你刚收好电脑，两个好朋友已经在群里催：今晚八点三角洲。谁鸽谁给剩下两个人一人一杯奶茶，不发自己滚。 组长走过来：小陈家里临时有事，今天得提前走。他手上还有一些工作没做完，客户明早就要。你今晚能不能帮忙接一下？ 你怎么选？",
         "sourceRefs": [
           "LW-S01",
           "LW-S02",
@@ -27,12 +29,14 @@ export const GENERATED_ROUTE_DATA = {
         ],
         "options": [
           {
-            "id": "late-work.q.open-1743.option.accept",
-            "label": "收到，周日几点前要？",
+            "id": "late-work.q.friday-request.option.accept-all",
+            "label": "行，我今晚接。",
             "intent": "normal",
             "stateTags": [
-              "respectful-acceptance",
-              "weekend-possible"
+              "normal",
+              "work-all",
+              "friend-cancelled",
+              "service-provided"
             ],
             "sourceRefs": [
               "LW-S01",
@@ -44,77 +48,24 @@ export const GENERATED_ROUTE_DATA = {
               "normal": 1
             },
             "signatureFlags": [],
-            "evidence": "收到，周日几点前要？",
+            "evidence": "行，我今晚接。",
             "consequence": {
-              "id": "late-work.q.open-1743.option.accept.consequence",
-              "action": "奶蛙把关机线重新插回去。",
-              "npcReaction": "领导回：`周日晚上先发我。先弄得像样点。` “弄哪块”仍没说清",
-              "visibleStateChange": "奶蛙把关机线重新插回去。 领导回：`周日晚上先发我。先弄得像样点。` “弄哪块”仍没说清",
-              "nextNodeId": "late-work.q.scope-accepted"
+              "id": "late-work.q.friday-request.option.accept-all.consequence",
+              "action": "你在好友群发出两个奶茶红包：`ggb，被领导压力了，下次一定`。",
+              "npcReaction": "朋友 A 回：`CNM，又鸽，能不能赶紧`；朋友 B 回：`不行就赶紧辞了，每次都鸽`。两个人一边收红包一边开喷，然后拉了一个路人",
+              "visibleStateChange": "你在好友群发出两个奶茶红包：`ggb，被领导压力了，下次一定`。 朋友 A 回：`CNM，又鸽，能不能赶紧`；朋友 B 回：`不行就赶紧辞了，每次都鸽`。两个人一边收红包一边开喷，然后拉了一个路人",
+              "nextNodeId": "late-work.q.at-1958-working"
             }
           },
           {
-            "id": "late-work.q.open-1743.option.boundary",
-            "label": "我周末有安排，真来不了。周一一早可以接。",
-            "intent": "boundary",
-            "stateTags": [
-              "hard-boundary",
-              "weekend-unavailable"
-            ],
-            "sourceRefs": [
-              "LW-S01",
-              "LW-S02",
-              "LW-S08"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "boundary": 1
-            },
-            "signatureFlags": [],
-            "evidence": "我周末有安排，真来不了。周一一早可以接。",
-            "consequence": {
-              "id": "late-work.q.open-1743.option.boundary.consequence",
-              "action": "奶蛙把周末日历盖住。",
-              "npcReaction": "领导停了十几秒：`那今晚能不能先留个框架？`",
-              "visibleStateChange": "奶蛙把周末日历盖住。 领导停了十几秒：`那今晚能不能先留个框架？`",
-              "nextNodeId": "late-work.q.scope-boundary"
-            }
-          },
-          {
-            "id": "late-work.q.open-1743.option.priority",
-            "label": "PPT 接了，那预算表先停？",
-            "intent": "strategy",
-            "stateTags": [
-              "priority-coordination",
-              "budget-conflict-visible"
-            ],
-            "sourceRefs": [
-              "LW-S01",
-              "LW-S02",
-              "LW-S08"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "strategy": 1
-            },
-            "signatureFlags": [],
-            "evidence": "PPT 接了，那预算表先停？",
-            "consequence": {
-              "id": "late-work.q.open-1743.option.priority.consequence",
-              "action": "奶蛙把预算表和 PPT 放到两个工位。",
-              "npcReaction": "领导回：`预算表周一九点也要。` 两件事第一次被摆到同一张桌上",
-              "visibleStateChange": "奶蛙把预算表和 PPT 放到两个工位。 领导回：`预算表周一九点也要。` 两件事第一次被摆到同一张桌上",
-              "nextNodeId": "late-work.q.scope-priority"
-            }
-          },
-          {
-            "id": "late-work.q.open-1743.option.time-slot",
-            "label": "可以。我先给周末两小时在工时表里占个位，下周哪天调休您定？",
+            "id": "late-work.q.friday-request.option.until-eight",
+            "label": "我可以先帮到八点。没做完的部分，下周一再排。",
             "intent": "absurd",
             "stateTags": [
-              "time-compensation",
-              "object-logic",
-              "time-record-opened"
+              "strategy",
+              "time-boundary",
+              "service-provided",
+              "priority-control"
             ],
             "sourceRefs": [
               "LW-S01",
@@ -128,360 +79,109 @@ export const GENERATED_ROUTE_DATA = {
             "signatureFlags": [
               "consistent-absurd"
             ],
-            "evidence": "可以。我先给周末两小时在工时表里占个位，下周哪天调休您定？",
+            "evidence": "我可以先帮到八点。没做完的部分，下周一再排。",
             "consequence": {
-              "id": "late-work.q.open-1743.option.time-slot.consequence",
-              "action": "奶蛙给空工位贴`周末工时：待认领`。",
-              "npcReaction": "领导回：`先做，调休周一说。`",
-              "visibleStateChange": "奶蛙给空工位贴`周末工时：待认领`。 领导回：`先做，调休周一说。`",
-              "nextNodeId": "late-work.q.scope-time"
-            }
-          }
-        ],
-        "sceneObjects": [
-          "预算表",
-          "PPT 版本",
-          "数据口径",
-          "群聊确认",
-          "附件",
-          "工时记录"
-        ],
-        "contentVersion": "late-work.graph.preview.2026-07-22.v1",
-        "approvalStatus": "source-reviewed"
-      },
-      "late-work.q.scope-accepted": {
-        "id": "late-work.q.scope-accepted",
-        "routeId": "late-work",
-        "stage": 2,
-        "prompt": "领导又发来三个附件：客户汇报V5.pptx、最终版.pptx、最终版_真.pptx，只补一句：先弄得像样点。 你先把范围钉在哪？",
-        "sourceRefs": [
-          "LW-S01",
-          "LW-S05"
-        ],
-        "options": [
-          {
-            "id": "late-work.q.scope-accepted.option.ask-three",
-            "label": "我先确认一下：逻辑、版式、数据，您最想先看哪个？",
-            "intent": "strategy",
-            "stateTags": [
-              "evidence-first",
-              "scope-requested"
-            ],
-            "sourceRefs": [
-              "LW-S01",
-              "LW-S05"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "strategy": 1
-            },
-            "signatureFlags": [],
-            "evidence": "我先确认一下：逻辑、版式、数据，您最想先看哪个？",
-            "consequence": {
-              "id": "late-work.q.scope-accepted.option.ask-three.consequence",
-              "action": "奶蛙把三件事做成三个勾选框。",
-              "npcReaction": "领导勾了`逻辑`，又说`数据别错`，母版仍待确认",
-              "visibleStateChange": "奶蛙把三件事做成三个勾选框。 领导勾了`逻辑`，又说`数据别错`，母版仍待确认",
-              "nextNodeId": "late-work.q.version-master"
+              "id": "late-work.q.friday-request.option.until-eight.consequence",
+              "action": "组长点头，你把八点设成截止线。",
+              "npcReaction": "好友群暂时没有收到奶茶，两个朋友还等你上线",
+              "visibleStateChange": "组长点头，你把八点设成截止线。 好友群暂时没有收到奶茶，两个朋友还等你上线",
+              "nextNodeId": "late-work.q.at-1958-cutoff"
             }
           },
           {
-            "id": "late-work.q.scope-accepted.option.logic-first",
-            "label": "我按客户版本改逻辑，版式先不动。",
-            "intent": "normal",
-            "stateTags": [
-              "respectful-acceptance",
-              "logic-first"
-            ],
-            "sourceRefs": [
-              "LW-S01",
-              "LW-S05"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "normal": 1
-            },
-            "signatureFlags": [],
-            "evidence": "我按客户版本改逻辑，版式先不动。",
-            "consequence": {
-              "id": "late-work.q.scope-accepted.option.logic-first.consequence",
-              "action": "奶蛙把字体工具收进抽屉，只展开目录。",
-              "npcReaction": "领导回：`行，但客户刚又发了一版。`",
-              "visibleStateChange": "奶蛙把字体工具收进抽屉，只展开目录。 领导回：`行，但客户刚又发了一版。`",
-              "nextNodeId": "late-work.q.version-client"
-            }
-          },
-          {
-            "id": "late-work.q.scope-accepted.option.layout-first",
-            "label": "我先把版式拉齐，数据原样保留。",
+            "id": "late-work.q.friday-request.option.refuse-overtime",
+            "label": "今天晚上有安排，这个我接不了。如果确实需要临时加班，明天走加班申请，或者下周一再排。",
             "intent": "boundary",
             "stateTags": [
-              "limited-commitment",
-              "layout-first"
+              "boundary",
+              "formal-boundary",
+              "no-service-yet"
             ],
             "sourceRefs": [
               "LW-S01",
-              "LW-S05"
+              "LW-S02",
+              "LW-S08"
             ],
             "requiresConfirmation": true,
             "scoreEffects": {
               "boundary": 1
             },
             "signatureFlags": [],
-            "evidence": "我先把版式拉齐，数据原样保留。",
+            "evidence": "今天晚上有安排，这个我接不了。如果确实需要临时加班，明天走加班申请，或者下周一再排。",
             "consequence": {
-              "id": "late-work.q.scope-accepted.option.layout-first.consequence",
-              "action": "奶蛙给数据区套上只读框。",
-              "npcReaction": "设计同事提醒：`模板母版别覆盖。`",
-              "visibleStateChange": "奶蛙给数据区套上只读框。 设计同事提醒：`模板母版别覆盖。`",
-              "nextNodeId": "late-work.q.version-layout-lock"
+              "id": "late-work.q.friday-request.option.refuse-overtime.consequence",
+              "action": "组长说先想别的办法。",
+              "npcReaction": "你准时回家，八点和两个朋友进入三角洲",
+              "visibleStateChange": "组长说先想别的办法。 你准时回家，八点和两个朋友进入三角洲",
+              "nextNodeId": "late-work.q.at-1958-game"
             }
           },
           {
-            "id": "late-work.q.scope-accepted.option.paternity-test",
-            "label": "我先把三份差异拉出来，别让“最终版”互相认亲。",
-            "intent": "absurd",
+            "id": "late-work.q.friday-request.option.digital-twin",
+            "label": "你把旧方案、会议记录、常用模板和自己的写作习惯交给 AI，制作一个能模仿你写材料、修改页面并导出交付文件的数字分身；它留在电脑里替你完成今晚的工作，你准时去上号",
+            "intent": "strategy",
             "stateTags": [
-              "object-logic",
-              "version-forensics"
+              "strategy",
+              "ai-hidden",
+              "ai-output",
+              "service-provided"
             ],
             "sourceRefs": [
               "LW-S01",
-              "LW-S05"
+              "LW-S02",
+              "LW-S08"
             ],
             "requiresConfirmation": true,
             "scoreEffects": {
-              "absurd": 1
+              "strategy": 1
             },
-            "signatureFlags": [
-              "consistent-absurd"
-            ],
-            "evidence": "我先把三份差异拉出来，别让“最终版”互相认亲。",
+            "signatureFlags": [],
+            "evidence": "你把旧方案、会议记录、常用模板和自己的写作习惯交给 AI，制作一个能模仿你写材料、修改页面并导出交付文件的数字分身；它留在电脑里替你完成今晚的工作，你准时去上号",
             "consequence": {
-              "id": "late-work.q.scope-accepted.option.paternity-test.consequence",
-              "action": "三份附件被摆进`PPT 亲子鉴定`对照页；修改时间和作者开始互相打架",
-              "npcReaction": "三份附件被摆进`PPT 亲子鉴定`对照页；修改时间和作者开始互相打架",
-              "visibleStateChange": "三份附件被摆进`PPT 亲子鉴定`对照页；修改时间和作者开始互相打架 三份附件被摆进`PPT 亲子鉴定`对照页；修改时间和作者开始互相打架",
-              "nextNodeId": "late-work.q.version-forensic"
+              "id": "late-work.q.friday-request.option.digital-twin.consequence",
+              "action": "数字分身开始处理你交给它的资料。",
+              "npcReaction": "它没有工作群权限，也不会替你回消息；你回家和两个朋友进入三角洲",
+              "visibleStateChange": "数字分身开始处理你交给它的资料。 它没有工作群权限，也不会替你回消息；你回家和两个朋友进入三角洲",
+              "nextNodeId": "late-work.q.at-1958-game"
             }
           }
         ],
         "sceneObjects": [
-          "预算表",
-          "PPT 版本",
-          "数据口径",
-          "群聊确认",
-          "附件",
-          "工时记录"
+          "好友群",
+          "奶茶红包",
+          "项目群通知",
+          "游戏战损",
+          "AI 数字分身",
+          "交付说明",
+          "绩效承诺",
+          "招聘需求"
         ],
-        "contentVersion": "late-work.graph.preview.2026-07-22.v1",
+        "contentVersion": "late-work.graph.preview.2026-07-23.v2",
         "approvalStatus": "source-reviewed"
       },
-      "late-work.q.scope-boundary": {
-        "id": "late-work.q.scope-boundary",
+      "late-work.q.at-1958-working": {
+        "id": "late-work.q.at-1958-working",
         "routeId": "late-work",
         "stage": 2,
-        "prompt": "领导追问：周末不做也行，那你今晚先留个框架？ 17:47，预算表还有两项没核完。你怎么划今晚的边界？",
+        "prompt": "19:58，你还坐在工位上。资料刚提交，组长在项目群里发来：@奶蛙，客户那边突然又补了要求，需要你现在继续处理一下。 你怎么办？",
         "sourceRefs": [
           "LW-S01",
           "LW-S02",
-          "LW-S03"
-        ],
-        "options": [
-          {
-            "id": "late-work.q.scope-boundary.option.twelve-minutes",
-            "label": "可以，17:59前发目录和缺数清单，周末不在线。",
-            "intent": "normal",
-            "stateTags": [
-              "hard-boundary",
-              "bounded-handoff"
-            ],
-            "sourceRefs": [
-              "LW-S01",
-              "LW-S02",
-              "LW-S03"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "normal": 1
-            },
-            "signatureFlags": [],
-            "evidence": "可以，17:59前发目录和缺数清单，周末不在线。",
-            "consequence": {
-              "id": "late-work.q.scope-boundary.option.twelve-minutes.consequence",
-              "action": "奶蛙把倒计时改成 12 分钟，只建目录。",
-              "npcReaction": "领导随后转来客户的新附件",
-              "visibleStateChange": "奶蛙把倒计时改成 12 分钟，只建目录。 领导随后转来客户的新附件",
-              "nextNodeId": "late-work.q.version-client"
-            }
-          },
-          {
-            "id": "late-work.q.scope-boundary.option.monday-start",
-            "label": "今晚也排满了，周一 8:30 开始。",
-            "intent": "boundary",
-            "stateTags": [
-              "hard-boundary",
-              "no-extra-work"
-            ],
-            "sourceRefs": [
-              "LW-S01",
-              "LW-S02",
-              "LW-S03"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "boundary": 1
-            },
-            "signatureFlags": [],
-            "evidence": "今晚也排满了，周一 8:30 开始。",
-            "consequence": {
-              "id": "late-work.q.scope-boundary.option.monday-start.consequence",
-              "action": "奶蛙关掉编辑权限。",
-              "npcReaction": "领导把模板发来：`那先别动母版。`",
-              "visibleStateChange": "奶蛙关掉编辑权限。 领导把模板发来：`那先别动母版。`",
-              "nextNodeId": "late-work.q.version-layout-lock"
-            }
-          },
-          {
-            "id": "late-work.q.scope-boundary.option.status-together",
-            "label": "我把预算表状态和 PPT 缺口一起发，您今晚定先后。",
-            "intent": "strategy",
-            "stateTags": [
-              "priority-coordination",
-              "scope-and-priority-visible"
-            ],
-            "sourceRefs": [
-              "LW-S01",
-              "LW-S02",
-              "LW-S03"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "strategy": 1
-            },
-            "signatureFlags": [],
-            "evidence": "我把预算表状态和 PPT 缺口一起发，您今晚定先后。",
-            "consequence": {
-              "id": "late-work.q.scope-boundary.option.status-together.consequence",
-              "action": "一页状态表同时显示两个截止时间，领导圈出`先定PPT母版`",
-              "npcReaction": "一页状态表同时显示两个截止时间，领导圈出`先定PPT母版`",
-              "visibleStateChange": "一页状态表同时显示两个截止时间，领导圈出`先定PPT母版` 一页状态表同时显示两个截止时间，领导圈出`先定PPT母版`",
-              "nextNodeId": "late-work.q.version-master"
-            }
-          },
-          {
-            "id": "late-work.q.scope-boundary.option.empty-skeleton",
-            "label": "玩家确认奶蛙只搭六张空白页，每页写清缺什么，不填任何猜测数据",
-            "intent": "absurd",
-            "stateTags": [
-              "object-logic",
-              "no-fabrication"
-            ],
-            "sourceRefs": [
-              "LW-S01",
-              "LW-S02",
-              "LW-S03"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "absurd": 1
-            },
-            "signatureFlags": [
-              "consistent-absurd"
-            ],
-            "evidence": "玩家确认奶蛙只搭六张空白页，每页写清缺什么，不填任何猜测数据",
-            "consequence": {
-              "id": "late-work.q.scope-boundary.option.empty-skeleton.consequence",
-              "action": "六张空白页排成候诊区，三个“最终版”在门口等待挂号",
-              "npcReaction": "六张空白页排成候诊区，三个“最终版”在门口等待挂号",
-              "visibleStateChange": "六张空白页排成候诊区，三个“最终版”在门口等待挂号 六张空白页排成候诊区，三个“最终版”在门口等待挂号",
-              "nextNodeId": "late-work.q.version-forensic"
-            }
-          }
-        ],
-        "sceneObjects": [
-          "预算表",
-          "PPT 版本",
-          "数据口径",
-          "群聊确认",
-          "附件",
-          "工时记录"
-        ],
-        "contentVersion": "late-work.graph.preview.2026-07-22.v1",
-        "approvalStatus": "source-reviewed"
-      },
-      "late-work.q.scope-priority": {
-        "id": "late-work.q.scope-priority",
-        "routeId": "late-work",
-        "stage": 2,
-        "prompt": "领导回：预算表周一九点，PPT周一十点，最好都别停。 两件事都急，但周末只有一份你。下一句说什么？",
-        "sourceRefs": [
-          "LW-S01",
           "LW-S07"
         ],
         "options": [
           {
-            "id": "late-work.q.scope-priority.option.choose-one",
-            "label": "两个都按原标准做不完，您定一个先。",
-            "intent": "strategy",
-            "stateTags": [
-              "priority-coordination",
-              "owner-decides"
-            ],
-            "sourceRefs": [
-              "LW-S01",
-              "LW-S07"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "strategy": 1
-            },
-            "signatureFlags": [],
-            "evidence": "两个都按原标准做不完，您定一个先。",
-            "consequence": {
-              "id": "late-work.q.scope-priority.option.choose-one.consequence",
-              "action": "奶蛙把两个任务放进一进一出的闸机。",
-              "npcReaction": "领导说：`先PPT，但要用对版本。`",
-              "visibleStateChange": "奶蛙把两个任务放进一进一出的闸机。 领导说：`先PPT，但要用对版本。`",
-              "nextNodeId": "late-work.q.version-master"
-            }
-          },
-          {
-            "id": "late-work.q.scope-priority.option.split-depth",
-            "label": "我今晚收预算表，PPT 周日只做逻辑，版式周一再说。",
-            "intent": "boundary",
-            "stateTags": [
-              "reality-plan",
-              "scope-split"
-            ],
-            "sourceRefs": [
-              "LW-S01",
-              "LW-S07"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "boundary": 1
-            },
-            "signatureFlags": [],
-            "evidence": "我今晚收预算表，PPT 周日只做逻辑，版式周一再说。",
-            "consequence": {
-              "id": "late-work.q.scope-priority.option.split-depth.consequence",
-              "action": "工作被拆成三个时间盒；客户的新反馈刚好落进“逻辑”盒",
-              "npcReaction": "工作被拆成三个时间盒；客户的新反馈刚好落进“逻辑”盒",
-              "visibleStateChange": "工作被拆成三个时间盒；客户的新反馈刚好落进“逻辑”盒 工作被拆成三个时间盒；客户的新反馈刚好落进“逻辑”盒",
-              "nextNodeId": "late-work.q.version-client"
-            }
-          },
-          {
-            "id": "late-work.q.scope-priority.option.ask-owner",
-            "label": "业务同事能不能给最终数据？我只整合。",
+            "id": "late-work.q.at-1958-working.option.accept-all",
+            "label": "收到，我今晚一起做完。",
             "intent": "normal",
             "stateTags": [
-              "reality-plan",
-              "data-owner-requested"
+              "normal",
+              "work-all",
+              "service-provided"
             ],
             "sourceRefs": [
               "LW-S01",
+              "LW-S02",
               "LW-S07"
             ],
             "requiresConfirmation": true,
@@ -489,25 +189,84 @@ export const GENERATED_ROUTE_DATA = {
               "normal": 1
             },
             "signatureFlags": [],
-            "evidence": "业务同事能不能给最终数据？我只整合。",
+            "evidence": "收到，我今晚一起做完。",
             "consequence": {
-              "id": "late-work.q.scope-priority.option.ask-owner.consequence",
-              "action": "领导拉来业务同事，对方先提醒`模板别改坏`",
-              "npcReaction": "领导拉来业务同事，对方先提醒`模板别改坏`",
-              "visibleStateChange": "领导拉来业务同事，对方先提醒`模板别改坏` 领导拉来业务同事，对方先提醒`模板别改坏`",
-              "nextNodeId": "late-work.q.version-layout-lock"
+              "id": "late-work.q.at-1958-working.option.accept-all.consequence",
+              "action": "电脑重新亮起，新增要求和原任务一起进入你的夜班列表。",
+              "npcReaction": "好友群里那个路人已经顶上你的位置",
+              "visibleStateChange": "电脑重新亮起，新增要求和原任务一起进入你的夜班列表。 好友群里那个路人已经顶上你的位置",
+              "nextNodeId": "late-work.q.saturday-0906"
             }
           },
           {
-            "id": "late-work.q.scope-priority.option.two-desks",
-            "label": "玩家确认奶蛙给 PPT 和预算表各摆一个工位，空工位贴`等一位同事`",
-            "intent": "absurd",
+            "id": "late-work.q.at-1958-working.option.priority-plan",
+            "label": "今晚只能先做最急的部分。您排一下优先级，剩下的下周一继续。",
+            "intent": "boundary",
             "stateTags": [
-              "object-logic",
-              "resource-gap-visible"
+              "strategy",
+              "priority-control",
+              "service-provided"
             ],
             "sourceRefs": [
               "LW-S01",
+              "LW-S02",
+              "LW-S07"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "boundary": 1
+            },
+            "signatureFlags": [],
+            "evidence": "今晚只能先做最急的部分。您排一下优先级，剩下的下周一继续。",
+            "consequence": {
+              "id": "late-work.q.at-1958-working.option.priority-plan.consequence",
+              "action": "组长圈出最急的一项，其余要求被排到下周一，不再假装所有事情都能同时完成",
+              "npcReaction": "组长圈出最急的一项，其余要求被排到下周一，不再假装所有事情都能同时完成",
+              "visibleStateChange": "组长圈出最急的一项，其余要求被排到下周一，不再假装所有事情都能同时完成 组长圈出最急的一项，其余要求被排到下周一，不再假装所有事情都能同时完成",
+              "nextNodeId": "late-work.q.saturday-0906"
+            }
+          },
+          {
+            "id": "late-work.q.at-1958-working.option.digital-twin",
+            "label": "你回复`收到`，把新增要求和资料继续交给数字分身，自己收电脑离开",
+            "intent": "strategy",
+            "stateTags": [
+              "strategy",
+              "ai-hidden",
+              "ai-output",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S01",
+              "LW-S02",
+              "LW-S07"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "strategy": 1
+            },
+            "signatureFlags": [],
+            "evidence": "你回复`收到`，把新增要求和资料继续交给数字分身，自己收电脑离开",
+            "consequence": {
+              "id": "late-work.q.at-1958-working.option.digital-twin.consequence",
+              "action": "数字分身继续工作，项目群只看到你回复了收到，没有人知道电脑前已经换了人",
+              "npcReaction": "数字分身继续工作，项目群只看到你回复了收到，没有人知道电脑前已经换了人",
+              "visibleStateChange": "数字分身继续工作，项目群只看到你回复了收到，没有人知道电脑前已经换了人 数字分身继续工作，项目群只看到你回复了收到，没有人知道电脑前已经换了人",
+              "nextNodeId": "late-work.q.saturday-0906"
+            }
+          },
+          {
+            "id": "late-work.q.at-1958-working.option.unread",
+            "label": "你锁上电脑，手机也不再点开项目群",
+            "intent": "absurd",
+            "stateTags": [
+              "boundary",
+              "unread",
+              "no-response"
+            ],
+            "sourceRefs": [
+              "LW-S01",
+              "LW-S02",
               "LW-S07"
             ],
             "requiresConfirmation": true,
@@ -517,46 +276,53 @@ export const GENERATED_ROUTE_DATA = {
             "signatureFlags": [
               "consistent-absurd"
             ],
-            "evidence": "玩家确认奶蛙给 PPT 和预算表各摆一个工位，空工位贴`等一位同事`",
+            "evidence": "你锁上电脑，手机也不再点开项目群",
             "consequence": {
-              "id": "late-work.q.scope-priority.option.two-desks.consequence",
-              "action": "办公室没有凭空长出第二个人，领导只好打开三份版本对照",
-              "npcReaction": "办公室没有凭空长出第二个人，领导只好打开三份版本对照",
-              "visibleStateChange": "办公室没有凭空长出第二个人，领导只好打开三份版本对照 办公室没有凭空长出第二个人，领导只好打开三份版本对照",
-              "nextNodeId": "late-work.q.version-forensic"
+              "id": "late-work.q.at-1958-working.option.unread.consequence",
+              "action": "消息停在未读状态。",
+              "npcReaction": "组长又发了一句：`看到回一下。`",
+              "visibleStateChange": "消息停在未读状态。 组长又发了一句：`看到回一下。`",
+              "nextNodeId": "late-work.q.saturday-0906-unread"
             }
           }
         ],
         "sceneObjects": [
-          "预算表",
-          "PPT 版本",
-          "数据口径",
-          "群聊确认",
-          "附件",
-          "工时记录"
+          "好友群",
+          "奶茶红包",
+          "项目群通知",
+          "游戏战损",
+          "AI 数字分身",
+          "交付说明",
+          "绩效承诺",
+          "招聘需求"
         ],
-        "contentVersion": "late-work.graph.preview.2026-07-22.v1",
+        "contentVersion": "late-work.graph.preview.2026-07-23.v2",
         "approvalStatus": "source-reviewed"
       },
-      "late-work.q.scope-time": {
-        "id": "late-work.q.scope-time",
+      "late-work.q.at-1958-cutoff": {
+        "id": "late-work.q.at-1958-cutoff",
         "routeId": "late-work",
         "stage": 2,
-        "prompt": "领导说：先做，调休周一再说。 任务范围和补休都还漂着。你准备先锁哪一层承诺？",
+        "prompt": "19:58，离你说好的八点只剩两分钟。资料刚提交，组长在项目群里发来：@奶蛙，客户那边临时又来活了，需要你现在加个班。我明天帮你补加班申请，调休也一起帮你争取。 你怎么办？",
         "sourceRefs": [
+          "LW-S01",
           "LW-S03",
           "LW-S04"
         ],
         "options": [
           {
-            "id": "late-work.q.scope-time.option.two-hour-cap",
-            "label": "好，我先做两小时；超过的部分周日再跟您确认。",
+            "id": "late-work.q.at-1958-cutoff.option.accept-and-cancel",
+            "label": "收到，我继续做。",
             "intent": "normal",
             "stateTags": [
-              "time-compensation",
-              "time-cap"
+              "normal",
+              "work-all",
+              "friend-cancelled",
+              "service-provided",
+              "promise-comp-time"
             ],
             "sourceRefs": [
+              "LW-S01",
               "LW-S03",
               "LW-S04"
             ],
@@ -565,50 +331,27 @@ export const GENERATED_ROUTE_DATA = {
               "normal": 1
             },
             "signatureFlags": [],
-            "evidence": "好，我先做两小时；超过的部分周日再跟您确认。",
+            "evidence": "收到，我继续做。",
             "consequence": {
-              "id": "late-work.q.scope-time.option.two-hour-cap.consequence",
-              "action": "奶蛙启动两小时沙漏。",
-              "npcReaction": "领导先要求`用对母版，别返工`",
-              "visibleStateChange": "奶蛙启动两小时沙漏。 领导先要求`用对母版，别返工`",
-              "nextNodeId": "late-work.q.version-master"
+              "id": "late-work.q.at-1958-cutoff.option.accept-and-cancel.consequence",
+              "action": "你第一次在好友群发出两个奶茶红包：`ggb，被领导压力了，下次一定`。",
+              "npcReaction": "两个人收完红包直接开喷，然后拉了一个路人",
+              "visibleStateChange": "你第一次在好友群发出两个奶茶红包：`ggb，被领导压力了，下次一定`。 两个人收完红包直接开喷，然后拉了一个路人",
+              "nextNodeId": "late-work.q.saturday-0906"
             }
           },
           {
-            "id": "late-work.q.scope-time.option.gap-list-only",
-            "label": "调休没定之前，我先列需求和缺口，不承诺成稿。",
-            "intent": "boundary",
-            "stateTags": [
-              "hard-boundary",
-              "no-final-commitment"
-            ],
-            "sourceRefs": [
-              "LW-S03",
-              "LW-S04"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "boundary": 1
-            },
-            "signatureFlags": [],
-            "evidence": "调休没定之前，我先列需求和缺口，不承诺成稿。",
-            "consequence": {
-              "id": "late-work.q.scope-time.option.gap-list-only.consequence",
-              "action": "成稿按钮被套上保护罩，客户新版本只进入待确认区",
-              "npcReaction": "成稿按钮被套上保护罩，客户新版本只进入待确认区",
-              "visibleStateChange": "成稿按钮被套上保护罩，客户新版本只进入待确认区 成稿按钮被套上保护罩，客户新版本只进入待确认区",
-              "nextNodeId": "late-work.q.version-client"
-            }
-          },
-          {
-            "id": "late-work.q.scope-time.option.group-confirm",
-            "label": "您在群里回一句“周末做、下周调”，我好登记。",
+            "id": "late-work.q.at-1958-cutoff.option.hold-boundary",
+            "label": "我今天只能做到八点。新增内容下周一排；如果明天必须做，再单独走加班申请。",
             "intent": "strategy",
             "stateTags": [
-              "evidence-first",
-              "comp-confirmation-requested"
+              "boundary",
+              "formal-boundary",
+              "priority-control",
+              "service-provided"
             ],
             "sourceRefs": [
+              "LW-S01",
               "LW-S03",
               "LW-S04"
             ],
@@ -617,24 +360,27 @@ export const GENERATED_ROUTE_DATA = {
               "strategy": 1
             },
             "signatureFlags": [],
-            "evidence": "您在群里回一句“周末做、下周调”，我好登记。",
+            "evidence": "我今天只能做到八点。新增内容下周一排；如果明天必须做，再单独走加班申请。",
             "consequence": {
-              "id": "late-work.q.scope-time.option.group-confirm.consequence",
-              "action": "领导在群里确认`周末两小时，下周调`，设计同事顺手锁定母版",
-              "npcReaction": "领导在群里确认`周末两小时，下周调`，设计同事顺手锁定母版",
-              "visibleStateChange": "领导在群里确认`周末两小时，下周调`，设计同事顺手锁定母版 领导在群里确认`周末两小时，下周调`，设计同事顺手锁定母版",
-              "nextNodeId": "late-work.q.version-layout-lock"
+              "id": "late-work.q.at-1958-cutoff.option.hold-boundary.consequence",
+              "action": "你按八点交出已有进度。",
+              "npcReaction": "组长没有继续劝，只把新增内容留在项目群里",
+              "visibleStateChange": "你按八点交出已有进度。 组长没有继续劝，只把新增内容留在项目群里",
+              "nextNodeId": "late-work.q.saturday-0906"
             }
           },
           {
-            "id": "late-work.q.scope-time.option.futures-slip",
-            "label": "玩家确认奶蛙打印`调休期货：周一待交割`，连同任务截图夹进工时表",
+            "id": "late-work.q.at-1958-cutoff.option.digital-twin",
+            "label": "你回复`收到`，把新增任务交给数字分身，八点准时离开",
             "intent": "absurd",
             "stateTags": [
-              "object-logic",
-              "time-record-opened"
+              "strategy",
+              "ai-hidden",
+              "ai-output",
+              "service-provided"
             ],
             "sourceRefs": [
+              "LW-S01",
               "LW-S03",
               "LW-S04"
             ],
@@ -645,121 +391,371 @@ export const GENERATED_ROUTE_DATA = {
             "signatureFlags": [
               "consistent-absurd"
             ],
-            "evidence": "玩家确认奶蛙打印`调休期货：周一待交割`，连同任务截图夹进工时表",
+            "evidence": "你回复`收到`，把新增任务交给数字分身，八点准时离开",
             "consequence": {
-              "id": "late-work.q.scope-time.option.futures-slip.consequence",
-              "action": "纸条没有变成假期，却让三个版本的时间戳一目了然",
-              "npcReaction": "纸条没有变成假期，却让三个版本的时间戳一目了然",
-              "visibleStateChange": "纸条没有变成假期，却让三个版本的时间戳一目了然 纸条没有变成假期，却让三个版本的时间戳一目了然",
-              "nextNodeId": "late-work.q.version-forensic"
+              "id": "late-work.q.at-1958-cutoff.option.digital-twin.consequence",
+              "action": "工位上的电脑继续工作，你本人准时回去上号；组长只看到文件仍在更新",
+              "npcReaction": "工位上的电脑继续工作，你本人准时回去上号；组长只看到文件仍在更新",
+              "visibleStateChange": "工位上的电脑继续工作，你本人准时回去上号；组长只看到文件仍在更新 工位上的电脑继续工作，你本人准时回去上号；组长只看到文件仍在更新",
+              "nextNodeId": "late-work.q.saturday-0906"
+            }
+          },
+          {
+            "id": "late-work.q.at-1958-cutoff.option.unread",
+            "label": "你不点开项目群，八点一到直接走人",
+            "intent": "boundary",
+            "stateTags": [
+              "boundary",
+              "unread",
+              "no-response"
+            ],
+            "sourceRefs": [
+              "LW-S01",
+              "LW-S03",
+              "LW-S04"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "boundary": 1
+            },
+            "signatureFlags": [],
+            "evidence": "你不点开项目群，八点一到直接走人",
+            "consequence": {
+              "id": "late-work.q.at-1958-cutoff.option.unread.consequence",
+              "action": "锁屏上的消息没有变成已读。",
+              "npcReaction": "组长在群里又问：`人呢？`",
+              "visibleStateChange": "锁屏上的消息没有变成已读。 组长在群里又问：`人呢？`",
+              "nextNodeId": "late-work.q.saturday-0906-unread"
             }
           }
         ],
         "sceneObjects": [
-          "预算表",
-          "PPT 版本",
-          "数据口径",
-          "群聊确认",
-          "附件",
-          "工时记录"
+          "好友群",
+          "奶茶红包",
+          "项目群通知",
+          "游戏战损",
+          "AI 数字分身",
+          "交付说明",
+          "绩效承诺",
+          "招聘需求"
         ],
-        "contentVersion": "late-work.graph.preview.2026-07-22.v1",
+        "contentVersion": "late-work.graph.preview.2026-07-23.v2",
         "approvalStatus": "source-reviewed"
       },
-      "late-work.q.version-master": {
-        "id": "late-work.q.version-master",
+      "late-work.q.at-1958-game": {
+        "id": "late-work.q.at-1958-game",
+        "routeId": "late-work",
+        "stage": 2,
+        "prompt": "这把刚好复活二员。你们正在刷卡过点，手机锁屏突然弹出项目群消息。组长：@奶蛙，客户那边临时有事，需要你现在加班处理一下。我明天给你补加班申请，再帮你申请一天调休。 你怎么办？",
+        "sourceRefs": [
+          "LW-S02",
+          "LW-S03",
+          "LW-S08"
+        ],
+        "options": [
+          {
+            "id": "late-work.q.at-1958-game.option.exit-and-work",
+            "label": "你在语音里说：`捏妈，怎么又来活啊，xdm我得先退了`，随后退出游戏回去加班",
+            "intent": "normal",
+            "stateTags": [
+              "normal",
+              "work-all",
+              "friend-cancelled",
+              "service-provided",
+              "mid-game-exit"
+            ],
+            "sourceRefs": [
+              "LW-S02",
+              "LW-S03",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "normal": 1
+            },
+            "signatureFlags": [],
+            "evidence": "你在语音里说：`捏妈，怎么又来活啊，xdm我得先退了`，随后退出游戏回去加班",
+            "consequence": {
+              "id": "late-work.q.at-1958-game.option.exit-and-work.consequence",
+              "action": "你把两杯奶茶红包扔进群里，没等队友回话就退出。",
+              "npcReaction": "刚才的三人队瞬间只剩两个朋友面对 2 打 3",
+              "visibleStateChange": "你把两杯奶茶红包扔进群里，没等队友回话就退出。 刚才的三人队瞬间只剩两个朋友面对 2 打 3",
+              "nextNodeId": "late-work.q.saturday-0906"
+            }
+          },
+          {
+            "id": "late-work.q.at-1958-game.option.clear-map-first",
+            "label": "先无视锁屏通知，把这局打完再说",
+            "intent": "boundary",
+            "stateTags": [
+              "boundary",
+              "game-first",
+              "service-provided",
+              "late-reply"
+            ],
+            "sourceRefs": [
+              "LW-S02",
+              "LW-S03",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "boundary": 1
+            },
+            "signatureFlags": [],
+            "evidence": "先无视锁屏通知，把这局打完再说",
+            "consequence": {
+              "id": "late-work.q.at-1958-game.option.clear-map-first.consequence",
+              "action": "十几分钟后你们成功清图撤离。",
+              "npcReaction": "你再点开项目群回复：`刚看到，我现在处理。` 组长上一条消息是：`人呢？`",
+              "visibleStateChange": "十几分钟后你们成功清图撤离。 你再点开项目群回复：`刚看到，我现在处理。` 组长上一条消息是：`人呢？`",
+              "nextNodeId": "late-work.q.saturday-0906"
+            }
+          },
+          {
+            "id": "late-work.q.at-1958-game.option.digital-twin",
+            "label": "你趁着队友在总裁吃保险，点开项目群回复`收到`，随后把任务和资料交给数字分身，又把手机扔到一旁",
+            "intent": "strategy",
+            "stateTags": [
+              "strategy",
+              "ai-hidden",
+              "ai-output",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S02",
+              "LW-S03",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "strategy": 1
+            },
+            "signatureFlags": [],
+            "evidence": "你趁着队友在总裁吃保险，点开项目群回复`收到`，随后把任务和资料交给数字分身，又把手机扔到一旁",
+            "consequence": {
+              "id": "late-work.q.at-1958-game.option.digital-twin.consequence",
+              "action": "数字分身在电脑上继续处理工作。",
+              "npcReaction": "项目群显示你已经回复，队友仍在总裁房等你过点",
+              "visibleStateChange": "数字分身在电脑上继续处理工作。 项目群显示你已经回复，队友仍在总裁房等你过点",
+              "nextNodeId": "late-work.q.saturday-0906"
+            }
+          },
+          {
+            "id": "late-work.q.at-1958-game.option.read-and-refuse",
+            "label": "我今晚不方便，这个现在接不了。需要周末做的话，明天走加班申请。",
+            "intent": "boundary",
+            "stateTags": [
+              "boundary",
+              "formal-boundary",
+              "response-given"
+            ],
+            "sourceRefs": [
+              "LW-S02",
+              "LW-S03",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "boundary": 1
+            },
+            "signatureFlags": [],
+            "evidence": "我今晚不方便，这个现在接不了。需要周末做的话，明天走加班申请。",
+            "consequence": {
+              "id": "late-work.q.at-1958-game.option.read-and-refuse.consequence",
+              "action": "组长没有继续追。",
+              "npcReaction": "你把手机扔到一旁，对队友说：`你们先去抢总裁，我先吃一口黑室。`",
+              "visibleStateChange": "组长没有继续追。 你把手机扔到一旁，对队友说：`你们先去抢总裁，我先吃一口黑室。`",
+              "nextNodeId": "late-work.q.saturday-0906"
+            }
+          },
+          {
+            "id": "late-work.q.at-1958-game.option.unread",
+            "label": "继续让消息留在锁屏上，今晚一直不点开",
+            "intent": "boundary",
+            "stateTags": [
+              "boundary",
+              "unread",
+              "no-response",
+              "no-service-yet"
+            ],
+            "sourceRefs": [
+              "LW-S02",
+              "LW-S03",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "boundary": 1
+            },
+            "signatureFlags": [],
+            "evidence": "继续让消息留在锁屏上，今晚一直不点开",
+            "consequence": {
+              "id": "late-work.q.at-1958-game.option.unread.consequence",
+              "action": "你打开勿扰模式，项目群保持未读。",
+              "npcReaction": "组长后来又发了一条消息，但你整晚没有进入群聊",
+              "visibleStateChange": "你打开勿扰模式，项目群保持未读。 组长后来又发了一条消息，但你整晚没有进入群聊",
+              "nextNodeId": "late-work.q.saturday-0906-unread"
+            }
+          },
+          {
+            "id": "late-work.q.at-1958-game.option.claim-gear",
+            "label": "调休可以，那我现在退，这三百万战损公司给报吗？",
+            "intent": "absurd",
+            "stateTags": [
+              "absurd",
+              "game-first",
+              "response-given",
+              "gear-claim"
+            ],
+            "sourceRefs": [
+              "LW-S02",
+              "LW-S03",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "absurd": 1
+            },
+            "signatureFlags": [
+              "consistent-absurd"
+            ],
+            "evidence": "调休可以，那我现在退，这三百万战损公司给报吗？",
+            "consequence": {
+              "id": "late-work.q.at-1958-game.option.claim-gear.consequence",
+              "action": "组长只回了一个`？`。",
+              "npcReaction": "你把它视为拒赔通知，锁上手机继续过点",
+              "visibleStateChange": "组长只回了一个`？`。 你把它视为拒赔通知，锁上手机继续过点",
+              "nextNodeId": "late-work.q.saturday-0906"
+            }
+          }
+        ],
+        "sceneObjects": [
+          "好友群",
+          "奶茶红包",
+          "项目群通知",
+          "游戏战损",
+          "AI 数字分身",
+          "交付说明",
+          "绩效承诺",
+          "招聘需求"
+        ],
+        "contentVersion": "late-work.graph.preview.2026-07-23.v2",
+        "approvalStatus": "source-reviewed"
+      },
+      "late-work.q.saturday-0906": {
+        "id": "late-work.q.saturday-0906",
         "routeId": "late-work",
         "stage": 3,
-        "prompt": "共享盘里出现最终版_v6、最终版_v6_老板批注、最终版_v6_客户已看。三个修改时间只差七分钟。哪份做母版？",
+        "prompt": "周六 09:06，组长在项目群里发来：@奶蛙，客户看完昨晚的版本，又提了修改，需要上午十点前再出一版。这次周末支援我给你记下来，季度绩效的时候帮你争取。看到以后回复一下。 你怎么办？",
         "sourceRefs": [
-          "LW-S05"
+          "LW-S02",
+          "LW-S03",
+          "LW-S04"
         ],
         "options": [
           {
-            "id": "late-work.q.version-master.option.owner-picks",
-            "label": "三份我都不覆盖，您指定一份母版。",
-            "intent": "strategy",
-            "stateTags": [
-              "evidence-first",
-              "master-owner-confirmed"
-            ],
-            "sourceRefs": [
-              "LW-S05"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "strategy": 1
-            },
-            "signatureFlags": [],
-            "evidence": "三份我都不覆盖，您指定一份母版。",
-            "consequence": {
-              "id": "late-work.q.version-master.option.owner-picks.consequence",
-              "action": "领导指定`客户已看`，但其中 82/79/85 三个数字仍无人认领",
-              "npcReaction": "领导指定`客户已看`，但其中 82/79/85 三个数字仍无人认领",
-              "visibleStateChange": "领导指定`客户已看`，但其中 82/79/85 三个数字仍无人认领 领导指定`客户已看`，但其中 82/79/85 三个数字仍无人认领",
-              "nextNodeId": "late-work.q.metric-owner"
-            }
-          },
-          {
-            "id": "late-work.q.version-master.option.timeline",
-            "label": "我先按修改时间做一张差异表，再合并。",
+            "id": "late-work.q.saturday-0906.option.jump-up-and-work",
+            "label": "你立刻从床上跳下来，打开电脑把新增内容全部接下",
             "intent": "boundary",
             "stateTags": [
-              "reality-plan",
-              "version-history-used"
+              "normal",
+              "work-all",
+              "service-provided",
+              "promise-performance"
             ],
             "sourceRefs": [
-              "LW-S05"
+              "LW-S02",
+              "LW-S03",
+              "LW-S04"
             ],
             "requiresConfirmation": true,
             "scoreEffects": {
               "boundary": 1
             },
             "signatureFlags": [],
-            "evidence": "我先按修改时间做一张差异表，再合并。",
+            "evidence": "你立刻从床上跳下来，打开电脑把新增内容全部接下",
             "consequence": {
-              "id": "late-work.q.version-master.option.timeline.consequence",
-              "action": "七分钟被展开成时间轴，发现两份取数周期不同",
-              "npcReaction": "七分钟被展开成时间轴，发现两份取数周期不同",
-              "visibleStateChange": "七分钟被展开成时间轴，发现两份取数周期不同 七分钟被展开成时间轴，发现两份取数周期不同",
-              "nextNodeId": "late-work.q.metric-window"
+              "id": "late-work.q.saturday-0906.option.jump-up-and-work.consequence",
+              "action": "被子还没落回床上，电脑已经开机。",
+              "npcReaction": "组长回：`辛苦，十点前等你。`",
+              "visibleStateChange": "被子还没落回床上，电脑已经开机。 组长回：`辛苦，十点前等你。`",
+              "nextNodeId": "late-work.q.monday-share-no-ai"
             }
           },
           {
-            "id": "late-work.q.version-master.option.client-base",
-            "label": "以客户看过的为底，老板批注另加一层。",
-            "intent": "normal",
+            "id": "late-work.q.saturday-0906.option.priority-order",
+            "label": "组长，上午十点前我最多先完成最紧急的部分。您把优先级排一下，后面的内容我们再按顺序处理。",
+            "intent": "strategy",
             "stateTags": [
-              "respectful-acceptance",
-              "client-baseline"
+              "strategy",
+              "priority-control",
+              "service-provided",
+              "promise-performance"
             ],
             "sourceRefs": [
-              "LW-S05"
+              "LW-S02",
+              "LW-S03",
+              "LW-S04"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "strategy": 1
+            },
+            "signatureFlags": [],
+            "evidence": "组长，上午十点前我最多先完成最紧急的部分。您把优先级排一下，后面的内容我们再按顺序处理。",
+            "consequence": {
+              "id": "late-work.q.saturday-0906.option.priority-order.consequence",
+              "action": "组长把最急的一项排到第一位，其余修改不再一起挤进十点",
+              "npcReaction": "组长把最急的一项排到第一位，其余修改不再一起挤进十点",
+              "visibleStateChange": "组长把最急的一项排到第一位，其余修改不再一起挤进十点 组长把最急的一项排到第一位，其余修改不再一起挤进十点",
+              "nextNodeId": "late-work.q.monday-share-no-ai"
+            }
+          },
+          {
+            "id": "late-work.q.saturday-0906.option.digital-twin-sleep",
+            "label": "你点开项目群简单回复`收到`，把组长安排的工作交给数字分身，然后把手机丢到一旁，翻身继续睡",
+            "intent": "normal",
+            "stateTags": [
+              "strategy",
+              "ai-hidden",
+              "ai-output",
+              "service-provided",
+              "promise-performance"
+            ],
+            "sourceRefs": [
+              "LW-S02",
+              "LW-S03",
+              "LW-S04"
             ],
             "requiresConfirmation": true,
             "scoreEffects": {
               "normal": 1
             },
             "signatureFlags": [],
-            "evidence": "以客户看过的为底，老板批注另加一层。",
+            "evidence": "你点开项目群简单回复`收到`，把组长安排的工作交给数字分身，然后把手机丢到一旁，翻身继续睡",
             "consequence": {
-              "id": "late-work.q.version-master.option.client-base.consequence",
-              "action": "逻辑保住了，客户版里的`转化率`却没写分母",
-              "npcReaction": "逻辑保住了，客户版里的`转化率`却没写分母",
-              "visibleStateChange": "逻辑保住了，客户版里的`转化率`却没写分母 逻辑保住了，客户版里的`转化率`却没写分母",
-              "nextNodeId": "late-work.q.metric-definition"
+              "id": "late-work.q.saturday-0906.option.digital-twin-sleep.consequence",
+              "action": "数字分身开始修改文件，你重新盖上被子。",
+              "npcReaction": "组长只看到你已经回复收到",
+              "visibleStateChange": "数字分身开始修改文件，你重新盖上被子。 组长只看到你已经回复收到",
+              "nextNodeId": "late-work.q.monday-share"
             }
           },
           {
-            "id": "late-work.q.version-master.option.lock-two",
-            "label": "玩家确认奶蛙给两份非母版盖`只读旁证`，禁止继续繁殖",
+            "id": "late-work.q.saturday-0906.option.schrodinger-unread",
+            "label": "你把手机调成勿扰模式，塞进枕头下面：只要没有点开，它就同时处于需要回复和不需要回复的状态",
             "intent": "absurd",
             "stateTags": [
-              "object-logic",
-              "version-freeze"
+              "absurd",
+              "unread",
+              "no-response",
+              "no-service-yet"
             ],
             "sourceRefs": [
-              "LW-S05"
+              "LW-S02",
+              "LW-S03",
+              "LW-S04"
             ],
             "requiresConfirmation": true,
             "scoreEffects": {
@@ -768,126 +764,142 @@ export const GENERATED_ROUTE_DATA = {
             "signatureFlags": [
               "consistent-absurd"
             ],
-            "evidence": "玩家确认奶蛙给两份非母版盖`只读旁证`，禁止继续繁殖",
+            "evidence": "你把手机调成勿扰模式，塞进枕头下面：只要没有点开，它就同时处于需要回复和不需要回复的状态",
             "consequence": {
-              "id": "late-work.q.version-master.option.lock-two.consequence",
-              "action": "版本终于停在三份，唯一母版里的缺数格开始闪",
-              "npcReaction": "版本终于停在三份，唯一母版里的缺数格开始闪",
-              "visibleStateChange": "版本终于停在三份，唯一母版里的缺数格开始闪 版本终于停在三份，唯一母版里的缺数格开始闪",
-              "nextNodeId": "late-work.q.metric-placeholder"
+              "id": "late-work.q.saturday-0906.option.schrodinger-unread.consequence",
+              "action": "项目群消息继续保持未读，上午十点以后组长又打来一次电话",
+              "npcReaction": "项目群消息继续保持未读，上午十点以后组长又打来一次电话",
+              "visibleStateChange": "项目群消息继续保持未读，上午十点以后组长又打来一次电话 项目群消息继续保持未读，上午十点以后组长又打来一次电话",
+              "nextNodeId": "late-work.q.weekend-accountability"
             }
           }
         ],
         "sceneObjects": [
-          "预算表",
-          "PPT 版本",
-          "数据口径",
-          "群聊确认",
-          "附件",
-          "工时记录"
+          "好友群",
+          "奶茶红包",
+          "项目群通知",
+          "游戏战损",
+          "AI 数字分身",
+          "交付说明",
+          "绩效承诺",
+          "招聘需求"
         ],
-        "contentVersion": "late-work.graph.preview.2026-07-22.v1",
+        "contentVersion": "late-work.graph.preview.2026-07-23.v2",
         "approvalStatus": "source-reviewed"
       },
-      "late-work.q.version-client": {
-        "id": "late-work.q.version-client",
+      "late-work.q.saturday-0906-unread": {
+        "id": "late-work.q.saturday-0906-unread",
         "routeId": "late-work",
         "stage": 3,
-        "prompt": "客户刚发rev3-review：数据较新，版式却是旧的；内部final版式新，数据停在上月。你怎么合？",
+        "prompt": "周六 09:06，锁屏显示项目群有 2 条新消息。最新一条是：@奶蛙，客户看完昨晚的版本，又提了修改，需要上午十点前再出一版。这次周末支援我给你记下来，季度绩效的时候帮你争取。看到以后回复一下。 你怎么办？",
         "sourceRefs": [
-          "LW-S05",
-          "LW-S06"
+          "LW-S02",
+          "LW-S03",
+          "LW-S04"
         ],
         "options": [
           {
-            "id": "late-work.q.version-client.option.source-layer",
-            "label": "用客户新数据，来源和更新时间都标上；结构沿用内部版。",
-            "intent": "normal",
-            "stateTags": [
-              "reality-plan",
-              "source-layered"
-            ],
-            "sourceRefs": [
-              "LW-S05",
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "normal": 1
-            },
-            "signatureFlags": [],
-            "evidence": "用客户新数据，来源和更新时间都标上；结构沿用内部版。",
-            "consequence": {
-              "id": "late-work.q.version-client.option.source-layer.consequence",
-              "action": "新数据进入结构后，财务、CRM、业务群三个负责人浮出水面",
-              "npcReaction": "新数据进入结构后，财务、CRM、业务群三个负责人浮出水面",
-              "visibleStateChange": "新数据进入结构后，财务、CRM、业务群三个负责人浮出水面 新数据进入结构后，财务、CRM、业务群三个负责人浮出水面",
-              "nextNodeId": "late-work.q.metric-owner"
-            }
-          },
-          {
-            "id": "late-work.q.version-client.option.ask-status",
-            "label": "先问一句：rev3 是反馈稿，还是新的母版？",
-            "intent": "strategy",
-            "stateTags": [
-              "evidence-first",
-              "version-status-requested"
-            ],
-            "sourceRefs": [
-              "LW-S05",
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "strategy": 1
-            },
-            "signatureFlags": [],
-            "evidence": "先问一句：rev3 是反馈稿，还是新的母版？",
-            "consequence": {
-              "id": "late-work.q.version-client.option.ask-status.consequence",
-              "action": "客户确认是反馈稿，并补一句`看近三个月`",
-              "npcReaction": "客户确认是反馈稿，并补一句`看近三个月`",
-              "visibleStateChange": "客户确认是反馈稿，并补一句`看近三个月` 客户确认是反馈稿，并补一句`看近三个月`",
-              "nextNodeId": "late-work.q.metric-window"
-            }
-          },
-          {
-            "id": "late-work.q.version-client.option.freeze-layout",
-            "label": "版式不动，只导入已经确认的新数据。",
+            "id": "late-work.q.saturday-0906-unread.option.jump-up-and-work",
+            "label": "你立刻从床上跳下来，点开消息并把新增内容全部接下",
             "intent": "boundary",
             "stateTags": [
-              "limited-commitment",
-              "layout-frozen"
+              "normal",
+              "work-all",
+              "service-provided",
+              "promise-performance"
             ],
             "sourceRefs": [
-              "LW-S05",
-              "LW-S06"
+              "LW-S02",
+              "LW-S03",
+              "LW-S04"
             ],
             "requiresConfirmation": true,
             "scoreEffects": {
               "boundary": 1
             },
             "signatureFlags": [],
-            "evidence": "版式不动，只导入已经确认的新数据。",
+            "evidence": "你立刻从床上跳下来，点开消息并把新增内容全部接下",
             "consequence": {
-              "id": "late-work.q.version-client.option.freeze-layout.consequence",
-              "action": "导入时暴露两边对`转化率`的定义不同",
-              "npcReaction": "导入时暴露两边对`转化率`的定义不同",
-              "visibleStateChange": "导入时暴露两边对`转化率`的定义不同 导入时暴露两边对`转化率`的定义不同",
-              "nextNodeId": "late-work.q.metric-definition"
+              "id": "late-work.q.saturday-0906-unread.option.jump-up-and-work.consequence",
+              "action": "两条未读一起消失，你打开电脑开始收尾。",
+              "npcReaction": "组长回：`终于看到了，十点前等你。`",
+              "visibleStateChange": "两条未读一起消失，你打开电脑开始收尾。 组长回：`终于看到了，十点前等你。`",
+              "nextNodeId": "late-work.q.monday-share-no-ai"
             }
           },
           {
-            "id": "late-work.q.version-client.option.custody-form",
-            "label": "玩家确认奶蛙把两版并排，做一张`PPT 监护权交接单`，未确认页保持空白",
-            "intent": "absurd",
+            "id": "late-work.q.saturday-0906-unread.option.priority-order",
+            "label": "组长，上午十点前我最多先完成最紧急的部分。您把优先级排一下，后面的内容我们再按顺序处理。",
+            "intent": "strategy",
             "stateTags": [
-              "object-logic",
-              "no-silent-merge"
+              "strategy",
+              "priority-control",
+              "service-provided",
+              "promise-performance"
             ],
             "sourceRefs": [
-              "LW-S05",
-              "LW-S06"
+              "LW-S02",
+              "LW-S03",
+              "LW-S04"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "strategy": 1
+            },
+            "signatureFlags": [],
+            "evidence": "组长，上午十点前我最多先完成最紧急的部分。您把优先级排一下，后面的内容我们再按顺序处理。",
+            "consequence": {
+              "id": "late-work.q.saturday-0906-unread.option.priority-order.consequence",
+              "action": "组长排出第一项，剩下的工作被放回正常排期",
+              "npcReaction": "组长排出第一项，剩下的工作被放回正常排期",
+              "visibleStateChange": "组长排出第一项，剩下的工作被放回正常排期 组长排出第一项，剩下的工作被放回正常排期",
+              "nextNodeId": "late-work.q.monday-share-no-ai"
+            }
+          },
+          {
+            "id": "late-work.q.saturday-0906-unread.option.digital-twin-sleep",
+            "label": "你点开项目群回复`收到`，把组长安排的活交给数字分身，把手机丢到一旁继续睡",
+            "intent": "normal",
+            "stateTags": [
+              "strategy",
+              "ai-hidden",
+              "ai-output",
+              "service-provided",
+              "promise-performance"
+            ],
+            "sourceRefs": [
+              "LW-S02",
+              "LW-S03",
+              "LW-S04"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "normal": 1
+            },
+            "signatureFlags": [],
+            "evidence": "你点开项目群回复`收到`，把组长安排的活交给数字分身，把手机丢到一旁继续睡",
+            "consequence": {
+              "id": "late-work.q.saturday-0906-unread.option.digital-twin-sleep.consequence",
+              "action": "数字分身开始处理，锁屏上的未读清零，你重新盖上被子",
+              "npcReaction": "数字分身开始处理，锁屏上的未读清零，你重新盖上被子",
+              "visibleStateChange": "数字分身开始处理，锁屏上的未读清零，你重新盖上被子 数字分身开始处理，锁屏上的未读清零，你重新盖上被子",
+              "nextNodeId": "late-work.q.monday-share"
+            }
+          },
+          {
+            "id": "late-work.q.saturday-0906-unread.option.schrodinger-unread",
+            "label": "继续不点开，把手机塞回枕头下面",
+            "intent": "absurd",
+            "stateTags": [
+              "absurd",
+              "unread",
+              "no-response",
+              "no-service-yet"
+            ],
+            "sourceRefs": [
+              "LW-S02",
+              "LW-S03",
+              "LW-S04"
             ],
             "requiresConfirmation": true,
             "scoreEffects": {
@@ -896,1337 +908,321 @@ export const GENERATED_ROUTE_DATA = {
             "signatureFlags": [
               "consistent-absurd"
             ],
-            "evidence": "玩家确认奶蛙把两版并排，做一张`PPT 监护权交接单`，未确认页保持空白",
+            "evidence": "继续不点开，把手机塞回枕头下面",
             "consequence": {
-              "id": "late-work.q.version-client.option.custody-form.consequence",
-              "action": "空白页没有被脑补，数据缺口被集中列出",
-              "npcReaction": "空白页没有被脑补，数据缺口被集中列出",
-              "visibleStateChange": "空白页没有被脑补，数据缺口被集中列出 空白页没有被脑补，数据缺口被集中列出",
-              "nextNodeId": "late-work.q.metric-placeholder"
+              "id": "late-work.q.saturday-0906-unread.option.schrodinger-unread.consequence",
+              "action": "两条消息继续处于薛定谔状态。",
+              "npcReaction": "十点以后，组长又打来一次电话",
+              "visibleStateChange": "两条消息继续处于薛定谔状态。 十点以后，组长又打来一次电话",
+              "nextNodeId": "late-work.q.weekend-accountability"
             }
           }
         ],
         "sceneObjects": [
-          "预算表",
-          "PPT 版本",
-          "数据口径",
-          "群聊确认",
-          "附件",
-          "工时记录"
+          "好友群",
+          "奶茶红包",
+          "项目群通知",
+          "游戏战损",
+          "AI 数字分身",
+          "交付说明",
+          "绩效承诺",
+          "招聘需求"
         ],
-        "contentVersion": "late-work.graph.preview.2026-07-22.v1",
+        "contentVersion": "late-work.graph.preview.2026-07-23.v2",
         "approvalStatus": "source-reviewed"
       },
-      "late-work.q.version-layout-lock": {
-        "id": "late-work.q.version-layout-lock",
+      "late-work.q.ai-delivery-check": {
+        "id": "late-work.q.ai-delivery-check",
         "routeId": "late-work",
         "stage": 3,
-        "prompt": "设计同事发来只读母版：字体、页码、封底别动，动了周一还得重套。 领导同时说周末先出一版。你怎么动？",
+        "prompt": "到了交付时间，数字分身发来一份交付说明：已按要求完成修改；汇总内容已经更新；可交付文件已经生成。 文件看起来完整，你准备怎么做？",
         "sourceRefs": [
-          "LW-S05"
-        ],
-        "options": [
-          {
-            "id": "late-work.q.version-layout-lock.option.content-only",
-            "label": "母版不动，我只改文字和数据区。",
-            "intent": "normal",
-            "stateTags": [
-              "respectful-acceptance",
-              "template-preserved"
-            ],
-            "sourceRefs": [
-              "LW-S05"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "normal": 1
-            },
-            "signatureFlags": [],
-            "evidence": "母版不动，我只改文字和数据区。",
-            "consequence": {
-              "id": "late-work.q.version-layout-lock.option.content-only.consequence",
-              "action": "版式稳定，数据区的责任人缺失变得更醒目",
-              "npcReaction": "版式稳定，数据区的责任人缺失变得更醒目",
-              "visibleStateChange": "版式稳定，数据区的责任人缺失变得更醒目 版式稳定，数据区的责任人缺失变得更醒目",
-              "nextNodeId": "late-work.q.metric-owner"
-            }
-          },
-          {
-            "id": "late-work.q.version-layout-lock.option.working-copy",
-            "label": "我另存工作版，保留原母版和修改时间。",
-            "intent": "strategy",
-            "stateTags": [
-              "evidence-first",
-              "working-copy-created"
-            ],
-            "sourceRefs": [
-              "LW-S05"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "strategy": 1
-            },
-            "signatureFlags": [],
-            "evidence": "我另存工作版，保留原母版和修改时间。",
-            "consequence": {
-              "id": "late-work.q.version-layout-lock.option.working-copy.consequence",
-              "action": "工作版标出每张图的统计周期不一致",
-              "npcReaction": "工作版标出每张图的统计周期不一致",
-              "visibleStateChange": "工作版标出每张图的统计周期不一致 工作版标出每张图的统计周期不一致",
-              "nextNodeId": "late-work.q.metric-window"
-            }
-          },
-          {
-            "id": "late-work.q.version-layout-lock.option.ask-editable",
-            "label": "哪几页能改，您直接圈给我。",
-            "intent": "boundary",
-            "stateTags": [
-              "reality-plan",
-              "editable-range-confirmed"
-            ],
-            "sourceRefs": [
-              "LW-S05"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "boundary": 1
-            },
-            "signatureFlags": [],
-            "evidence": "哪几页能改，您直接圈给我。",
-            "consequence": {
-              "id": "late-work.q.version-layout-lock.option.ask-editable.consequence",
-              "action": "设计同事圈出四页，其中一页的转化率公式没人确认",
-              "npcReaction": "设计同事圈出四页，其中一页的转化率公式没人确认",
-              "visibleStateChange": "设计同事圈出四页，其中一页的转化率公式没人确认 设计同事圈出四页，其中一页的转化率公式没人确认",
-              "nextNodeId": "late-work.q.metric-definition"
-            }
-          },
-          {
-            "id": "late-work.q.version-layout-lock.option.red-tape",
-            "label": "玩家确认奶蛙给锁定区贴红胶带，只在透明空位填内容",
-            "intent": "absurd",
-            "stateTags": [
-              "object-logic",
-              "template-preserved"
-            ],
-            "sourceRefs": [
-              "LW-S05"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "absurd": 1
-            },
-            "signatureFlags": [
-              "consistent-absurd"
-            ],
-            "evidence": "玩家确认奶蛙给锁定区贴红胶带，只在透明空位填内容",
-            "consequence": {
-              "id": "late-work.q.version-layout-lock.option.red-tape.consequence",
-              "action": "胶带让缺数据的空位无法被漂亮图形遮住",
-              "npcReaction": "胶带让缺数据的空位无法被漂亮图形遮住",
-              "visibleStateChange": "胶带让缺数据的空位无法被漂亮图形遮住 胶带让缺数据的空位无法被漂亮图形遮住",
-              "nextNodeId": "late-work.q.metric-placeholder"
-            }
-          }
-        ],
-        "sceneObjects": [
-          "预算表",
-          "PPT 版本",
-          "数据口径",
-          "群聊确认",
-          "附件",
-          "工时记录"
-        ],
-        "contentVersion": "late-work.graph.preview.2026-07-22.v1",
-        "approvalStatus": "source-reviewed"
-      },
-      "late-work.q.version-forensic": {
-        "id": "late-work.q.version-forensic",
-        "routeId": "late-work",
-        "stage": 3,
-        "prompt": "云盘、群附件和本地桌面各有一份“最终版”，修改者也不同。你先做哪种取证动作？",
-        "sourceRefs": [
-          "LW-S05"
-        ],
-        "options": [
-          {
-            "id": "late-work.q.version-forensic.option.map-owner",
-            "label": "我列文件名、时间、修改人，请大家认领。",
-            "intent": "strategy",
-            "stateTags": [
-              "evidence-first",
-              "version-map-created"
-            ],
-            "sourceRefs": [
-              "LW-S05"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "strategy": 1
-            },
-            "signatureFlags": [],
-            "evidence": "我列文件名、时间、修改人，请大家认领。",
-            "consequence": {
-              "id": "late-work.q.version-forensic.option.map-owner.consequence",
-              "action": "认领表显示数据页来自业务、封面来自设计、总数来自财务",
-              "npcReaction": "认领表显示数据页来自业务、封面来自设计、总数来自财务",
-              "visibleStateChange": "认领表显示数据页来自业务、封面来自设计、总数来自财务 认领表显示数据页来自业务、封面来自设计、总数来自财务",
-              "nextNodeId": "late-work.q.metric-owner"
-            }
-          },
-          {
-            "id": "late-work.q.version-forensic.option.restore-cloud",
-            "label": "以云端版本史为准，其他都只读保留。",
-            "intent": "normal",
-            "stateTags": [
-              "reality-plan",
-              "cloud-history-used"
-            ],
-            "sourceRefs": [
-              "LW-S05"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "normal": 1
-            },
-            "signatureFlags": [],
-            "evidence": "以云端版本史为准，其他都只读保留。",
-            "consequence": {
-              "id": "late-work.q.version-forensic.option.restore-cloud.consequence",
-              "action": "恢复点保住了内容，也暴露一张图用了滚动 90 天",
-              "npcReaction": "恢复点保住了内容，也暴露一张图用了滚动 90 天",
-              "visibleStateChange": "恢复点保住了内容，也暴露一张图用了滚动 90 天 恢复点保住了内容，也暴露一张图用了滚动 90 天",
-              "nextNodeId": "late-work.q.metric-window"
-            }
-          },
-          {
-            "id": "late-work.q.version-forensic.option.three-slide-diff",
-            "label": "我只发三页差异，请领导选，不先合并。",
-            "intent": "boundary",
-            "stateTags": [
-              "priority-coordination",
-              "decision-escalated"
-            ],
-            "sourceRefs": [
-              "LW-S05"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "boundary": 1
-            },
-            "signatureFlags": [],
-            "evidence": "我只发三页差异，请领导选，不先合并。",
-            "consequence": {
-              "id": "late-work.q.version-forensic.option.three-slide-diff.consequence",
-              "action": "领导选中一页，却反问`这个转化率怎么算的？`",
-              "npcReaction": "领导选中一页，却反问`这个转化率怎么算的？`",
-              "visibleStateChange": "领导选中一页，却反问`这个转化率怎么算的？` 领导选中一页，却反问`这个转化率怎么算的？`",
-              "nextNodeId": "late-work.q.metric-definition"
-            }
-          },
-          {
-            "id": "late-work.q.version-forensic.option.stop-breeding",
-            "label": "玩家确认奶蛙把冲突文件改为只读副本，并在工作版写`请停止繁殖`",
-            "intent": "absurd",
-            "stateTags": [
-              "object-logic",
-              "version-freeze"
-            ],
-            "sourceRefs": [
-              "LW-S05"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "absurd": 1
-            },
-            "signatureFlags": [
-              "consistent-absurd"
-            ],
-            "evidence": "玩家确认奶蛙把冲突文件改为只读副本，并在工作版写`请停止繁殖`",
-            "consequence": {
-              "id": "late-work.q.version-forensic.option.stop-breeding.consequence",
-              "action": "文件停止增殖后，缺数页只剩一个待确认格",
-              "npcReaction": "文件停止增殖后，缺数页只剩一个待确认格",
-              "visibleStateChange": "文件停止增殖后，缺数页只剩一个待确认格 文件停止增殖后，缺数页只剩一个待确认格",
-              "nextNodeId": "late-work.q.metric-placeholder"
-            }
-          }
-        ],
-        "sceneObjects": [
-          "预算表",
-          "PPT 版本",
-          "数据口径",
-          "群聊确认",
-          "附件",
-          "工时记录"
-        ],
-        "contentVersion": "late-work.graph.preview.2026-07-22.v1",
-        "approvalStatus": "source-reviewed"
-      },
-      "late-work.q.metric-owner": {
-        "id": "late-work.q.metric-owner",
-        "routeId": "late-work",
-        "stage": 4,
-        "prompt": "同一个总量，财务表是 82，CRM 是 79，业务群里说 85。客户会看到哪一个？",
-        "sourceRefs": [
-          "LW-S06"
-        ],
-        "options": [
-          {
-            "id": "late-work.q.metric-owner.option.name-owner",
-            "label": "先请领导指定这页的数据负责人，我等确认数。",
-            "intent": "normal",
-            "stateTags": [
-              "evidence-first",
-              "data-owner-requested"
-            ],
-            "sourceRefs": [
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "normal": 1
-            },
-            "signatureFlags": [],
-            "evidence": "先请领导指定这页的数据负责人，我等确认数。",
-            "consequence": {
-              "id": "late-work.q.metric-owner.option.name-owner.consequence",
-              "action": "财务被指定为 owner，客户随后追问`82 的原表在哪？`",
-              "npcReaction": "财务被指定为 owner，客户随后追问`82 的原表在哪？`",
-              "visibleStateChange": "财务被指定为 owner，客户随后追问`82 的原表在哪？` 财务被指定为 owner，客户随后追问`82 的原表在哪？`",
-              "nextNodeId": "late-work.q.client-source"
-            }
-          },
-          {
-            "id": "late-work.q.metric-owner.option.finance-source",
-            "label": "先用财务的 82，页脚写来源和周五更新时间。",
-            "intent": "strategy",
-            "stateTags": [
-              "reality-plan",
-              "source-labeled"
-            ],
-            "sourceRefs": [
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "strategy": 1
-            },
-            "signatureFlags": [],
-            "evidence": "先用财务的 82，页脚写来源和周五更新时间。",
-            "consequence": {
-              "id": "late-work.q.metric-owner.option.finance-source.consequence",
-              "action": "数字有出处，但客户说自己要的是全国，不是华东",
-              "npcReaction": "数字有出处，但客户说自己要的是全国，不是华东",
-              "visibleStateChange": "数字有出处，但客户说自己要的是全国，不是华东 数字有出处，但客户说自己要的是全国，不是华东",
-              "nextNodeId": "late-work.q.client-scope"
-            }
-          },
-          {
-            "id": "late-work.q.metric-owner.option.show-range",
-            "label": "先写 79–85，注明三方待对齐，不装成一个精确数。",
-            "intent": "boundary",
-            "stateTags": [
-              "limited-commitment",
-              "range-shown"
-            ],
-            "sourceRefs": [
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "boundary": 1
-            },
-            "signatureFlags": [],
-            "evidence": "先写 79–85，注明三方待对齐，不装成一个精确数。",
-            "consequence": {
-              "id": "late-work.q.metric-owner.option.show-range.consequence",
-              "action": "诚实范围进入 PPT，但客户打开的是仍写 79 的旧附件",
-              "npcReaction": "诚实范围进入 PPT，但客户打开的是仍写 79 的旧附件",
-              "visibleStateChange": "诚实范围进入 PPT，但客户打开的是仍写 79 的旧附件 诚实范围进入 PPT，但客户打开的是仍写 79 的旧附件",
-              "nextNodeId": "late-work.q.client-version"
-            }
-          },
-          {
-            "id": "late-work.q.metric-owner.option.number-scale",
-            "label": "玩家确认奶蛙把 79、82、85 三张数字卡放上秤，卡片背面写各自 owner",
-            "intent": "absurd",
-            "stateTags": [
-              "object-logic",
-              "conflict-visible"
-            ],
-            "sourceRefs": [
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "absurd": 1
-            },
-            "signatureFlags": [
-              "consistent-absurd"
-            ],
-            "evidence": "玩家确认奶蛙把 79、82、85 三张数字卡放上秤，卡片背面写各自 owner",
-            "consequence": {
-              "id": "late-work.q.metric-owner.option.number-scale.consequence",
-              "action": "秤没有替人拍板；客户要求周日中午前补齐五页解释",
-              "npcReaction": "秤没有替人拍板；客户要求周日中午前补齐五页解释",
-              "visibleStateChange": "秤没有替人拍板；客户要求周日中午前补齐五页解释 秤没有替人拍板；客户要求周日中午前补齐五页解释",
-              "nextNodeId": "late-work.q.client-deadline"
-            }
-          }
-        ],
-        "sceneObjects": [
-          "预算表",
-          "PPT 版本",
-          "数据口径",
-          "群聊确认",
-          "附件",
-          "工时记录"
-        ],
-        "contentVersion": "late-work.graph.preview.2026-07-22.v1",
-        "approvalStatus": "source-reviewed"
-      },
-      "late-work.q.metric-window": {
-        "id": "late-work.q.metric-window",
-        "routeId": "late-work",
-        "stage": 4,
-        "prompt": "客户说近三个月。现有图一张按自然季度，一张按滚动 90 天。你怎么定义？",
-        "sourceRefs": [
-          "LW-S06"
-        ],
-        "options": [
-          {
-            "id": "late-work.q.metric-window.option.ask-window",
-            "label": "确认一下：自然季度，还是截至今天往前 90 天？",
-            "intent": "strategy",
-            "stateTags": [
-              "evidence-first",
-              "window-requested"
-            ],
-            "sourceRefs": [
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "strategy": 1
-            },
-            "signatureFlags": [],
-            "evidence": "确认一下：自然季度，还是截至今天往前 90 天？",
-            "consequence": {
-              "id": "late-work.q.metric-window.option.ask-window.consequence",
-              "action": "客户选滚动 90 天，随后要看原始来源",
-              "npcReaction": "客户选滚动 90 天，随后要看原始来源",
-              "visibleStateChange": "客户选滚动 90 天，随后要看原始来源 客户选滚动 90 天，随后要看原始来源",
-              "nextNodeId": "late-work.q.client-source"
-            }
-          },
-          {
-            "id": "late-work.q.metric-window.option.calendar-label",
-            "label": "先按自然季度做，并把日期范围写全。",
-            "intent": "normal",
-            "stateTags": [
-              "respectful-acceptance",
-              "window-labeled"
-            ],
-            "sourceRefs": [
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "normal": 1
-            },
-            "signatureFlags": [],
-            "evidence": "先按自然季度做，并把日期范围写全。",
-            "consequence": {
-              "id": "late-work.q.metric-window.option.calendar-label.consequence",
-              "action": "日期写清后，客户指出范围应是全国",
-              "npcReaction": "日期写清后，客户指出范围应是全国",
-              "visibleStateChange": "日期写清后，客户指出范围应是全国 日期写清后，客户指出范围应是全国",
-              "nextNodeId": "late-work.q.client-scope"
-            }
-          },
-          {
-            "id": "late-work.q.metric-window.option.show-both",
-            "label": "两种口径并排，让客户选用于正文的一张。",
-            "intent": "boundary",
-            "stateTags": [
-              "reality-plan",
-              "comparison-visible"
-            ],
-            "sourceRefs": [
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "boundary": 1
-            },
-            "signatureFlags": [],
-            "evidence": "两种口径并排，让客户选用于正文的一张。",
-            "consequence": {
-              "id": "late-work.q.metric-window.option.show-both.consequence",
-              "action": "客户选中滚动 90 天，却在旧版本里仍看到自然季度",
-              "npcReaction": "客户选中滚动 90 天，却在旧版本里仍看到自然季度",
-              "visibleStateChange": "客户选中滚动 90 天，却在旧版本里仍看到自然季度 客户选中滚动 90 天，却在旧版本里仍看到自然季度",
-              "nextNodeId": "late-work.q.client-version"
-            }
-          },
-          {
-            "id": "late-work.q.metric-window.option.timeline-strip",
-            "label": "玩家确认奶蛙把 90 天做成一条可移动时间带，固定起止日期",
-            "intent": "absurd",
-            "stateTags": [
-              "object-logic",
-              "window-visible"
-            ],
-            "sourceRefs": [
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "absurd": 1
-            },
-            "signatureFlags": [
-              "consistent-absurd"
-            ],
-            "evidence": "玩家确认奶蛙把 90 天做成一条可移动时间带，固定起止日期",
-            "consequence": {
-              "id": "late-work.q.metric-window.option.timeline-strip.consequence",
-              "action": "时间带堵住偷换区间的路，客户转而加要五页拆分",
-              "npcReaction": "时间带堵住偷换区间的路，客户转而加要五页拆分",
-              "visibleStateChange": "时间带堵住偷换区间的路，客户转而加要五页拆分 时间带堵住偷换区间的路，客户转而加要五页拆分",
-              "nextNodeId": "late-work.q.client-deadline"
-            }
-          }
-        ],
-        "sceneObjects": [
-          "预算表",
-          "PPT 版本",
-          "数据口径",
-          "群聊确认",
-          "附件",
-          "工时记录"
-        ],
-        "contentVersion": "late-work.graph.preview.2026-07-22.v1",
-        "approvalStatus": "source-reviewed"
-      },
-      "late-work.q.metric-definition": {
-        "id": "late-work.q.metric-definition",
-        "routeId": "late-work",
-        "stage": 4,
-        "prompt": "标题写转化率，但分母可能是线索、有效商机或已付款客户。现在填哪一个？",
-        "sourceRefs": [
-          "LW-S06"
-        ],
-        "options": [
-          {
-            "id": "late-work.q.metric-definition.option.ask-denominator",
-            "label": "这页分母用线索、有效商机还是已付款？请确认一个。",
-            "intent": "strategy",
-            "stateTags": [
-              "evidence-first",
-              "denominator-requested"
-            ],
-            "sourceRefs": [
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "strategy": 1
-            },
-            "signatureFlags": [],
-            "evidence": "这页分母用线索、有效商机还是已付款？请确认一个。",
-            "consequence": {
-              "id": "late-work.q.metric-definition.option.ask-denominator.consequence",
-              "action": "业务确认有效商机，客户下一句要原表",
-              "npcReaction": "业务确认有效商机，客户下一句要原表",
-              "visibleStateChange": "业务确认有效商机，客户下一句要原表 业务确认有效商机，客户下一句要原表",
-              "nextNodeId": "late-work.q.client-source"
-            }
-          },
-          {
-            "id": "late-work.q.metric-definition.option.crm-field",
-            "label": "先按 CRM 现有字段算，页脚写公式。",
-            "intent": "normal",
-            "stateTags": [
-              "reality-plan",
-              "formula-labeled"
-            ],
-            "sourceRefs": [
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "normal": 1
-            },
-            "signatureFlags": [],
-            "evidence": "先按 CRM 现有字段算，页脚写公式。",
-            "consequence": {
-              "id": "late-work.q.metric-definition.option.crm-field.consequence",
-              "action": "公式可查，但客户发现字段只覆盖华东",
-              "npcReaction": "公式可查，但客户发现字段只覆盖华东",
-              "visibleStateChange": "公式可查，但客户发现字段只覆盖华东 公式可查，但客户发现字段只覆盖华东",
-              "nextNodeId": "late-work.q.client-scope"
-            }
-          },
-          {
-            "id": "late-work.q.metric-definition.option.formula-note",
-            "label": "正文先写待确认，小字放三种公式，不替业务拍板。",
-            "intent": "boundary",
-            "stateTags": [
-              "limited-commitment",
-              "definition-pending"
-            ],
-            "sourceRefs": [
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "boundary": 1
-            },
-            "signatureFlags": [],
-            "evidence": "正文先写待确认，小字放三种公式，不替业务拍板。",
-            "consequence": {
-              "id": "late-work.q.metric-definition.option.formula-note.consequence",
-              "action": "三个公式保住上下文，旧附件却只剩一个数字",
-              "npcReaction": "三个公式保住上下文，旧附件却只剩一个数字",
-              "visibleStateChange": "三个公式保住上下文，旧附件却只剩一个数字 三个公式保住上下文，旧附件却只剩一个数字",
-              "nextNodeId": "late-work.q.client-version"
-            }
-          },
-          {
-            "id": "late-work.q.metric-definition.option.three-jars",
-            "label": "玩家确认奶蛙摆三只透明罐：`线索`、`商机`、`付款`，停止混装",
-            "intent": "absurd",
-            "stateTags": [
-              "object-logic",
-              "denominator-visible"
-            ],
-            "sourceRefs": [
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "absurd": 1
-            },
-            "signatureFlags": [
-              "consistent-absurd"
-            ],
-            "evidence": "玩家确认奶蛙摆三只透明罐：`线索`、`商机`、`付款`，停止混装",
-            "consequence": {
-              "id": "late-work.q.metric-definition.option.three-jars.consequence",
-              "action": "分母问题无法再藏，客户要求周日补五页说明",
-              "npcReaction": "分母问题无法再藏，客户要求周日补五页说明",
-              "visibleStateChange": "分母问题无法再藏，客户要求周日补五页说明 分母问题无法再藏，客户要求周日补五页说明",
-              "nextNodeId": "late-work.q.client-deadline"
-            }
-          }
-        ],
-        "sceneObjects": [
-          "预算表",
-          "PPT 版本",
-          "数据口径",
-          "群聊确认",
-          "附件",
-          "工时记录"
-        ],
-        "contentVersion": "late-work.graph.preview.2026-07-22.v1",
-        "approvalStatus": "source-reviewed"
-      },
-      "late-work.q.metric-placeholder": {
-        "id": "late-work.q.metric-placeholder",
-        "routeId": "late-work",
-        "stage": 4,
-        "prompt": "业务说最终数据周一才出，周末谁也给不了确定数。PPT 这一格怎么办？",
-        "sourceRefs": [
-          "LW-S03",
-          "LW-S06"
-        ],
-        "options": [
-          {
-            "id": "late-work.q.metric-placeholder.option.owner-deadline",
-            "label": "留“待业务确认”，写负责人和最晚回填时间。",
-            "intent": "strategy",
-            "stateTags": [
-              "evidence-first",
-              "placeholder-owned"
-            ],
-            "sourceRefs": [
-              "LW-S03",
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "strategy": 1
-            },
-            "signatureFlags": [],
-            "evidence": "留“待业务确认”，写负责人和最晚回填时间。",
-            "consequence": {
-              "id": "late-work.q.metric-placeholder.option.owner-deadline.consequence",
-              "action": "空格有了 owner，客户随后直接问数据来源",
-              "npcReaction": "空格有了 owner，客户随后直接问数据来源",
-              "visibleStateChange": "空格有了 owner，客户随后直接问数据来源 空格有了 owner，客户随后直接问数据来源",
-              "nextNodeId": "late-work.q.client-source"
-            }
-          },
-          {
-            "id": "late-work.q.metric-placeholder.option.last-confirmed",
-            "label": "用上期确认数，明确写截至日期，不冒充最新。",
-            "intent": "normal",
-            "stateTags": [
-              "reality-plan",
-              "stale-data-labeled"
-            ],
-            "sourceRefs": [
-              "LW-S03",
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "normal": 1
-            },
-            "signatureFlags": [],
-            "evidence": "用上期确认数，明确写截至日期，不冒充最新。",
-            "consequence": {
-              "id": "late-work.q.metric-placeholder.option.last-confirmed.consequence",
-              "action": "日期诚实可见，客户指出自己要全国范围",
-              "npcReaction": "日期诚实可见，客户指出自己要全国范围",
-              "visibleStateChange": "日期诚实可见，客户指出自己要全国范围 日期诚实可见，客户指出自己要全国范围",
-              "nextNodeId": "late-work.q.client-scope"
-            }
-          },
-          {
-            "id": "late-work.q.metric-placeholder.option.remove-chart",
-            "label": "删掉无来源图，结论改成条件句。",
-            "intent": "boundary",
-            "stateTags": [
-              "hard-boundary",
-              "unsupported-chart-removed"
-            ],
-            "sourceRefs": [
-              "LW-S03",
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "boundary": 1
-            },
-            "signatureFlags": [],
-            "evidence": "删掉无来源图，结论改成条件句。",
-            "consequence": {
-              "id": "late-work.q.metric-placeholder.option.remove-chart.consequence",
-              "action": "错误风险下降，但客户旧附件里仍保留那张图",
-              "npcReaction": "错误风险下降，但客户旧附件里仍保留那张图",
-              "visibleStateChange": "错误风险下降，但客户旧附件里仍保留那张图 错误风险下降，但客户旧附件里仍保留那张图",
-              "nextNodeId": "late-work.q.client-version"
-            }
-          },
-          {
-            "id": "late-work.q.metric-placeholder.option.no-imagination-tape",
-            "label": "玩家确认奶蛙给空格贴透明封条：`数据未到，禁止脑补`",
-            "intent": "absurd",
-            "stateTags": [
-              "object-logic",
-              "no-fabrication"
-            ],
-            "sourceRefs": [
-              "LW-S03",
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "absurd": 1
-            },
-            "signatureFlags": [
-              "consistent-absurd"
-            ],
-            "evidence": "玩家确认奶蛙给空格贴透明封条：`数据未到，禁止脑补`",
-            "consequence": {
-              "id": "late-work.q.metric-placeholder.option.no-imagination-tape.consequence",
-              "action": "封条挡住假数字，客户改要五页结构框架",
-              "npcReaction": "封条挡住假数字，客户改要五页结构框架",
-              "visibleStateChange": "封条挡住假数字，客户改要五页结构框架 封条挡住假数字，客户改要五页结构框架",
-              "nextNodeId": "late-work.q.client-deadline"
-            }
-          }
-        ],
-        "sceneObjects": [
-          "预算表",
-          "PPT 版本",
-          "数据口径",
-          "群聊确认",
-          "附件",
-          "工时记录"
-        ],
-        "contentVersion": "late-work.graph.preview.2026-07-22.v1",
-        "approvalStatus": "source-reviewed"
-      },
-      "late-work.q.client-source": {
-        "id": "late-work.q.client-source",
-        "routeId": "late-work",
-        "stage": 5,
-        "prompt": "周日，客户在群里问：这页 37% 从哪来的？ 领导也在群里。你怎么处理？",
-        "sourceRefs": [
-          "LW-S03",
-          "LW-S06"
-        ],
-        "options": [
-          {
-            "id": "late-work.q.client-source.option.attach-proof",
-            "label": "来自财务周五确认表。我把原表、口径和更新时间一起发。",
-            "intent": "strategy",
-            "stateTags": [
-              "evidence-first",
-              "source-proof-attached"
-            ],
-            "sourceRefs": [
-              "LW-S03",
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "strategy": 1
-            },
-            "signatureFlags": [],
-            "evidence": "来自财务周五确认表。我把原表、口径和更新时间一起发。",
-            "consequence": {
-              "id": "late-work.q.client-source.option.attach-proof.consequence",
-              "action": "客户能复核，领导说`下次别等人问才放来源`",
-              "npcReaction": "客户能复核，领导说`下次别等人问才放来源`",
-              "visibleStateChange": "客户能复核，领导说`下次别等人问才放来源` 客户能复核，领导说`下次别等人问才放来源`",
-              "nextNodeId": "late-work.q.rule-next-time"
-            }
-          },
-          {
-            "id": "late-work.q.client-source.option.withdraw-page",
-            "label": "这页先撤，确认后补，不拿不确定数顶着。",
-            "intent": "boundary",
-            "stateTags": [
-              "hard-boundary",
-              "page-withdrawn"
-            ],
-            "sourceRefs": [
-              "LW-S03",
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "boundary": 1
-            },
-            "signatureFlags": [],
-            "evidence": "这页先撤，确认后补，不拿不确定数顶着。",
-            "consequence": {
-              "id": "late-work.q.client-source.option.withdraw-page.consequence",
-              "action": "客户继续看其他页，37% 留在待确认清单；本局进入结算",
-              "npcReaction": "客户继续看其他页，37% 留在待确认清单；本局进入结算",
-              "visibleStateChange": "客户继续看其他页，37% 留在待确认清单；本局进入结算 客户继续看其他页，37% 留在待确认清单；本局进入结算",
-              "nextNodeId": "result"
-            }
-          },
-          {
-            "id": "late-work.q.client-source.option.list-differences",
-            "label": "现在有三套口径，我先列差异，请您确认要看的那套。",
-            "intent": "normal",
-            "stateTags": [
-              "reality-plan",
-              "definition-choice-opened"
-            ],
-            "sourceRefs": [
-              "LW-S03",
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "normal": 1
-            },
-            "signatureFlags": [],
-            "evidence": "现在有三套口径，我先列差异，请您确认要看的那套。",
-            "consequence": {
-              "id": "late-work.q.client-source.option.list-differences.consequence",
-              "action": "客户选出口径，责任回到数据 owner；本局进入结算",
-              "npcReaction": "客户选出口径，责任回到数据 owner；本局进入结算",
-              "visibleStateChange": "客户选出口径，责任回到数据 owner；本局进入结算 客户选出口径，责任回到数据 owner；本局进入结算",
-              "nextNodeId": "result"
-            }
-          },
-          {
-            "id": "late-work.q.client-source.option.birth-certificate",
-            "label": "玩家确认奶蛙给 37% 配一张`数字出生证明`：来源、时间、计算人",
-            "intent": "absurd",
-            "stateTags": [
-              "object-logic",
-              "provenance-visible"
-            ],
-            "sourceRefs": [
-              "LW-S03",
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "absurd": 1
-            },
-            "signatureFlags": [
-              "consistent-absurd"
-            ],
-            "evidence": "玩家确认奶蛙给 37% 配一张`数字出生证明`：来源、时间、计算人",
-            "consequence": {
-              "id": "late-work.q.client-source.option.birth-certificate.consequence",
-              "action": "附件不再像野生数字，客户回了一个`收到`；本局进入结算",
-              "npcReaction": "附件不再像野生数字，客户回了一个`收到`；本局进入结算",
-              "visibleStateChange": "附件不再像野生数字，客户回了一个`收到`；本局进入结算 附件不再像野生数字，客户回了一个`收到`；本局进入结算",
-              "nextNodeId": "result"
-            }
-          }
-        ],
-        "sceneObjects": [
-          "预算表",
-          "PPT 版本",
-          "数据口径",
-          "群聊确认",
-          "附件",
-          "工时记录"
-        ],
-        "contentVersion": "late-work.graph.preview.2026-07-22.v1",
-        "approvalStatus": "source-reviewed"
-      },
-      "late-work.q.client-scope": {
-        "id": "late-work.q.client-scope",
-        "routeId": "late-work",
-        "stage": 5,
-        "prompt": "客户问：我说的是全国，你们怎么只放华东？ 原消息里只写过区域表现。你怎么接？",
-        "sourceRefs": [
-          "LW-S01",
-          "LW-S06"
-        ],
-        "options": [
-          {
-            "id": "late-work.q.client-scope.option.own-and-expand",
-            "label": "范围之前没写清。我今晚补全国，华东保留作对比。",
-            "intent": "normal",
-            "stateTags": [
-              "respectful-acceptance",
-              "scope-expanded"
-            ],
-            "sourceRefs": [
-              "LW-S01",
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "normal": 1
-            },
-            "signatureFlags": [],
-            "evidence": "范围之前没写清。我今晚补全国，华东保留作对比。",
-            "consequence": {
-              "id": "late-work.q.client-scope.option.own-and-expand.consequence",
-              "action": "客户接受处理方案，领导问`下次范围怎么一次说清`",
-              "npcReaction": "客户接受处理方案，领导问`下次范围怎么一次说清`",
-              "visibleStateChange": "客户接受处理方案，领导问`下次范围怎么一次说清` 客户接受处理方案，领导问`下次范围怎么一次说清`",
-              "nextNodeId": "late-work.q.rule-next-time"
-            }
-          },
-          {
-            "id": "late-work.q.client-scope.option.show-record",
-            "label": "原确认记录写的是“区域表现”。我先发记录，请您定是否扩到全国。",
-            "intent": "strategy",
-            "stateTags": [
-              "evidence-first",
-              "scope-record-shown"
-            ],
-            "sourceRefs": [
-              "LW-S01",
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "strategy": 1
-            },
-            "signatureFlags": [],
-            "evidence": "原确认记录写的是“区域表现”。我先发记录，请您定是否扩到全国。",
-            "consequence": {
-              "id": "late-work.q.client-scope.option.show-record.consequence",
-              "action": "记录避免单方背锅，客户明确了全国；本局进入结算",
-              "npcReaction": "记录避免单方背锅，客户明确了全国；本局进入结算",
-              "visibleStateChange": "记录避免单方背锅，客户明确了全国；本局进入结算 记录避免单方背锅，客户明确了全国；本局进入结算",
-              "nextNodeId": "result"
-            }
-          },
-          {
-            "id": "late-work.q.client-scope.option.data-boundary",
-            "label": "全国数据周一才齐，现在只能交有来源的华东。",
-            "intent": "boundary",
-            "stateTags": [
-              "hard-boundary",
-              "unsupported-scope-refused"
-            ],
-            "sourceRefs": [
-              "LW-S01",
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "boundary": 1
-            },
-            "signatureFlags": [],
-            "evidence": "全国数据周一才齐，现在只能交有来源的华东。",
-            "consequence": {
-              "id": "late-work.q.client-scope.option.data-boundary.consequence",
-              "action": "客户把全国页延到周一，周末不再造数；本局进入结算",
-              "npcReaction": "客户把全国页延到周一，周末不再造数；本局进入结算",
-              "visibleStateChange": "客户把全国页延到周一，周末不再造数；本局进入结算 客户把全国页延到周一，周末不再造数；本局进入结算",
-              "nextNodeId": "result"
-            }
-          },
-          {
-            "id": "late-work.q.client-scope.option.map-stickers",
-            "label": "玩家确认奶蛙把华东贴纸从地图上揭下，旁边排`待解锁 24 省`",
-            "intent": "absurd",
-            "stateTags": [
-              "object-logic",
-              "scope-gap-visible"
-            ],
-            "sourceRefs": [
-              "LW-S01",
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "absurd": 1
-            },
-            "signatureFlags": [
-              "consistent-absurd"
-            ],
-            "evidence": "玩家确认奶蛙把华东贴纸从地图上揭下，旁边排`待解锁 24 省`",
-            "consequence": {
-              "id": "late-work.q.client-scope.option.map-stickers.consequence",
-              "action": "客户看见缺口不是一键放大，改为先审华东；本局进入结算",
-              "npcReaction": "客户看见缺口不是一键放大，改为先审华东；本局进入结算",
-              "visibleStateChange": "客户看见缺口不是一键放大，改为先审华东；本局进入结算 客户看见缺口不是一键放大，改为先审华东；本局进入结算",
-              "nextNodeId": "result"
-            }
-          }
-        ],
-        "sceneObjects": [
-          "预算表",
-          "PPT 版本",
-          "数据口径",
-          "群聊确认",
-          "附件",
-          "工时记录"
-        ],
-        "contentVersion": "late-work.graph.preview.2026-07-22.v1",
-        "approvalStatus": "source-reviewed"
-      },
-      "late-work.q.client-version": {
-        "id": "late-work.q.client-version",
-        "routeId": "late-work",
-        "stage": 5,
-        "prompt": "客户说：我打开的还是 79，你们群里怎么又是 82？ 群里已经有四个附件。下一步？",
-        "sourceRefs": [
-          "LW-S05"
-        ],
-        "options": [
-          {
-            "id": "late-work.q.client-version.option.one-link",
-            "label": "我重发唯一链接，旧附件全部标作废。",
-            "intent": "boundary",
-            "stateTags": [
-              "reality-plan",
-              "single-source-link"
-            ],
-            "sourceRefs": [
-              "LW-S05"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "boundary": 1
-            },
-            "signatureFlags": [],
-            "evidence": "我重发唯一链接，旧附件全部标作废。",
-            "consequence": {
-              "id": "late-work.q.client-version.option.one-link.consequence",
-              "action": "群里只剩一个可编辑入口，领导问`以后怎么防止四份并行`",
-              "npcReaction": "群里只剩一个可编辑入口，领导问`以后怎么防止四份并行`",
-              "visibleStateChange": "群里只剩一个可编辑入口，领导问`以后怎么防止四份并行` 群里只剩一个可编辑入口，领导问`以后怎么防止四份并行`",
-              "nextNodeId": "late-work.q.rule-next-time"
-            }
-          },
-          {
-            "id": "late-work.q.client-version.option.ask-filename",
-            "label": "先确认您打开的文件名和时间，我不盲改第五份。",
-            "intent": "strategy",
-            "stateTags": [
-              "evidence-first",
-              "opened-version-requested"
-            ],
-            "sourceRefs": [
-              "LW-S05"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "strategy": 1
-            },
-            "signatureFlags": [],
-            "evidence": "先确认您打开的文件名和时间，我不盲改第五份。",
-            "consequence": {
-              "id": "late-work.q.client-version.option.ask-filename.consequence",
-              "action": "客户发来文件名，旧附件被准确定位；本局进入结算",
-              "npcReaction": "客户发来文件名，旧附件被准确定位；本局进入结算",
-              "visibleStateChange": "客户发来文件名，旧附件被准确定位；本局进入结算 客户发来文件名，旧附件被准确定位；本局进入结算",
-              "nextNodeId": "result"
-            }
-          },
-          {
-            "id": "late-work.q.client-version.option.diff-no-blame",
-            "label": "我发一张版本对照，只写差异和有效版本，不在群里甩锅。",
-            "intent": "normal",
-            "stateTags": [
-              "respectful-acceptance",
-              "version-diff-shown"
-            ],
-            "sourceRefs": [
-              "LW-S05"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "normal": 1
-            },
-            "signatureFlags": [],
-            "evidence": "我发一张版本对照，只写差异和有效版本，不在群里甩锅。",
-            "consequence": {
-              "id": "late-work.q.client-version.option.diff-no-blame.consequence",
-              "action": "客户切到有效版本，群里没人被公开处刑；本局进入结算",
-              "npcReaction": "客户切到有效版本，群里没人被公开处刑；本局进入结算",
-              "visibleStateChange": "客户切到有效版本，群里没人被公开处刑；本局进入结算 客户切到有效版本，群里没人被公开处刑；本局进入结算",
-              "nextNodeId": "result"
-            }
-          },
-          {
-            "id": "late-work.q.client-version.option.retired-stamp",
-            "label": "玩家确认奶蛙给三个过期附件盖`已退役`，装进只读档案袋",
-            "intent": "absurd",
-            "stateTags": [
-              "object-logic",
-              "legacy-version-isolated"
-            ],
-            "sourceRefs": [
-              "LW-S05"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "absurd": 1
-            },
-            "signatureFlags": [
-              "consistent-absurd"
-            ],
-            "evidence": "玩家确认奶蛙给三个过期附件盖`已退役`，装进只读档案袋",
-            "consequence": {
-              "id": "late-work.q.client-version.option.retired-stamp.consequence",
-              "action": "过期附件仍可追溯但不能再冒充当前稿；本局进入结算",
-              "npcReaction": "过期附件仍可追溯但不能再冒充当前稿；本局进入结算",
-              "visibleStateChange": "过期附件仍可追溯但不能再冒充当前稿；本局进入结算 过期附件仍可追溯但不能再冒充当前稿；本局进入结算",
-              "nextNodeId": "result"
-            }
-          }
-        ],
-        "sceneObjects": [
-          "预算表",
-          "PPT 版本",
-          "数据口径",
-          "群聊确认",
-          "附件",
-          "工时记录"
-        ],
-        "contentVersion": "late-work.graph.preview.2026-07-22.v1",
-        "approvalStatus": "source-reviewed"
-      },
-      "late-work.q.client-deadline": {
-        "id": "late-work.q.client-deadline",
-        "routeId": "late-work",
-        "stage": 5,
-        "prompt": "客户追加：明天中午前再补五页，全国、竞品、趋势、原因、建议。 数据还没齐。你怎么答？",
-        "sourceRefs": [
-          "LW-S01",
-          "LW-S03",
-          "LW-S06"
-        ],
-        "options": [
-          {
-            "id": "late-work.q.client-deadline.option.trade-scope",
-            "label": "可以先补五页框架，但原定版式优化后移；数据到一页填一页。",
-            "intent": "strategy",
-            "stateTags": [
-              "priority-coordination",
-              "scope-tradeoff"
-            ],
-            "sourceRefs": [
-              "LW-S01",
-              "LW-S03",
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "strategy": 1
-            },
-            "signatureFlags": [],
-            "evidence": "可以先补五页框架，但原定版式优化后移；数据到一页填一页。",
-            "consequence": {
-              "id": "late-work.q.client-deadline.option.trade-scope.consequence",
-              "action": "客户接受先看框架，领导问`下次怎么提前暴露依赖`",
-              "npcReaction": "客户接受先看框架，领导问`下次怎么提前暴露依赖`",
-              "visibleStateChange": "客户接受先看框架，领导问`下次怎么提前暴露依赖` 客户接受先看框架，领导问`下次怎么提前暴露依赖`",
-              "nextNodeId": "late-work.q.rule-next-time"
-            }
-          },
-          {
-            "id": "late-work.q.client-deadline.option.real-time",
-            "label": "明天中午做不了，最早周日 18 点。",
-            "intent": "boundary",
-            "stateTags": [
-              "hard-boundary",
-              "deadline-reset"
-            ],
-            "sourceRefs": [
-              "LW-S01",
-              "LW-S03",
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "boundary": 1
-            },
-            "signatureFlags": [],
-            "evidence": "明天中午做不了，最早周日 18 点。",
-            "consequence": {
-              "id": "late-work.q.client-deadline.option.real-time.consequence",
-              "action": "客户选择 18 点，不再把愿望当工时；本局进入结算",
-              "npcReaction": "客户选择 18 点，不再把愿望当工时；本局进入结算",
-              "visibleStateChange": "客户选择 18 点，不再把愿望当工时；本局进入结算 客户选择 18 点，不再把愿望当工时；本局进入结算",
-              "nextNodeId": "result"
-            }
-          },
-          {
-            "id": "late-work.q.client-deadline.option.require-owners",
-            "label": "请先给三项数据负责人；没有来源，我只能交结构。",
-            "intent": "normal",
-            "stateTags": [
-              "reality-plan",
-              "dependency-required"
-            ],
-            "sourceRefs": [
-              "LW-S01",
-              "LW-S03",
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "normal": 1
-            },
-            "signatureFlags": [],
-            "evidence": "请先给三项数据负责人；没有来源，我只能交结构。",
-            "consequence": {
-              "id": "late-work.q.client-deadline.option.require-owners.consequence",
-              "action": "两名 owner 被拉进群，一项仍明确留空；本局进入结算",
-              "npcReaction": "两名 owner 被拉进群，一项仍明确留空；本局进入结算",
-              "visibleStateChange": "两名 owner 被拉进群，一项仍明确留空；本局进入结算 两名 owner 被拉进群，一项仍明确留空；本局进入结算",
-              "nextNodeId": "result"
-            }
-          },
-          {
-            "id": "late-work.q.client-deadline.option.waiting-room",
-            "label": "玩家确认奶蛙把五张空白页摆成候诊区：谁的数据到，谁先叫号",
-            "intent": "absurd",
-            "stateTags": [
-              "object-logic",
-              "dependency-visible"
-            ],
-            "sourceRefs": [
-              "LW-S01",
-              "LW-S03",
-              "LW-S06"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "absurd": 1
-            },
-            "signatureFlags": [
-              "consistent-absurd"
-            ],
-            "evidence": "玩家确认奶蛙把五张空白页摆成候诊区：谁的数据到，谁先叫号",
-            "consequence": {
-              "id": "late-work.q.client-deadline.option.waiting-room.consequence",
-              "action": "五页没有同时“自动痊愈”，客户先审已有两页；本局进入结算",
-              "npcReaction": "五页没有同时“自动痊愈”，客户先审已有两页；本局进入结算",
-              "visibleStateChange": "五页没有同时“自动痊愈”，客户先审已有两页；本局进入结算 五页没有同时“自动痊愈”，客户先审已有两页；本局进入结算",
-              "nextNodeId": "result"
-            }
-          }
-        ],
-        "sceneObjects": [
-          "预算表",
-          "PPT 版本",
-          "数据口径",
-          "群聊确认",
-          "附件",
-          "工时记录"
-        ],
-        "contentVersion": "late-work.graph.preview.2026-07-22.v1",
-        "approvalStatus": "source-reviewed"
-      },
-      "late-work.q.rule-next-time": {
-        "id": "late-work.q.rule-next-time",
-        "routeId": "late-work",
-        "stage": 6,
-        "prompt": "周一客户会结束，领导说：这次先过了。下次临时任务怎么省点事？ 你留下哪条具体规则？",
-        "sourceRefs": [
-          "LW-S03",
-          "LW-S04",
-          "LW-S05",
           "LW-S06",
+          "LW-S08"
+        ],
+        "options": [
+          {
+            "id": "late-work.q.ai-delivery-check.option.trust-ai",
+            "label": "让数字分身再自检一遍，然后直接提交",
+            "intent": "normal",
+            "stateTags": [
+              "normal",
+              "ai-hidden",
+              "ai-output",
+              "ai-error"
+            ],
+            "sourceRefs": [
+              "LW-S06",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "normal": 1
+            },
+            "signatureFlags": [],
+            "evidence": "让数字分身再自检一遍，然后直接提交",
+            "consequence": {
+              "id": "late-work.q.ai-delivery-check.option.trust-ai.consequence",
+              "action": "数字分身显示自检通过，文件以你的名字提交。",
+              "npcReaction": "一个关键金额被它算错了",
+              "visibleStateChange": "数字分身显示自检通过，文件以你的名字提交。 一个关键金额被它算错了",
+              "nextNodeId": "late-work.q.ai-incident"
+            }
+          },
+          {
+            "id": "late-work.q.ai-delivery-check.option.manual-review",
+            "label": "自己打开原始表格，把金额和关键数字重新核对一遍",
+            "intent": "strategy",
+            "stateTags": [
+              "strategy",
+              "ai-hidden",
+              "ai-reviewed",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S06",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "strategy": 1
+            },
+            "signatureFlags": [],
+            "evidence": "自己打开原始表格，把金额和关键数字重新核对一遍",
+            "consequence": {
+              "id": "late-work.q.ai-delivery-check.option.manual-review.consequence",
+              "action": "你发现一个简单的金额错误并改正，最终文件正常提交",
+              "npcReaction": "你发现一个简单的金额错误并改正，最终文件正常提交",
+              "visibleStateChange": "你发现一个简单的金额错误并改正，最终文件正常提交 你发现一个简单的金额错误并改正，最终文件正常提交",
+              "nextNodeId": "late-work.q.monday-share"
+            }
+          }
+        ],
+        "sceneObjects": [
+          "好友群",
+          "奶茶红包",
+          "项目群通知",
+          "游戏战损",
+          "AI 数字分身",
+          "交付说明",
+          "绩效承诺",
+          "招聘需求"
+        ],
+        "contentVersion": "late-work.graph.preview.2026-07-23.v2",
+        "approvalStatus": "source-reviewed"
+      },
+      "late-work.q.monday-share": {
+        "id": "late-work.q.monday-share",
+        "routeId": "late-work",
+        "stage": 4,
+        "prompt": "下周一，组长在会上表扬你这次交付又快又完整，并安排你周五给全组做一场心得分享。实际上，你这轮使用了数字分身。你准备怎么讲？",
+        "sourceRefs": [
+          "LW-S07",
+          "LW-S08"
+        ],
+        "options": [
+          {
+            "id": "late-work.q.monday-share.option.full-disclose",
+            "label": "认真说明数字分身怎么搭建，并把完整配置、模板和工作流程交出来",
+            "intent": "boundary",
+            "stateTags": [
+              "normal",
+              "ai-disclosed",
+              "ai-handed-over",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S07",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "boundary": 1
+            },
+            "signatureFlags": [],
+            "evidence": "认真说明数字分身怎么搭建，并把完整配置、模板和工作流程交出来",
+            "consequence": {
+              "id": "late-work.q.monday-share.option.full-disclose.consequence",
+              "action": "组长立刻把分享会升级成全组复制会，并让你整理完整交接包",
+              "npcReaction": "组长立刻把分享会升级成全组复制会，并让你整理完整交接包",
+              "visibleStateChange": "组长立刻把分享会升级成全组复制会，并让你整理完整交接包 组长立刻把分享会升级成全组复制会，并让你整理完整交接包",
+              "nextNodeId": "late-work.q.method-request"
+            }
+          },
+          {
+            "id": "late-work.q.monday-share.option.partial-disclose",
+            "label": "我确实用了 AI 做资料整理和初稿，但需求判断、取舍和最后交付还是我负责。",
+            "intent": "strategy",
+            "stateTags": [
+              "strategy",
+              "ai-partial-disclosure",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S07",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "strategy": 1
+            },
+            "signatureFlags": [],
+            "evidence": "我确实用了 AI 做资料整理和初稿，但需求判断、取舍和最后交付还是我负责。",
+            "consequence": {
+              "id": "late-work.q.monday-share.option.partial-disclose.consequence",
+              "action": "组长认可你的判断能力，同时继续追问这套方法能不能在组里推广",
+              "npcReaction": "组长认可你的判断能力，同时继续追问这套方法能不能在组里推广",
+              "visibleStateChange": "组长认可你的判断能力，同时继续追问这套方法能不能在组里推广 组长认可你的判断能力，同时继续追问这套方法能不能在组里推广",
+              "nextNodeId": "late-work.q.method-request"
+            }
+          },
+          {
+            "id": "late-work.q.monday-share.option.da-vinci",
+            "label": "只讲真实步骤，但故意把顺序打乱，让所有人听完都觉得自己会了，回去又跑不起来",
+            "intent": "absurd",
+            "stateTags": [
+              "absurd",
+              "ai-hidden",
+              "da-vinci-order",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S07",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "absurd": 1
+            },
+            "signatureFlags": [
+              "consistent-absurd"
+            ],
+            "evidence": "只讲真实步骤，但故意把顺序打乱，让所有人听完都觉得自己会了，回去又跑不起来",
+            "consequence": {
+              "id": "late-work.q.monday-share.option.da-vinci.consequence",
+              "action": "分享结束后掌声很多，复刻成功率为零。",
+              "npcReaction": "组长私下找你要完整流程",
+              "visibleStateChange": "分享结束后掌声很多，复刻成功率为零。 组长私下找你要完整流程",
+              "nextNodeId": "late-work.q.method-request"
+            }
+          },
+          {
+            "id": "late-work.q.monday-share.option.claim-own",
+            "label": "这套东西主要还是我自己做的，我平时效率就比较高。",
+            "intent": "normal",
+            "stateTags": [
+              "normal",
+              "ai-hidden",
+              "claim-own-skill",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S07",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "normal": 1
+            },
+            "signatureFlags": [],
+            "evidence": "这套东西主要还是我自己做的，我平时效率就比较高。",
+            "consequence": {
+              "id": "late-work.q.monday-share.option.claim-own.consequence",
+              "action": "组长点头：`那说明你现在产能还有空间。",
+              "npcReaction": "` 随后向你要一份可复制的方法",
+              "visibleStateChange": "组长点头：`那说明你现在产能还有空间。 ` 随后向你要一份可复制的方法",
+              "nextNodeId": "late-work.q.method-request"
+            }
+          },
+          {
+            "id": "late-work.q.monday-share.option.skip-sharing",
+            "label": "领导，周五这个分享我参加不了，这次先不安排了。",
+            "intent": "boundary",
+            "stateTags": [
+              "boundary",
+              "ai-hidden",
+              "share-cancelled",
+              "response-given"
+            ],
+            "sourceRefs": [
+              "LW-S07",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "boundary": 1
+            },
+            "signatureFlags": [],
+            "evidence": "领导，周五这个分享我参加不了，这次先不安排了。",
+            "consequence": {
+              "id": "late-work.q.monday-share.option.skip-sharing.consequence",
+              "action": "分享会被取消，没有改期。",
+              "npcReaction": "组长第二天私下问你能不能把方法直接整理给他",
+              "visibleStateChange": "分享会被取消，没有改期。 组长第二天私下问你能不能把方法直接整理给他",
+              "nextNodeId": "late-work.q.method-request"
+            }
+          },
+          {
+            "id": "late-work.q.monday-share.option.ask-performance",
+            "label": "这套方法如果要在组里推广，我能不能申请加薪，或者把这部分算进绩效？",
+            "intent": "strategy",
+            "stateTags": [
+              "strategy",
+              "ai-hidden",
+              "pay-negotiation",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S07",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "strategy": 1
+            },
+            "signatureFlags": [],
+            "evidence": "这套方法如果要在组里推广，我能不能申请加薪，或者把这部分算进绩效？",
+            "consequence": {
+              "id": "late-work.q.monday-share.option.ask-performance.consequence",
+              "action": "组长说可以帮你争取，但希望先看到一套能推广的完整方法",
+              "npcReaction": "组长说可以帮你争取，但希望先看到一套能推广的完整方法",
+              "visibleStateChange": "组长说可以帮你争取，但希望先看到一套能推广的完整方法 组长说可以帮你争取，但希望先看到一套能推广的完整方法",
+              "nextNodeId": "late-work.q.method-request"
+            }
+          }
+        ],
+        "sceneObjects": [
+          "好友群",
+          "奶茶红包",
+          "项目群通知",
+          "游戏战损",
+          "AI 数字分身",
+          "交付说明",
+          "绩效承诺",
+          "招聘需求"
+        ],
+        "contentVersion": "late-work.graph.preview.2026-07-23.v2",
+        "approvalStatus": "source-reviewed"
+      },
+      "late-work.q.monday-share-no-ai": {
+        "id": "late-work.q.monday-share-no-ai",
+        "routeId": "late-work",
+        "stage": 4,
+        "prompt": "下周一，组长在会上表扬你这次处理得又快又稳，并安排你周五给全组做一场心得分享。你准备怎么讲？",
+        "sourceRefs": [
           "LW-S07"
         ],
         "options": [
           {
-            "id": "late-work.q.rule-next-time.option.brief-card",
-            "label": "以后开工前先写五项：逻辑、版式、数据、截止时间、负责人。",
-            "intent": "strategy",
-            "stateTags": [
-              "evidence-first",
-              "brief-template-created"
-            ],
-            "sourceRefs": [
-              "LW-S03",
-              "LW-S04",
-              "LW-S05",
-              "LW-S06",
-              "LW-S07"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "strategy": 1
-            },
-            "signatureFlags": [],
-            "evidence": "以后开工前先写五项：逻辑、版式、数据、截止时间、负责人。",
-            "consequence": {
-              "id": "late-work.q.rule-next-time.option.brief-card.consequence",
-              "action": "一张五格需求卡被置顶，下次`弄一下`必须先落进格子；本局结算",
-              "npcReaction": "一张五格需求卡被置顶，下次`弄一下`必须先落进格子；本局结算",
-              "visibleStateChange": "一张五格需求卡被置顶，下次`弄一下`必须先落进格子；本局结算 一张五格需求卡被置顶，下次`弄一下`必须先落进格子；本局结算",
-              "nextNodeId": "result"
-            }
-          },
-          {
-            "id": "late-work.q.rule-next-time.option.priority-owner",
-            "label": "新活撞旧活时，由派活的人在群里定优先级。",
+            "id": "late-work.q.monday-share-no-ai.option.honest-process",
+            "label": "把自己的真实做事流程和判断方法认真讲清楚",
             "intent": "normal",
             "stateTags": [
-              "priority-coordination",
-              "priority-rule-created"
+              "normal",
+              "workflow-shared",
+              "service-provided"
             ],
             "sourceRefs": [
-              "LW-S03",
-              "LW-S04",
-              "LW-S05",
-              "LW-S06",
               "LW-S07"
             ],
             "requiresConfirmation": true,
@@ -2234,57 +1230,25 @@ export const GENERATED_ROUTE_DATA = {
               "normal": 1
             },
             "signatureFlags": [],
-            "evidence": "新活撞旧活时，由派活的人在群里定优先级。",
+            "evidence": "把自己的真实做事流程和判断方法认真讲清楚",
             "consequence": {
-              "id": "late-work.q.rule-next-time.option.priority-owner.consequence",
-              "action": "两个工位中间多了一道由负责人控制的闸门；本局结算",
-              "npcReaction": "两个工位中间多了一道由负责人控制的闸门；本局结算",
-              "visibleStateChange": "两个工位中间多了一道由负责人控制的闸门；本局结算 两个工位中间多了一道由负责人控制的闸门；本局结算",
-              "nextNodeId": "result"
+              "id": "late-work.q.monday-share-no-ai.option.honest-process.consequence",
+              "action": "组员记下了流程，组长私下请你再整理一份可复用版本",
+              "npcReaction": "组员记下了流程，组长私下请你再整理一份可复用版本",
+              "visibleStateChange": "组员记下了流程，组长私下请你再整理一份可复用版本 组员记下了流程，组长私下请你再整理一份可复用版本",
+              "nextNodeId": "late-work.q.workflow-request"
             }
           },
           {
-            "id": "late-work.q.rule-next-time.option.time-rule",
-            "label": "周末工作先确认时长和补休，别等周一回忆。",
-            "intent": "boundary",
-            "stateTags": [
-              "time-compensation",
-              "time-rule-created"
-            ],
-            "sourceRefs": [
-              "LW-S03",
-              "LW-S04",
-              "LW-S05",
-              "LW-S06",
-              "LW-S07"
-            ],
-            "requiresConfirmation": true,
-            "scoreEffects": {
-              "boundary": 1
-            },
-            "signatureFlags": [],
-            "evidence": "周末工作先确认时长和补休，别等周一回忆。",
-            "consequence": {
-              "id": "late-work.q.rule-next-time.option.time-rule.consequence",
-              "action": "工时格与调休日历第一次连在一起，不再发行口头期货；本局结算",
-              "npcReaction": "工时格与调休日历第一次连在一起，不再发行口头期货；本局结算",
-              "visibleStateChange": "工时格与调休日历第一次连在一起，不再发行口头期货；本局结算 工时格与调休日历第一次连在一起，不再发行口头期货；本局结算",
-              "nextNodeId": "result"
-            }
-          },
-          {
-            "id": "late-work.q.rule-next-time.option.three-buttons",
-            "label": "玩家确认奶蛙在工位贴`弄一下前先选：逻辑 / 版式 / 数据`三键牌",
+            "id": "late-work.q.monday-share-no-ai.option.da-vinci",
+            "label": "讲的每句话都是真的，只把关键步骤顺序故意讲乱",
             "intent": "absurd",
             "stateTags": [
-              "object-logic",
-              "scope-rule-created"
+              "absurd",
+              "da-vinci-order",
+              "service-provided"
             ],
             "sourceRefs": [
-              "LW-S03",
-              "LW-S04",
-              "LW-S05",
-              "LW-S06",
               "LW-S07"
             ],
             "requiresConfirmation": true,
@@ -2294,35 +1258,1113 @@ export const GENERATED_ROUTE_DATA = {
             "signatureFlags": [
               "consistent-absurd"
             ],
-            "evidence": "玩家确认奶蛙在工位贴`弄一下前先选：逻辑 / 版式 / 数据`三键牌",
+            "evidence": "讲的每句话都是真的，只把关键步骤顺序故意讲乱",
             "consequence": {
-              "id": "late-work.q.rule-next-time.option.three-buttons.consequence",
-              "action": "领导下次伸手派活前，先被三颗实体按钮拦住；本局结算",
-              "npcReaction": "领导下次伸手派活前，先被三颗实体按钮拦住；本局结算",
-              "visibleStateChange": "领导下次伸手派活前，先被三颗实体按钮拦住；本局结算 领导下次伸手派活前，先被三颗实体按钮拦住；本局结算",
+              "id": "late-work.q.monday-share-no-ai.option.da-vinci.consequence",
+              "action": "所有人听懂了每一步，却没有人能把它们连起来。",
+              "npcReaction": "组长私下找你要书面流程",
+              "visibleStateChange": "所有人听懂了每一步，却没有人能把它们连起来。 组长私下找你要书面流程",
+              "nextNodeId": "late-work.q.workflow-request"
+            }
+          },
+          {
+            "id": "late-work.q.monday-share-no-ai.option.claim-own",
+            "label": "没什么特别方法，主要就是我自己效率高。",
+            "intent": "normal",
+            "stateTags": [
+              "normal",
+              "claim-own-skill",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S07"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "normal": 1
+            },
+            "signatureFlags": [],
+            "evidence": "没什么特别方法，主要就是我自己效率高。",
+            "consequence": {
+              "id": "late-work.q.monday-share-no-ai.option.claim-own.consequence",
+              "action": "组长点头：`那说明你现在产能还有空间。",
+              "npcReaction": "` 随后让你整理一份方法说明",
+              "visibleStateChange": "组长点头：`那说明你现在产能还有空间。 ` 随后让你整理一份方法说明",
+              "nextNodeId": "late-work.q.workflow-request"
+            }
+          },
+          {
+            "id": "late-work.q.monday-share-no-ai.option.skip-sharing",
+            "label": "领导，周五这个分享我参加不了，这次先不安排了。",
+            "intent": "boundary",
+            "stateTags": [
+              "boundary",
+              "share-cancelled",
+              "response-given"
+            ],
+            "sourceRefs": [
+              "LW-S07"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "boundary": 1
+            },
+            "signatureFlags": [],
+            "evidence": "领导，周五这个分享我参加不了，这次先不安排了。",
+            "consequence": {
+              "id": "late-work.q.monday-share-no-ai.option.skip-sharing.consequence",
+              "action": "分享会被取消，没有改期。",
+              "npcReaction": "组长第二天私下问你能不能把流程发给他",
+              "visibleStateChange": "分享会被取消，没有改期。 组长第二天私下问你能不能把流程发给他",
+              "nextNodeId": "late-work.q.workflow-request"
+            }
+          },
+          {
+            "id": "late-work.q.monday-share-no-ai.option.ask-performance",
+            "label": "如果要把这套方法在组里推广，我能不能申请加薪，或者把这部分算进绩效？",
+            "intent": "strategy",
+            "stateTags": [
+              "strategy",
+              "pay-negotiation",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S07"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "strategy": 1
+            },
+            "signatureFlags": [],
+            "evidence": "如果要把这套方法在组里推广，我能不能申请加薪，或者把这部分算进绩效？",
+            "consequence": {
+              "id": "late-work.q.monday-share-no-ai.option.ask-performance.consequence",
+              "action": "组长说会帮你争取，但要先把方法整理出来",
+              "npcReaction": "组长说会帮你争取，但要先把方法整理出来",
+              "visibleStateChange": "组长说会帮你争取，但要先把方法整理出来 组长说会帮你争取，但要先把方法整理出来",
+              "nextNodeId": "late-work.q.workflow-request"
+            }
+          }
+        ],
+        "sceneObjects": [
+          "好友群",
+          "奶茶红包",
+          "项目群通知",
+          "游戏战损",
+          "AI 数字分身",
+          "交付说明",
+          "绩效承诺",
+          "招聘需求"
+        ],
+        "contentVersion": "late-work.graph.preview.2026-07-23.v2",
+        "approvalStatus": "source-reviewed"
+      },
+      "late-work.q.weekend-accountability": {
+        "id": "late-work.q.weekend-accountability",
+        "routeId": "late-work",
+        "stage": 4,
+        "prompt": "周一，组长单独找你：周末项目群一直联系不上你，临时修改最后是别人接的。以后再遇到这种情况，你准备怎么处理？ 你怎么回答？",
+        "sourceRefs": [
+          "LW-S02",
+          "LW-S03",
+          "LW-S04"
+        ],
+        "options": [
+          {
+            "id": "late-work.q.weekend-accountability.option.take-back",
+            "label": "周末确实没看手机，抱歉。这个项目后面我接回来，剩下的我来收尾。",
+            "intent": "boundary",
+            "stateTags": [
+              "normal",
+              "response-given",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S02",
+              "LW-S03",
+              "LW-S04"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "boundary": 1
+            },
+            "signatureFlags": [],
+            "evidence": "周末确实没看手机，抱歉。这个项目后面我接回来，剩下的我来收尾。",
+            "consequence": {
+              "id": "late-work.q.weekend-accountability.option.take-back.consequence",
+              "action": "组长把项目重新交回你，并问你能不能在这个月临时负责周末突发事项",
+              "npcReaction": "组长把项目重新交回你，并问你能不能在这个月临时负责周末突发事项",
+              "visibleStateChange": "组长把项目重新交回你，并问你能不能在这个月临时负责周末突发事项 组长把项目重新交回你，并问你能不能在这个月临时负责周末突发事项",
+              "nextNodeId": "late-work.q.support-request"
+            }
+          },
+          {
+            "id": "late-work.q.weekend-accountability.option.formal-overtime",
+            "label": "突发情况我可以临时接，但如果确定周末要做，就提前说并走加班申请。",
+            "intent": "strategy",
+            "stateTags": [
+              "strategy",
+              "formal-boundary",
+              "response-given"
+            ],
+            "sourceRefs": [
+              "LW-S02",
+              "LW-S03",
+              "LW-S04"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "strategy": 1
+            },
+            "signatureFlags": [],
+            "evidence": "突发情况我可以临时接，但如果确定周末要做，就提前说并走加班申请。",
+            "consequence": {
+              "id": "late-work.q.weekend-accountability.option.formal-overtime.consequence",
+              "action": "组长接受这个条件，随后问你这个月能不能先临时帮忙",
+              "npcReaction": "组长接受这个条件，随后问你这个月能不能先临时帮忙",
+              "visibleStateChange": "组长接受这个条件，随后问你这个月能不能先临时帮忙 组长接受这个条件，随后问你这个月能不能先临时帮忙",
+              "nextNodeId": "late-work.q.support-request"
+            }
+          },
+          {
+            "id": "late-work.q.weekend-accountability.option.refuse-weekend",
+            "label": "周末的工作我不接，我只能处理正常工作时间内的任务。",
+            "intent": "normal",
+            "stateTags": [
+              "boundary",
+              "hard-refusal",
+              "no-service-yet"
+            ],
+            "sourceRefs": [
+              "LW-S02",
+              "LW-S03",
+              "LW-S04"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "normal": 1
+            },
+            "signatureFlags": [],
+            "evidence": "周末的工作我不接，我只能处理正常工作时间内的任务。",
+            "consequence": {
+              "id": "late-work.q.weekend-accountability.option.refuse-weekend.consequence",
+              "action": "组长没有继续争论，只问你是否愿意承担其他长期项目",
+              "npcReaction": "组长没有继续争论，只问你是否愿意承担其他长期项目",
+              "visibleStateChange": "组长没有继续争论，只问你是否愿意承担其他长期项目 组长没有继续争论，只问你是否愿意承担其他长期项目",
+              "nextNodeId": "late-work.q.support-request"
+            }
+          },
+          {
+            "id": "late-work.q.weekend-accountability.option.hidden-ai",
+            "label": "明面上答应以后及时处理，实际上准备让隐藏数字分身代班，自己照常过周末",
+            "intent": "absurd",
+            "stateTags": [
+              "absurd",
+              "ai-hidden",
+              "ai-output",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S02",
+              "LW-S03",
+              "LW-S04"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "absurd": 1
+            },
+            "signatureFlags": [
+              "consistent-absurd"
+            ],
+            "evidence": "明面上答应以后及时处理，实际上准备让隐藏数字分身代班，自己照常过周末",
+            "consequence": {
+              "id": "late-work.q.weekend-accountability.option.hidden-ai.consequence",
+              "action": "组长只听见你答应了。",
+              "npcReaction": "数字分身的周末任务列表悄悄多出一行",
+              "visibleStateChange": "组长只听见你答应了。 数字分身的周末任务列表悄悄多出一行",
+              "nextNodeId": "late-work.q.support-request"
+            }
+          }
+        ],
+        "sceneObjects": [
+          "好友群",
+          "奶茶红包",
+          "项目群通知",
+          "游戏战损",
+          "AI 数字分身",
+          "交付说明",
+          "绩效承诺",
+          "招聘需求"
+        ],
+        "contentVersion": "late-work.graph.preview.2026-07-23.v2",
+        "approvalStatus": "source-reviewed"
+      },
+      "late-work.q.ai-incident": {
+        "id": "late-work.q.ai-incident",
+        "routeId": "late-work",
+        "stage": 4,
+        "prompt": "周一复盘会上，组长直接问你：客户发现交付文件里有一个关键金额算错了，已经影响了内部审批。这是你负责的任务，为什么这么简单的地方也会出错？ 你怎么回答？",
+        "sourceRefs": [
+          "LW-S06",
+          "LW-S08"
+        ],
+        "options": [
+          {
+            "id": "late-work.q.ai-incident.option.own-missed-check",
+            "label": "是我核对的时候漏了这个细节。我现在把所有金额重新过一遍，会后发修正版。",
+            "intent": "normal",
+            "stateTags": [
+              "normal",
+              "ai-hidden",
+              "ai-error",
+              "responsibility-owned"
+            ],
+            "sourceRefs": [
+              "LW-S06",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "normal": 1
+            },
+            "signatureFlags": [],
+            "evidence": "是我核对的时候漏了这个细节。我现在把所有金额重新过一遍，会后发修正版。",
+            "consequence": {
+              "id": "late-work.q.ai-incident.option.own-missed-check.consequence",
+              "action": "组长让你当天完成全面复核，并要求以后增加检查步骤",
+              "npcReaction": "组长让你当天完成全面复核，并要求以后增加检查步骤",
+              "visibleStateChange": "组长让你当天完成全面复核，并要求以后增加检查步骤 组长让你当天完成全面复核，并要求以后增加检查步骤",
+              "nextNodeId": "late-work.q.ai-governance"
+            }
+          },
+          {
+            "id": "late-work.q.ai-incident.option.admit-ai",
+            "label": "因为我想尽快交付，所以用 AI 完成了部分工作，但提交前没有仔细审核它的产出，才导致这个细节出了问题。责任在我，我现在重新核对。",
+            "intent": "boundary",
+            "stateTags": [
+              "strategy",
+              "ai-disclosed",
+              "ai-error",
+              "responsibility-owned"
+            ],
+            "sourceRefs": [
+              "LW-S06",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "boundary": 1
+            },
+            "signatureFlags": [],
+            "evidence": "因为我想尽快交付，所以用 AI 完成了部分工作，但提交前没有仔细审核它的产出，才导致这个细节出了问题。责任在我，我现在重新核对。",
+            "consequence": {
+              "id": "late-work.q.ai-incident.option.admit-ai.consequence",
+              "action": "组长第一次知道你使用了 AI，并要求你给出后续质量规则",
+              "npcReaction": "组长第一次知道你使用了 AI，并要求你给出后续质量规则",
+              "visibleStateChange": "组长第一次知道你使用了 AI，并要求你给出后续质量规则 组长第一次知道你使用了 AI，并要求你给出后续质量规则",
+              "nextNodeId": "late-work.q.ai-governance"
+            }
+          },
+          {
+            "id": "late-work.q.ai-incident.option.weekend-pushback",
+            "label": "确实是我搞错了。但我之前就说过周末临时赶工效率会受影响，这种时间下没法保证每个细节都不出问题。",
+            "intent": "boundary",
+            "stateTags": [
+              "boundary",
+              "ai-hidden",
+              "ai-error",
+              "weekend-pushback"
+            ],
+            "sourceRefs": [
+              "LW-S06",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "boundary": 1
+            },
+            "signatureFlags": [],
+            "evidence": "确实是我搞错了。但我之前就说过周末临时赶工效率会受影响，这种时间下没法保证每个细节都不出问题。",
+            "consequence": {
+              "id": "late-work.q.ai-incident.option.weekend-pushback.consequence",
+              "action": "会议室安静了几秒。",
+              "npcReaction": "组长仍让你修正，同时要求以后把风险提前说清楚",
+              "visibleStateChange": "会议室安静了几秒。 组长仍让你修正，同时要求以后把风险提前说清楚",
+              "nextNodeId": "late-work.q.ai-governance"
+            }
+          }
+        ],
+        "sceneObjects": [
+          "好友群",
+          "奶茶红包",
+          "项目群通知",
+          "游戏战损",
+          "AI 数字分身",
+          "交付说明",
+          "绩效承诺",
+          "招聘需求"
+        ],
+        "contentVersion": "late-work.graph.preview.2026-07-23.v2",
+        "approvalStatus": "source-reviewed"
+      },
+      "late-work.q.method-request": {
+        "id": "late-work.q.method-request",
+        "routeId": "late-work",
+        "stage": 5,
+        "prompt": "组长希望把你的 AI 工作方式推广到全组，让你交出可复制的方法。你准备交到什么程度？",
+        "sourceRefs": [
+          "LW-S05",
+          "LW-S08"
+        ],
+        "options": [
+          {
+            "id": "late-work.q.method-request.option.full-handover",
+            "label": "可以，我把完整配置、模板和工作流程都整理给大家。",
+            "intent": "boundary",
+            "stateTags": [
+              "normal",
+              "ai-disclosed",
+              "ai-handed-over",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S05",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "boundary": 1
+            },
+            "signatureFlags": [],
+            "evidence": "可以，我把完整配置、模板和工作流程都整理给大家。",
+            "consequence": {
+              "id": "late-work.q.method-request.option.full-handover.consequence",
+              "action": "全套系统进入公司共享空间，数字分身开始被当作可复用产能",
+              "npcReaction": "全套系统进入公司共享空间，数字分身开始被当作可复用产能",
+              "visibleStateChange": "全套系统进入公司共享空间，数字分身开始被当作可复用产能 全套系统进入公司共享空间，数字分身开始被当作可复用产能",
+              "nextNodeId": "late-work.q.three-projects"
+            }
+          },
+          {
+            "id": "late-work.q.method-request.option.looks-complete",
+            "label": "`可以，我会把完整流程、模板和配置都整理给大家。` 实际交出的内容看起来完整，但你的个人账号、长期记忆和自动处理权限仍留在自己手里",
+            "intent": "strategy",
+            "stateTags": [
+              "strategy",
+              "ai-hidden",
+              "looks-complete",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S05",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "strategy": 1
+            },
+            "signatureFlags": [],
+            "evidence": "`可以，我会把完整流程、模板和配置都整理给大家。` 实际交出的内容看起来完整，但你的个人账号、长期记忆和自动处理权限仍留在自己手里",
+            "consequence": {
+              "id": "late-work.q.method-request.option.looks-complete.consequence",
+              "action": "组长拿到一套能跑的流程，却没有拿到真正会长期进化的那个你",
+              "npcReaction": "组长拿到一套能跑的流程，却没有拿到真正会长期进化的那个你",
+              "visibleStateChange": "组长拿到一套能跑的流程，却没有拿到真正会长期进化的那个你 组长拿到一套能跑的流程，却没有拿到真正会长期进化的那个你",
+              "nextNodeId": "late-work.q.three-projects"
+            }
+          },
+          {
+            "id": "late-work.q.method-request.option.refuse-system",
+            "label": "公开方法可以讲，但这套完整系统是我自己长期搭的，我不打算直接交出去。",
+            "intent": "boundary",
+            "stateTags": [
+              "boundary",
+              "ai-hidden",
+              "system-protected",
+              "response-given"
+            ],
+            "sourceRefs": [
+              "LW-S05",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "boundary": 1
+            },
+            "signatureFlags": [],
+            "evidence": "公开方法可以讲，但这套完整系统是我自己长期搭的，我不打算直接交出去。",
+            "consequence": {
+              "id": "late-work.q.method-request.option.refuse-system.consequence",
+              "action": "组长没有拿到系统，只保留了公开方法说明",
+              "npcReaction": "组长没有拿到系统，只保留了公开方法说明",
+              "visibleStateChange": "组长没有拿到系统，只保留了公开方法说明 组长没有拿到系统，只保留了公开方法说明",
+              "nextNodeId": "late-work.q.three-projects"
+            }
+          },
+          {
+            "id": "late-work.q.method-request.option.negotiate-role-pay",
+            "label": "如果公司要长期推广、培训和维护，我希望先把负责范围、奖金和调薪谈清楚。",
+            "intent": "strategy",
+            "stateTags": [
+              "strategy",
+              "ai-hidden",
+              "pay-negotiation",
+              "priority-control"
+            ],
+            "sourceRefs": [
+              "LW-S05",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "strategy": 1
+            },
+            "signatureFlags": [],
+            "evidence": "如果公司要长期推广、培训和维护，我希望先把负责范围、奖金和调薪谈清楚。",
+            "consequence": {
+              "id": "late-work.q.method-request.option.negotiate-role-pay.consequence",
+              "action": "组长说先做出成绩再谈，并表示会尽量帮你争取最大利益",
+              "npcReaction": "组长说先做出成绩再谈，并表示会尽量帮你争取最大利益",
+              "visibleStateChange": "组长说先做出成绩再谈，并表示会尽量帮你争取最大利益 组长说先做出成绩再谈，并表示会尽量帮你争取最大利益",
+              "nextNodeId": "late-work.q.three-projects"
+            }
+          },
+          {
+            "id": "late-work.q.method-request.option.digital-twin-meeting",
+            "label": "让数字分身自己进入会议：`完整复刻版按年授权。复刻本人情绪劳动，另行计价。`",
+            "intent": "absurd",
+            "stateTags": [
+              "absurd",
+              "ai-disclosed",
+              "ai-public",
+              "pay-negotiation"
+            ],
+            "sourceRefs": [
+              "LW-S05",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "absurd": 1
+            },
+            "signatureFlags": [
+              "consistent-absurd"
+            ],
+            "evidence": "让数字分身自己进入会议：`完整复刻版按年授权。复刻本人情绪劳动，另行计价。`",
+            "consequence": {
+              "id": "late-work.q.method-request.option.digital-twin-meeting.consequence",
+              "action": "会议第一次发现这套系统会自己报价。",
+              "npcReaction": "组长把授权问题记进待讨论清单",
+              "visibleStateChange": "会议第一次发现这套系统会自己报价。 组长把授权问题记进待讨论清单",
+              "nextNodeId": "late-work.q.three-projects"
+            }
+          }
+        ],
+        "sceneObjects": [
+          "好友群",
+          "奶茶红包",
+          "项目群通知",
+          "游戏战损",
+          "AI 数字分身",
+          "交付说明",
+          "绩效承诺",
+          "招聘需求"
+        ],
+        "contentVersion": "late-work.graph.preview.2026-07-23.v2",
+        "approvalStatus": "source-reviewed"
+      },
+      "late-work.q.workflow-request": {
+        "id": "late-work.q.workflow-request",
+        "routeId": "late-work",
+        "stage": 5,
+        "prompt": "组长希望把你的做事方法整理成全组流程。你准备怎么交？",
+        "sourceRefs": [
+          "LW-S07"
+        ],
+        "options": [
+          {
+            "id": "late-work.q.workflow-request.option.share-all",
+            "label": "把真实流程、模板和检查步骤全部整理出来",
+            "intent": "strategy",
+            "stateTags": [
+              "normal",
+              "workflow-shared",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S07"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "strategy": 1
+            },
+            "signatureFlags": [],
+            "evidence": "把真实流程、模板和检查步骤全部整理出来",
+            "consequence": {
+              "id": "late-work.q.workflow-request.option.share-all.consequence",
+              "action": "组长把流程放进共享空间，并开始考虑把更多项目交给你",
+              "npcReaction": "组长把流程放进共享空间，并开始考虑把更多项目交给你",
+              "visibleStateChange": "组长把流程放进共享空间，并开始考虑把更多项目交给你 组长把流程放进共享空间，并开始考虑把更多项目交给你",
+              "nextNodeId": "late-work.q.three-projects"
+            }
+          },
+          {
+            "id": "late-work.q.workflow-request.option.da-vinci",
+            "label": "文档里每句话都是真的，但关键步骤仍按错误顺序排列",
+            "intent": "absurd",
+            "stateTags": [
+              "absurd",
+              "da-vinci-order",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S07"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "absurd": 1
+            },
+            "signatureFlags": [
+              "consistent-absurd"
+            ],
+            "evidence": "文档里每句话都是真的，但关键步骤仍按错误顺序排列",
+            "consequence": {
+              "id": "late-work.q.workflow-request.option.da-vinci.consequence",
+              "action": "流程看起来完整，照着做的人却总会在第三步回到第一步",
+              "npcReaction": "流程看起来完整，照着做的人却总会在第三步回到第一步",
+              "visibleStateChange": "流程看起来完整，照着做的人却总会在第三步回到第一步 流程看起来完整，照着做的人却总会在第三步回到第一步",
+              "nextNodeId": "late-work.q.three-projects"
+            }
+          },
+          {
+            "id": "late-work.q.workflow-request.option.refuse",
+            "label": "经验可以口头交流，但完整流程我暂时不方便整理。",
+            "intent": "normal",
+            "stateTags": [
+              "boundary",
+              "system-protected",
+              "response-given"
+            ],
+            "sourceRefs": [
+              "LW-S07"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "normal": 1
+            },
+            "signatureFlags": [],
+            "evidence": "经验可以口头交流，但完整流程我暂时不方便整理。",
+            "consequence": {
+              "id": "late-work.q.workflow-request.option.refuse.consequence",
+              "action": "组长没有拿到完整方法，转而把注意力放到你能不能多带项目上",
+              "npcReaction": "组长没有拿到完整方法，转而把注意力放到你能不能多带项目上",
+              "visibleStateChange": "组长没有拿到完整方法，转而把注意力放到你能不能多带项目上 组长没有拿到完整方法，转而把注意力放到你能不能多带项目上",
+              "nextNodeId": "late-work.q.three-projects"
+            }
+          },
+          {
+            "id": "late-work.q.workflow-request.option.negotiate-role-pay",
+            "label": "如果要我长期负责流程推广和培训，能不能先把奖金、绩效或者调薪谈清楚？",
+            "intent": "boundary",
+            "stateTags": [
+              "strategy",
+              "pay-negotiation",
+              "priority-control"
+            ],
+            "sourceRefs": [
+              "LW-S07"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "boundary": 1
+            },
+            "signatureFlags": [],
+            "evidence": "如果要我长期负责流程推广和培训，能不能先把奖金、绩效或者调薪谈清楚？",
+            "consequence": {
+              "id": "late-work.q.workflow-request.option.negotiate-role-pay.consequence",
+              "action": "组长表示会争取，但希望你先把新项目做出成绩",
+              "npcReaction": "组长表示会争取，但希望你先把新项目做出成绩",
+              "visibleStateChange": "组长表示会争取，但希望你先把新项目做出成绩 组长表示会争取，但希望你先把新项目做出成绩",
+              "nextNodeId": "late-work.q.three-projects"
+            }
+          }
+        ],
+        "sceneObjects": [
+          "好友群",
+          "奶茶红包",
+          "项目群通知",
+          "游戏战损",
+          "AI 数字分身",
+          "交付说明",
+          "绩效承诺",
+          "招聘需求"
+        ],
+        "contentVersion": "late-work.graph.preview.2026-07-23.v2",
+        "approvalStatus": "source-reviewed"
+      },
+      "late-work.q.support-request": {
+        "id": "late-work.q.support-request",
+        "routeId": "late-work",
+        "stage": 5,
+        "prompt": "组长说：这个月项目容易临时改，你能不能先负责周末的突发情况？如果后面真出了成绩，绩效奖励这些我会帮你争取。 你怎么答？",
+        "sourceRefs": [
+          "LW-S02",
+          "LW-S03",
+          "LW-S04"
+        ],
+        "options": [
+          {
+            "id": "late-work.q.support-request.option.long-accept",
+            "label": "可以，这个月的突发情况都先找我。",
+            "intent": "normal",
+            "stateTags": [
+              "normal",
+              "work-all",
+              "service-provided",
+              "promise-performance"
+            ],
+            "sourceRefs": [
+              "LW-S02",
+              "LW-S03",
+              "LW-S04"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "normal": 1
+            },
+            "signatureFlags": [],
+            "evidence": "可以，这个月的突发情况都先找我。",
+            "consequence": {
+              "id": "late-work.q.support-request.option.long-accept.consequence",
+              "action": "你的名字被写进整月临时联系人，周末消息默认先落到你这里",
+              "npcReaction": "你的名字被写进整月临时联系人，周末消息默认先落到你这里",
+              "visibleStateChange": "你的名字被写进整月临时联系人，周末消息默认先落到你这里 你的名字被写进整月临时联系人，周末消息默认先落到你这里",
+              "nextNodeId": "late-work.q.three-projects"
+            }
+          },
+          {
+            "id": "late-work.q.support-request.option.temporary-only",
+            "label": "这个项目结束以前我可以先顶一下。但如果后面要长期这样安排，可能还是得找其他人。",
+            "intent": "boundary",
+            "stateTags": [
+              "strategy",
+              "time-boundary",
+              "service-provided",
+              "promise-performance"
+            ],
+            "sourceRefs": [
+              "LW-S02",
+              "LW-S03",
+              "LW-S04"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "boundary": 1
+            },
+            "signatureFlags": [],
+            "evidence": "这个项目结束以前我可以先顶一下。但如果后面要长期这样安排，可能还是得找其他人。",
+            "consequence": {
+              "id": "late-work.q.support-request.option.temporary-only.consequence",
+              "action": "组长把你的承接范围写到当前项目结束，不再自动续期",
+              "npcReaction": "组长把你的承接范围写到当前项目结束，不再自动续期",
+              "visibleStateChange": "组长把你的承接范围写到当前项目结束，不再自动续期 组长把你的承接范围写到当前项目结束，不再自动续期",
+              "nextNodeId": "late-work.q.three-projects"
+            }
+          },
+          {
+            "id": "late-work.q.support-request.option.refuse",
+            "label": "我周末确实没法长期接这些突发情况，您还是安排其他人吧。",
+            "intent": "strategy",
+            "stateTags": [
+              "boundary",
+              "hard-refusal",
+              "no-service-yet"
+            ],
+            "sourceRefs": [
+              "LW-S02",
+              "LW-S03",
+              "LW-S04"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "strategy": 1
+            },
+            "signatureFlags": [],
+            "evidence": "我周末确实没法长期接这些突发情况，您还是安排其他人吧。",
+            "consequence": {
+              "id": "late-work.q.support-request.option.refuse.consequence",
+              "action": "组长把周末支援留空，转而问你是否愿意多接三个长期项目",
+              "npcReaction": "组长把周末支援留空，转而问你是否愿意多接三个长期项目",
+              "visibleStateChange": "组长把周末支援留空，转而问你是否愿意多接三个长期项目 组长把周末支援留空，转而问你是否愿意多接三个长期项目",
+              "nextNodeId": "late-work.q.three-projects"
+            }
+          },
+          {
+            "id": "late-work.q.support-request.option.hidden-ai",
+            "label": "`可以，这个月先由我负责。` 你明面上接下，实际把共享目录和临时资料交给隐藏数字分身，自己照常过周末",
+            "intent": "absurd",
+            "stateTags": [
+              "absurd",
+              "ai-hidden",
+              "ai-output",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S02",
+              "LW-S03",
+              "LW-S04"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "absurd": 1
+            },
+            "signatureFlags": [
+              "consistent-absurd"
+            ],
+            "evidence": "`可以，这个月先由我负责。` 你明面上接下，实际把共享目录和临时资料交给隐藏数字分身，自己照常过周末",
+            "consequence": {
+              "id": "late-work.q.support-request.option.hidden-ai.consequence",
+              "action": "组长把你列为联系人，真正值班的却是电脑里的另一个你",
+              "npcReaction": "组长把你列为联系人，真正值班的却是电脑里的另一个你",
+              "visibleStateChange": "组长把你列为联系人，真正值班的却是电脑里的另一个你 组长把你列为联系人，真正值班的却是电脑里的另一个你",
+              "nextNodeId": "late-work.q.three-projects"
+            }
+          }
+        ],
+        "sceneObjects": [
+          "好友群",
+          "奶茶红包",
+          "项目群通知",
+          "游戏战损",
+          "AI 数字分身",
+          "交付说明",
+          "绩效承诺",
+          "招聘需求"
+        ],
+        "contentVersion": "late-work.graph.preview.2026-07-23.v2",
+        "approvalStatus": "source-reviewed"
+      },
+      "late-work.q.ai-governance": {
+        "id": "late-work.q.ai-governance",
+        "routeId": "late-work",
+        "stage": 5,
+        "prompt": "金额错误修正以后，组长要求你留下一个防止类似事故再次发生的办法。你准备承担到什么程度？",
+        "sourceRefs": [
+          "LW-S05",
+          "LW-S06",
+          "LW-S08"
+        ],
+        "options": [
+          {
+            "id": "late-work.q.ai-governance.option.take-responsibility",
+            "label": "以后这类文件都由我做最后核对，出了问题我负责。",
+            "intent": "boundary",
+            "stateTags": [
+              "normal",
+              "work-all",
+              "responsibility-owned",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S05",
+              "LW-S06",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "boundary": 1
+            },
+            "signatureFlags": [],
+            "evidence": "以后这类文件都由我做最后核对，出了问题我负责。",
+            "consequence": {
+              "id": "late-work.q.ai-governance.option.take-responsibility.consequence",
+              "action": "你成了所有 AI 文件的最终检查人，检查任务也一起增长",
+              "npcReaction": "你成了所有 AI 文件的最终检查人，检查任务也一起增长",
+              "visibleStateChange": "你成了所有 AI 文件的最终检查人，检查任务也一起增长 你成了所有 AI 文件的最终检查人，检查任务也一起增长",
+              "nextNodeId": "late-work.q.three-projects"
+            }
+          },
+          {
+            "id": "late-work.q.ai-governance.option.one-time-checklist",
+            "label": "我可以把金额、日期和关键结论做成检查清单，教大家用一次；后面谁提交谁核对。",
+            "intent": "normal",
+            "stateTags": [
+              "strategy",
+              "priority-control",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S05",
+              "LW-S06",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "normal": 1
+            },
+            "signatureFlags": [],
+            "evidence": "我可以把金额、日期和关键结论做成检查清单，教大家用一次；后面谁提交谁核对。",
+            "consequence": {
+              "id": "late-work.q.ai-governance.option.one-time-checklist.consequence",
+              "action": "检查清单进入共享空间，责任仍留在每个提交人名下",
+              "npcReaction": "检查清单进入共享空间，责任仍留在每个提交人名下",
+              "visibleStateChange": "检查清单进入共享空间，责任仍留在每个提交人名下 检查清单进入共享空间，责任仍留在每个提交人名下",
+              "nextNodeId": "late-work.q.three-projects"
+            }
+          },
+          {
+            "id": "late-work.q.ai-governance.option.refuse-governance",
+            "label": "这次错误我负责修，但我没法长期替所有人的 AI 产出兜底。",
+            "intent": "strategy",
+            "stateTags": [
+              "boundary",
+              "formal-boundary",
+              "response-given"
+            ],
+            "sourceRefs": [
+              "LW-S05",
+              "LW-S06",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "strategy": 1
+            },
+            "signatureFlags": [],
+            "evidence": "这次错误我负责修，但我没法长期替所有人的 AI 产出兜底。",
+            "consequence": {
+              "id": "late-work.q.ai-governance.option.refuse-governance.consequence",
+              "action": "组长保留了你的修正版，没有把全组审核永久挂到你名下",
+              "npcReaction": "组长保留了你的修正版，没有把全组审核永久挂到你名下",
+              "visibleStateChange": "组长保留了你的修正版，没有把全组审核永久挂到你名下 组长保留了你的修正版，没有把全组审核永久挂到你名下",
+              "nextNodeId": "late-work.q.three-projects"
+            }
+          },
+          {
+            "id": "late-work.q.ai-governance.option.ai-writes-rules",
+            "label": "让数字分身写一份《如何防止数字分身再次算错》的制度，再由你人工核对后发布",
+            "intent": "absurd",
+            "stateTags": [
+              "absurd",
+              "ai-disclosed",
+              "ai-reviewed",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S05",
+              "LW-S06",
+              "LW-S08"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "absurd": 1
+            },
+            "signatureFlags": [
+              "consistent-absurd"
+            ],
+            "evidence": "让数字分身写一份《如何防止数字分身再次算错》的制度，再由你人工核对后发布",
+            "consequence": {
+              "id": "late-work.q.ai-governance.option.ai-writes-rules.consequence",
+              "action": "数字分身第一次给自己写操作规程，第一条就是`关键金额必须由真人复核`",
+              "npcReaction": "数字分身第一次给自己写操作规程，第一条就是`关键金额必须由真人复核`",
+              "visibleStateChange": "数字分身第一次给自己写操作规程，第一条就是`关键金额必须由真人复核` 数字分身第一次给自己写操作规程，第一条就是`关键金额必须由真人复核`",
+              "nextNodeId": "late-work.q.three-projects"
+            }
+          }
+        ],
+        "sceneObjects": [
+          "好友群",
+          "奶茶红包",
+          "项目群通知",
+          "游戏战损",
+          "AI 数字分身",
+          "交付说明",
+          "绩效承诺",
+          "招聘需求"
+        ],
+        "contentVersion": "late-work.graph.preview.2026-07-23.v2",
+        "approvalStatus": "source-reviewed"
+      },
+      "late-work.q.three-projects": {
+        "id": "late-work.q.three-projects",
+        "routeId": "late-work",
+        "stage": 6,
+        "prompt": "月底，组长把三个长期项目推到你面前：现在人手紧，你先帮忙顶一下。调薪申请还在走流程。你先把这三个项目做出成绩，后面我也更好帮你争取。这三个项目要是做成了，我会尽量帮你争取最大利益，调薪、奖金和后面的安排都一起往上提。 你怎么接？",
+        "sourceRefs": [
+          "LW-S01",
+          "LW-S02",
+          "LW-S07"
+        ],
+        "options": [
+          {
+            "id": "late-work.q.three-projects.option.accept-three",
+            "label": "可以，以后这三个项目都交给我。",
+            "intent": "normal",
+            "stateTags": [
+              "normal",
+              "work-all",
+              "accept-three",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S01",
+              "LW-S02",
+              "LW-S07"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "normal": 1
+            },
+            "signatureFlags": [],
+            "evidence": "可以，以后这三个项目都交给我。",
+            "consequence": {
+              "id": "late-work.q.three-projects.option.accept-three.consequence",
+              "action": "三个项目一起搬进你的工位。",
+              "npcReaction": "结算单显示：加班申请已补录；调休审批中；绩效备注已填写；绩效加分 0；调薪进入下轮预算",
+              "visibleStateChange": "三个项目一起搬进你的工位。 结算单显示：加班申请已补录；调休审批中；绩效备注已填写；绩效加分 0；调薪进入下轮预算",
+              "nextNodeId": "result"
+            }
+          },
+          {
+            "id": "late-work.q.three-projects.option.proxy-month",
+            "label": "我可以先顶一个月，但我手上原来的工作也得做。这个月结束以后，我们再重新对一下后面怎么安排。",
+            "intent": "boundary",
+            "stateTags": [
+              "strategy",
+              "time-boundary",
+              "priority-control",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S01",
+              "LW-S02",
+              "LW-S07"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "boundary": 1
+            },
+            "signatureFlags": [],
+            "evidence": "我可以先顶一个月，但我手上原来的工作也得做。这个月结束以后，我们再重新对一下后面怎么安排。",
+            "consequence": {
+              "id": "late-work.q.three-projects.option.proxy-month.consequence",
+              "action": "负责人一栏写上`暂代`。",
+              "npcReaction": "一个月后，三个项目和你原来的工作都还在，调薪仍显示下轮预算",
+              "visibleStateChange": "负责人一栏写上`暂代`。 一个月后，三个项目和你原来的工作都还在，调薪仍显示下轮预算",
+              "nextNodeId": "result"
+            }
+          },
+          {
+            "id": "late-work.q.three-projects.option.refuse-three",
+            "label": "我这边实在抽不开身，这三个长期项目我接不了。",
+            "intent": "boundary",
+            "stateTags": [
+              "boundary",
+              "hard-refusal",
+              "no-service-yet"
+            ],
+            "sourceRefs": [
+              "LW-S01",
+              "LW-S02",
+              "LW-S07"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "boundary": 1
+            },
+            "signatureFlags": [],
+            "evidence": "我这边实在抽不开身，这三个长期项目我接不了。",
+            "consequence": {
+              "id": "late-work.q.three-projects.option.refuse-three.consequence",
+              "action": "三个项目停在待分配区。",
+              "npcReaction": "你保留现有工作，也没有拿到新的绩效承诺",
+              "visibleStateChange": "三个项目停在待分配区。 你保留现有工作，也没有拿到新的绩效承诺",
+              "nextNodeId": "result"
+            }
+          },
+          {
+            "id": "late-work.q.three-projects.option.hidden-ai",
+            "label": "明面上把三个项目接下来，实际全部加入隐藏数字分身的夜班任务列表",
+            "intent": "absurd",
+            "stateTags": [
+              "absurd",
+              "ai-hidden",
+              "ai-output",
+              "accept-three",
+              "service-provided"
+            ],
+            "sourceRefs": [
+              "LW-S01",
+              "LW-S02",
+              "LW-S07"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "absurd": 1
+            },
+            "signatureFlags": [
+              "consistent-absurd"
+            ],
+            "evidence": "明面上把三个项目接下来，实际全部加入隐藏数字分身的夜班任务列表",
+            "consequence": {
+              "id": "late-work.q.three-projects.option.hidden-ai.consequence",
+              "action": "你的名字挂在三个项目上，数字分身悄悄开始夜班。",
+              "npcReaction": "绩效备注写了你的名字，真正干活的人仍没有工号",
+              "visibleStateChange": "你的名字挂在三个项目上，数字分身悄悄开始夜班。 绩效备注写了你的名字，真正干活的人仍没有工号",
+              "nextNodeId": "result"
+            }
+          },
+          {
+            "id": "late-work.q.three-projects.option.hire-three",
+            "label": "你当场写出三份招聘需求：`三个项目可以接，先给它们各配一个负责人。`",
+            "intent": "strategy",
+            "stateTags": [
+              "strategy",
+              "priority-control",
+              "hire-team",
+              "response-given"
+            ],
+            "sourceRefs": [
+              "LW-S01",
+              "LW-S02",
+              "LW-S07"
+            ],
+            "requiresConfirmation": true,
+            "scoreEffects": {
+              "strategy": 1
+            },
+            "signatureFlags": [],
+            "evidence": "你当场写出三份招聘需求：`三个项目可以接，先给它们各配一个负责人。`",
+            "consequence": {
+              "id": "late-work.q.three-projects.option.hire-three.consequence",
+              "action": "三份招聘需求摆上桌。",
+              "npcReaction": "组长说现在没有编制，让你先顶；你把需求原封不动推回去，等人到岗再开工",
+              "visibleStateChange": "三份招聘需求摆上桌。 组长说现在没有编制，让你先顶；你把需求原封不动推回去，等人到岗再开工",
               "nextNodeId": "result"
             }
           }
         ],
         "sceneObjects": [
-          "预算表",
-          "PPT 版本",
-          "数据口径",
-          "群聊确认",
-          "附件",
-          "工时记录"
+          "好友群",
+          "奶茶红包",
+          "项目群通知",
+          "游戏战损",
+          "AI 数字分身",
+          "交付说明",
+          "绩效承诺",
+          "招聘需求"
         ],
-        "contentVersion": "late-work.graph.preview.2026-07-22.v1",
+        "contentVersion": "late-work.graph.preview.2026-07-23.v2",
         "approvalStatus": "source-reviewed"
       }
     },
     "canonicalPath": [
-      "late-work.q.open-1743.option.accept",
-      "late-work.q.scope-accepted.option.logic-first",
-      "late-work.q.version-client.option.source-layer",
-      "late-work.q.metric-owner.option.name-owner",
-      "late-work.q.client-source.option.attach-proof",
-      "late-work.q.rule-next-time.option.priority-owner"
+      "late-work.q.friday-request.option.accept-all",
+      "late-work.q.at-1958-working.option.accept-all",
+      "late-work.q.saturday-0906.option.digital-twin-sleep",
+      "late-work.q.monday-share.option.claim-own",
+      "late-work.q.method-request.option.looks-complete",
+      "late-work.q.three-projects.option.accept-three"
     ]
   },
   "revived-friend": {

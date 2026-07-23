@@ -310,7 +310,7 @@ a:focus-visible {
   right: 1%;
   bottom: 22%;
   left: 1%;
-  height: 50svh;
+  height: 54svh;
   display: grid;
   place-items: end center;
   filter:
@@ -462,12 +462,13 @@ a:focus-visible {
 
 .museum-gallery__preview-image {
   position: absolute;
-  inset: 7% 8% 7%;
-  width: 84%;
-  height: 86%;
+  inset: 4% 7% 6%;
+  width: 86%;
+  height: 90%;
   object-fit: contain;
-  object-position: center bottom;
-  opacity: 0.56;
+  object-position: center;
+  filter: drop-shadow(0 18px 24px rgb(0 0 0 / 0.48));
+  opacity: 0.94;
 }
 
 .museum-gallery__preview-image--locked {
@@ -1046,9 +1047,9 @@ a:focus-visible {
   }
 
   .museum-gallery__preview-image {
-    inset: 16% 16% 20%;
-    width: 68%;
-    height: 64%;
+    inset: 8% 12% 15%;
+    width: 76%;
+    height: 77%;
   }
 
   .museum-gallery__preview .museum-gallery__lock-icon {

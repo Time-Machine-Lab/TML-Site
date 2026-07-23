@@ -1,3 +1,5 @@
+import { possibleNextNodeIds, resolveNextNodeId } from "./route-transition.js";
+
 const REQUIRED_INTENTS = Object.freeze(["normal", "boundary", "strategy", "absurd"]);
 const TERMINAL_NODE_ID = "result";
 
@@ -33,8 +35,16 @@ function validateQuestion(route, question, consequenceIds) {
   requireTextList(question.sceneObjects, `question ${question.id} scene object`);
   requireTextList(question.sourceRefs, `question ${question.id} source reference`);
 
-  if (!Array.isArray(question.options) || question.options.length !== 4) {
-    fail(`question ${question.id} must have exactly four options`);
+  const usesFlexibleOptions = route.optionContract === "flexible-2-to-6";
+  if (
+    !Array.isArray(question.options)
+    || (usesFlexibleOptions
+      ? question.options.length < 2 || question.options.length > 6
+      : question.options.length !== 4)
+  ) {
+    fail(usesFlexibleOptions
+      ? `question ${question.id} must have two to six options`
+      : `question ${question.id} must have exactly four options`);
   }
 
   const optionIds = new Set();
@@ -74,7 +84,9 @@ function validateQuestion(route, question, consequenceIds) {
     consequenceIds.add(consequence.id);
   }
 
-  if (
+  if (usesFlexibleOptions) {
+    if (intents.size < 2) fail(`question ${question.id} must cover at least two distinct intents`);
+  } else if (
     intents.size !== REQUIRED_INTENTS.length
     || REQUIRED_INTENTS.some((intent) => !intents.has(intent))
   ) {
@@ -86,7 +98,7 @@ function tracePaths(route) {
   const paths = [];
   const reachableQuestions = new Set();
 
-  function visit(questionId, optionPath, nodePath, activeQuestions) {
+  function visit(questionId, optionPath, nodePath, activeQuestions, history) {
     if (questionId === TERMINAL_NODE_ID) {
       paths.push(Object.freeze({
         optionIds: Object.freeze([...optionPath]),
@@ -106,16 +118,29 @@ function tracePaths(route) {
     nextActive.add(questionId);
     for (const option of question.options) {
       const consequence = option.consequence;
-      visit(
-        consequence.nextNodeId,
-        [...optionPath, option.id],
-        [...nodePath, questionId, consequence.id],
-        nextActive,
-      );
+      const nextHistory = [...history, {
+        questionId,
+        optionId: option.id,
+        stateTags: [...(option.stateTags ?? [])],
+        signatureFlags: [...(option.signatureFlags ?? [])],
+      }];
+      const nextNodeIds = possibleNextNodeIds(route, {
+        history: nextHistory,
+        defaultNextNodeId: consequence.nextNodeId,
+      });
+      for (const nextNodeId of nextNodeIds) {
+        visit(
+          nextNodeId,
+          [...optionPath, option.id],
+          [...nodePath, questionId, consequence.id],
+          nextActive,
+          nextHistory,
+        );
+      }
     }
   }
 
-  visit(route.startNodeId, [], [], new Set());
+  visit(route.startNodeId, [], [], new Set(), []);
   return { paths, reachableQuestions };
 }
 
@@ -125,12 +150,23 @@ function validateCanonicalPath(route) {
   }
 
   let questionId = route.startNodeId;
+  const history = [];
   for (const optionId of route.canonicalPath) {
     const question = route.questions[questionId];
     if (!question) fail(`canonical path has dangling question ${questionId}`);
     const option = question.options.find((candidate) => candidate.id === optionId);
     if (!option) fail(`canonical path option ${optionId} is not reachable at ${questionId}`);
-    questionId = option.consequence.nextNodeId;
+    history.push({
+      questionId,
+      optionId: option.id,
+      stateTags: [...(option.stateTags ?? [])],
+      signatureFlags: [...(option.signatureFlags ?? [])],
+    });
+    questionId = resolveNextNodeId(route, {
+      history,
+      defaultNextNodeId: option.consequence.nextNodeId,
+      runSeed: `${route.id}:canonical`,
+    });
   }
   if (questionId !== TERMINAL_NODE_ID) fail(`canonical 6-question path does not resolve`);
 }

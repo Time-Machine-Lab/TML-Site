@@ -1,37 +1,49 @@
 import { CARD_MANIFEST } from "./card-manifest.js";
 
-const CONTENT_VERSION = "2026-07-22.preview.v1";
+const CONTENT_VERSION = "2026-07-23.preview.v2";
 
 const RESULT_COPY = Object.freeze({
   "late-work.ordinary.01": Object.freeze({
-    conclusion: "任务每加一层，你就把工位装修得更像家。",
-    coreSkill: "在连续加码中保持全盘承接",
-    sideEffect: "同事下班带包，你下班开始考虑工位软装。",
-    shareCopy: "别人加班攒首付，我加班直接喜提工位独栋。",
+    conclusion: "任务每加一层，你就给工位再添一件家具。",
+    coreSkill: "把临时加班稳定经营成长期居住",
+    sideEffect: "别人下班带包，你下班开始研究工位软装。",
+    shareCopy: "别人加班攒首付，我先喜提一套工位别墅。",
   }),
   "late-work.ordinary.02": Object.freeze({
-    conclusion: "领导刚问周末有没有空，你已经背着露营包走出公司。",
-    coreSkill: "持续保护已经排好的周末",
-    sideEffect: "“有空”两个字一出现，行程会自动加载。",
-    shareCopy: "周末有空吗？不好意思，蛙已经在去没信号的地方了。",
+    conclusion: "你不是不干，你只是要求每个“都急”先领号码牌。",
+    coreSkill: "把优先级、人手和回报重新交给派活的人决定",
+    sideEffect: "口头画过的饼靠近你，会自动生成催收日期。",
+    shareCopy: "活可以接，先让三个最高优先级排个队。",
   }),
   "late-work.ordinary.03": Object.freeze({
-    conclusion: "你不替所有“都急”背锅，先让派活的人决定先后。",
-    coreSkill: "把隐形冲突摆到同一张桌上",
-    sideEffect: "任何待办靠近你都会自动长出优先级。",
-    shareCopy: "我的超能力：让两个“最急”当面排队。",
+    conclusion: "工作可以晚点。不撤离，就亏三百万战损。",
+    coreSkill: "先保住本局，再处理锁屏外的世界",
+    sideEffect: "所有临时任务都会先收到一张战损拒赔单。",
+    shareCopy: "工作可以晚点。不撤离，就亏三百万战损。",
   }),
   "late-work.ordinary.04": Object.freeze({
-    conclusion: "你愿意限时救场，但不会替公司打一整个周末的怪兽。",
-    coreSkill: "接受有限任务，并在加码后重新封顶",
-    sideEffect: "任务每多长一页，胸前计时器就红一格。",
-    shareCopy: "这场可以救，新增怪兽请留到下一集。",
+    conclusion: "只要没有点开，周末就仍然可能属于你。",
+    coreSkill: "让工作请求长期停留在通知的量子态",
+    sideEffect: "消息没有消失，只是在周一早会上完成坍缩。",
+    shareCopy: "我没有拒绝，我只是还没让这条消息成为现实。",
   }),
-  "late-work.rare.01": Object.freeze({
-    conclusion: "你连续把职场黑话掏成实物，直到矛盾再也藏不住。",
-    coreSkill: "把抽象冲突物化成会推动剧情的道具",
-    sideEffect: "第二个工位已经到货，第二个你仍在配送。",
-    shareCopy: "两个都急？我先从口袋里掏出第二个工位。",
+  "late-work.ordinary.05": Object.freeze({
+    conclusion: "你把完整数字分身交给了公司，最后被优化的是原装版本。",
+    coreSkill: "把自己训练成一套可复制、可交接的生产系统",
+    sideEffect: "交接完成以后，真人成了系统里最贵的兼容层。",
+    shareCopy: "我成功把工作外包给了自己，也把自己外包了出去。",
+  }),
+  "late-work.hidden.01": Object.freeze({
+    conclusion: "你把数字分身藏在电脑里上夜班，真人负责准点上线。",
+    coreSkill: "隐藏调度另一个自己，同时保留关键审核权",
+    sideEffect: "绩效写你的名字，真正值夜班的员工没有工号。",
+    shareCopy: "白天我是员工，晚上电脑里的我也是员工。",
+  }),
+  "late-work.hidden.02": Object.freeze({
+    conclusion: "你一直不回公司的消息。公司最后回了你一个 N+1。",
+    coreSkill: "把全部工作请求维持在永久未读状态",
+    sideEffect: "本局唯一按时兑现的承诺，是解除劳动关系。",
+    shareCopy: "我没回复公司，公司最后用 N+1 回复了我。",
   }),
 
   "revived-friend.ordinary.01": Object.freeze({
@@ -139,59 +151,81 @@ const RESULT_PROFILE_BY_CARD = Object.freeze({
   "late-work.ordinary.01": Object.freeze({
     tendency: null,
     signatures: Object.freeze([
-      "respectful-acceptance",
-      "weekend-possible",
-      "client-baseline",
-      "template-preserved",
-      "scope-expanded",
-      "version-diff-shown",
+      "work-all",
+      "friend-cancelled",
+      "accept-three",
+      "responsibility-owned",
+      "long-accept",
     ]),
     finalAffinities: Object.freeze(["normal"]),
   }),
   "late-work.ordinary.02": Object.freeze({
     tendency: null,
     signatures: Object.freeze([
-      "hard-boundary",
-      "weekend-unavailable",
-      "no-extra-work",
-      "unsupported-scope-refused",
-      "deadline-reset",
-      "page-withdrawn",
+      "priority-control",
+      "pay-negotiation",
+      "hire-team",
+      "looks-complete",
+      "time-boundary",
     ]),
-    finalAffinities: Object.freeze(["boundary"]),
+    finalAffinities: Object.freeze(["strategy"]),
   }),
   "late-work.ordinary.03": Object.freeze({
     tendency: null,
     signatures: Object.freeze([
-      "priority-coordination",
-      "owner-decides",
-      "decision-escalated",
-      "scope-tradeoff",
-      "priority-rule-created",
-      "scope-and-priority-visible",
+      "game-first",
+      "formal-boundary",
+      "late-reply",
+      "gear-claim",
+      "share-cancelled",
+      "system-protected",
     ]),
-    finalAffinities: Object.freeze(["strategy", "normal"]),
+    finalAffinities: Object.freeze(["boundary", "absurd"]),
   }),
   "late-work.ordinary.04": Object.freeze({
     tendency: null,
     signatures: Object.freeze([
-      "limited-commitment",
-      "bounded-handoff",
-      "time-compensation",
-      "time-cap",
-      "scope-split",
-      "layout-frozen",
-      "range-shown",
-      "definition-pending",
-      "no-final-commitment",
+      "unread",
+      "no-response",
+      "no-service-yet",
+      "hard-refusal",
     ]),
-    finalAffinities: Object.freeze(["normal", "boundary"]),
+    finalAffinities: Object.freeze(["boundary", "absurd"]),
   }),
-  "late-work.rare.01": Object.freeze({
+  "late-work.ordinary.05": Object.freeze({
     tendency: null,
-    signatures: Object.freeze(["consistent-absurd", "object-logic"]),
-    minimumSignatureMatches: 5,
+    signatures: Object.freeze(["ai-disclosed", "ai-handed-over"]),
+    finalAffinities: Object.freeze(["normal"]),
+    resolutionMode: "self-outsourced",
+  }),
+  "late-work.hidden.01": Object.freeze({
+    tendency: null,
+    signatures: Object.freeze(["ai-hidden"]),
+    minimumSignatureMatches: 3,
+    requiredOptionIds: Object.freeze(["late-work.q.three-projects.option.hidden-ai"]),
+    forbiddenSignatureFlags: Object.freeze(["ai-error", "ai-disclosed", "ai-handed-over"]),
     finalAffinities: Object.freeze([]),
+    resolutionMode: "cyber-employee",
+    hiddenPriority: 20,
+  }),
+  "late-work.hidden.02": Object.freeze({
+    tendency: null,
+    signatures: Object.freeze([]),
+    minimumSignatureMatches: 0,
+    requiredOptionIds: Object.freeze([
+      "late-work.q.friday-request.option.refuse-overtime",
+      "late-work.q.at-1958-game.option.unread",
+      "late-work.q.saturday-0906-unread.option.schrodinger-unread",
+      "late-work.q.weekend-accountability.option.refuse-weekend",
+      "late-work.q.support-request.option.refuse",
+      "late-work.q.three-projects.option.refuse-three",
+    ]),
+    forbiddenSignatureFlags: Object.freeze(["service-provided", "ai-output"]),
+    seedProbability: 70,
+    seedSalt: "late-work.nplus1",
+    finalAffinities: Object.freeze([]),
+    resolutionMode: "n-plus-one",
+    hiddenPriority: 10,
   }),
 });
 
@@ -199,8 +233,9 @@ function makePreviewCard(cardId, copy) {
   const canonical = CARD_MANIFEST[cardId];
   if (!canonical?.name) throw new RangeError(`preview card ${cardId} lacks an approved name anchor`);
   const rare = canonical.tier === "rare";
+  const hidden = canonical.tier === "hidden";
   const profile = RESULT_PROFILE_BY_CARD[cardId];
-  const tendency = profile ? profile.tendency : (rare ? null : TENDENCY_BY_SLOT[canonical.slot]);
+  const tendency = profile ? profile.tendency : (rare || hidden ? null : TENDENCY_BY_SLOT[canonical.slot]);
   return Object.freeze({
     ...canonical,
     title: canonical.name,
@@ -214,9 +249,14 @@ function makePreviewCard(cardId, copy) {
     tendency,
     signatures: profile?.signatures ?? (rare ? Object.freeze(["consistent-absurd"]) : Object.freeze([])),
     minimumSignatureMatches: profile?.minimumSignatureMatches ?? (rare ? 5 : 0),
-    requiredOptionIds: Object.freeze([]),
-    finalAffinities: profile?.finalAffinities ?? (rare ? Object.freeze([]) : Object.freeze([tendency])),
-    resolverPriority: rare ? 0 : Number(canonical.slot),
+    requiredOptionIds: profile?.requiredOptionIds ?? Object.freeze([]),
+    forbiddenSignatureFlags: profile?.forbiddenSignatureFlags ?? Object.freeze([]),
+    seedProbability: profile?.seedProbability ?? null,
+    seedSalt: profile?.seedSalt ?? null,
+    resolutionMode: profile?.resolutionMode ?? null,
+    hiddenPriority: profile?.hiddenPriority ?? null,
+    finalAffinities: profile?.finalAffinities ?? (rare || hidden ? Object.freeze([]) : Object.freeze([tendency])),
+    resolverPriority: rare || hidden ? 0 : Number(canonical.slot),
   });
 }
 

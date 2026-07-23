@@ -1,6 +1,7 @@
 import { loadCollectionBundle } from "./collection-store.js";
 import { PREVIEW_RESULT_CARDS } from "./result-cards.js";
 import { renderMuseumView } from "./merged-museum-view.js";
+import { museumAssetsForCard } from "./museum-assets.js";
 
 const root = document.querySelector("#museum-root");
 if (!root) throw new Error("museum root is missing");
@@ -13,22 +14,34 @@ const ROUTE_LABELS = Object.freeze({
   "group-assignment": "作业到底是谁做的",
 });
 const APPROVED_CARD_ART = new Set([
-  "late-work.ordinary.01",
-  "late-work.ordinary.02",
-  "late-work.ordinary.03",
-  "late-work.ordinary.04",
-  "late-work.rare.01",
   "revived-friend.ordinary.03",
   "revived-friend.ordinary.04",
 ]);
 
-function cardImage(cardId, unlocked) {
-  if (unlocked && APPROVED_CARD_ART.has(cardId)) return `./assets/cards/${cardId}.png`;
-  return "./assets/life-swap/characters-v3/locked-silhouette.png";
+function cardArt(cardId, unlocked) {
+  if (!unlocked) {
+    return Object.freeze({ image: "./assets/life-swap/characters-v3/locked-silhouette.png" });
+  }
+  const museumAssets = museumAssetsForCard(cardId);
+  if (museumAssets) {
+    return Object.freeze({
+      image: museumAssets.storyImage,
+      thumbnailImage: museumAssets.storyThumbnail,
+      alt: museumAssets.storyAlt,
+      characterImage: museumAssets.characterImage,
+      characterWebp: museumAssets.characterWebp,
+      characterAlt: museumAssets.characterAlt,
+    });
+  }
+  if (APPROVED_CARD_ART.has(cardId)) {
+    return Object.freeze({ image: `./assets/cards/${cardId}.png` });
+  }
+  return Object.freeze({ image: "./assets/life-swap/characters-v3/locked-silhouette.png" });
 }
 
 function cardView(card, entry, catalogNumber) {
   if (!entry) {
+    const art = cardArt(card.id, false);
     return Object.freeze({
       id: card.id,
       catalogNumber,
@@ -39,11 +52,12 @@ function cardView(card, entry, catalogNumber) {
       front: Object.freeze({
         catalogNumber,
         hint: `在「${ROUTE_LABELS[card.routeId]}」中走出另一种结果。`,
-        image: cardImage(card.id, false),
+        ...art,
       }),
       back: null,
     });
   }
+  const art = cardArt(card.id, true);
   return Object.freeze({
     id: card.id,
     catalogNumber,
@@ -53,9 +67,9 @@ function cardView(card, entry, catalogNumber) {
     canShare: false,
     front: Object.freeze({
       catalogNumber,
-      image: cardImage(card.id, true),
-      alt: card.title,
-      exhibitLevel: card.tier === "rare" ? "稀有馆藏" : "常设馆藏",
+      ...art,
+      alt: art.alt ?? card.title,
+      exhibitLevel: card.tier === "hidden" ? "隐藏身份" : card.tier === "rare" ? "稀有馆藏" : "常设馆藏",
       identity: card.title,
       title: ROUTE_LABELS[card.routeId],
       shortConclusion: card.conclusion,
@@ -93,6 +107,7 @@ function emptySection(id, title, roomType) {
 }
 
 function buildModel(collection) {
+  const catalogTotal = Object.keys(PREVIEW_RESULT_CARDS).length;
   let catalogIndex = 0;
   const commonSeries = ROUTE_ORDER.map((routeId) => {
     const cards = Object.values(PREVIEW_RESULT_CARDS)
@@ -112,9 +127,9 @@ function buildModel(collection) {
     storageStatus: Object.freeze({ ok: true, reason: "loaded" }),
     summary: Object.freeze({
       unlockedCount,
-      knownCount: 20,
-      totalCount: 20,
-      label: `已解锁 ${unlockedCount} / 20`,
+      knownCount: catalogTotal,
+      totalCount: catalogTotal,
+      label: `已解锁 ${unlockedCount} / ${catalogTotal}`,
       catalogLabel: "常设馆藏",
     }),
     emptyNotice: unlockedCount === 0 ? "这里还是空馆。完成一次事故后，结局卡会自动进入馆藏。" : "",
@@ -125,7 +140,30 @@ function buildModel(collection) {
   });
 }
 
-const collection = loadCollectionBundle(window.localStorage).v2.state;
-const initialCardId = new URL(window.location.href).searchParams.get("new");
+function withPreviewCard(collection, cardId) {
+  if (!museumAssetsForCard(cardId) || !PREVIEW_RESULT_CARDS[cardId]) return collection;
+  if (collection.cards[cardId]) return collection;
+  const acquiredAt = "隔离预览";
+  return Object.freeze({
+    ...collection,
+    cards: Object.freeze({
+      ...collection.cards,
+      [cardId]: Object.freeze({
+        cardId,
+        firstAcquiredAt: acquiredAt,
+        lastAcquiredAt: acquiredAt,
+        editionCount: 1,
+        displayLevel: "frame",
+        latestRevisionId: `${cardId}@preview`,
+      }),
+    }),
+  });
+}
+
+const searchParams = new URL(window.location.href).searchParams;
+const previewCardId = searchParams.get("preview");
+const storedCollection = loadCollectionBundle(window.localStorage).v2.state;
+const collection = withPreviewCard(storedCollection, previewCardId);
+const initialCardId = previewCardId ?? searchParams.get("new");
 renderMuseumView(root, buildModel(collection), { initialCardId });
-window.__NAIWA_MERGED_MUSEUM__ = Object.freeze({ collection });
+window.__NAIWA_MERGED_MUSEUM__ = Object.freeze({ collection, previewCardId });

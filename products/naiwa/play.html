@@ -6,15 +6,15 @@
     <meta name="theme-color" content="#0a241a" />
     <meta name="description" content="奶蛙交换计划的事故入口。" />
     <title>奶蛙交换计划</title>
-    <link rel="stylesheet" href="./src/visual/slice.css" />
+    <link rel="stylesheet" href="./src/visual/slice.css?v=20260723-cinematic-5" />
   </head>
   <body>
     <main class="show-shell">
       <header class="show-bar">
         <a class="show-brand" href="./index.html" aria-label="返回事故选择">
-          <img src="./assets/naiwa-icon.png" alt="" width="38" height="38" />
-          <span>返回事故选择</span>
+          <span>返回</span>
         </a>
+        <p class="show-progress" data-scenario-status aria-live="polite"></p>
       </header>
 
       <section class="screen question-screen" data-screen="invalid-scenario" aria-labelledby="invalid-scenario-title" hidden>
@@ -27,25 +27,23 @@
       </section>
 
       <section class="screen question-screen" data-screen="question" aria-labelledby="question-title" hidden>
-        <article class="question-panel">
-          <p class="eyebrow" data-scenario-status>本期事故</p>
-          <h1 id="question-title" data-scenario-title>临时加活</h1>
-          <div class="source-message" data-scenario-source>
-            <p class="source-message__label" data-scenario-source-label></p>
-            <blockquote class="source-message__copy" data-scenario-source-message></blockquote>
-          </div>
-          <p class="scenario-question" data-scenario-question></p>
-
-          <div class="choice-stack" aria-label="选择你的回复" data-choice-stack></div>
-        </article>
-
-        <figure class="hero-visual question-visual">
+        <figure class="scene-frame">
           <img
             data-scenario-hero
             src="./assets/life-swap/hero-office-v2.png"
-            alt="奶蛙穿着不合身的深绿色西装坐在你的工位上，一手举着手机，一手拿着红色大印章。"
+            alt="奶蛙穿着深绿色西装站在临近下班的办公室里。"
           />
         </figure>
+
+        <article class="question-panel">
+          <div class="scene-copy">
+            <p class="scene-time" data-scene-time>周五 · 17:36</p>
+            <h1 id="question-title" data-scenario-title>八点开黑，还是临时接活？</h1>
+            <div class="story-beats" data-story-beats></div>
+            <p class="decision-prompt" data-decision-prompt>这一幕，你怎么接？</p>
+          </div>
+          <div class="choice-grid" aria-label="选择你的回复" data-choice-stack></div>
+        </article>
       </section>
 
       <section class="screen question-screen" data-screen="content-pending" aria-labelledby="content-pending-title" hidden>
@@ -64,14 +62,22 @@
         <figure class="outcome-visual">
           <img data-outcome-image alt="" />
         </figure>
-        <article class="outcome-summary" aria-label="奶蛙执行结果">
-          <p class="eyebrow">奶蛙行动演出</p>
-          <h1 id="outcome-title">这一幕，已经发生。</h1>
-          <p class="outcome-beat outcome-beat--action" data-outcome-action></p>
-          <p class="outcome-beat outcome-beat--consequence" data-outcome-consequence></p>
-          <p class="outcome-archive-note">这一幕将被封存为一张结局卡。</p>
+        <article class="outcome-summary outcome-caption" aria-label="奶蛙执行结果">
+          <header class="outcome-heading">
+            <h1 id="outcome-title">结果已发生</h1>
+          </header>
+          <div class="outcome-copy-grid">
+            <section class="outcome-beat outcome-beat--action">
+              <p class="outcome-label" data-outcome-action-label>你做了</p>
+              <p class="outcome-value" data-outcome-action></p>
+            </section>
+            <section class="outcome-beat outcome-beat--consequence">
+              <p class="outcome-label">现场回应</p>
+              <p class="outcome-value" data-outcome-consequence></p>
+            </section>
+          </div>
           <button class="outcome-seal-action" type="button" data-action="seal-outcome">
-            <span>封存为结局卡</span><span aria-hidden="true">→</span>
+            <span>继续下一幕</span><span aria-hidden="true">→</span>
           </button>
         </article>
       </section>
@@ -134,6 +140,6 @@
       </section>
     </main>
 
-    <script type="module" src="./src/merged-play.js"></script>
+    <script type="module" src="./src/merged-play.js?v=20260723-cinematic-5"></script>
   </body>
 </html>

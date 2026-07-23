@@ -1,3 +1,5 @@
+import { CARD_MANIFEST } from "./card-manifest.js";
+
 export const COLLECTION_STORAGE_KEY_V2 = "naiwa-life-swap:collection:v2";
 export const LEGACY_STORAGE_KEY_V1 = "naiwa-life-swap:collection:v1";
 
@@ -16,6 +18,14 @@ export const LEGACY_CARD_IDS = new Set([
 ]);
 
 const MAX_PLAYS = 500;
+const CANONICAL_ROUTE_IDS = new Set(["late-work", "revived-friend", "family-care", "group-assignment"]);
+
+function requireCanonicalRouteCard(cardId, label) {
+  const routeId = cardId.split(".")[0];
+  if (CANONICAL_ROUTE_IDS.has(routeId) && !CARD_MANIFEST[cardId]) {
+    throw new RangeError(`${label} ${cardId} is not canonical`);
+  }
+}
 
 function displayLevel(editionCount) {
   if (editionCount === 1) return "frame";
@@ -34,6 +44,7 @@ function normalizeV2(state) {
   const cards = {};
   for (const [cardId, entry] of Object.entries(state.cards)) {
     requireText(cardId, "card id");
+    requireCanonicalRouteCard(cardId, "card id");
     if (
       !entry
       || entry.cardId !== cardId
@@ -49,6 +60,7 @@ function normalizeV2(state) {
   const plays = state.plays.map((play) => {
     requireText(play.playInstanceId, "play instance id");
     requireText(play.cardId, "play card id");
+    requireCanonicalRouteCard(play.cardId, "play card id");
     if (seen.has(play.playInstanceId)) throw new RangeError("duplicate play instance");
     seen.add(play.playInstanceId);
     return Object.freeze({ ...play, optionPath: Object.freeze([...(play.optionPath ?? [])]) });
@@ -74,6 +86,7 @@ export function registerResult(state, result) {
     requireText(result?.[field], `result ${field}`);
   }
   if (!Array.isArray(result.optionPath)) throw new RangeError("result option path is required");
+  requireCanonicalRouteCard(result.cardId, "result card id");
   if (current.plays.some(({ playInstanceId }) => playInstanceId === result.playInstanceId)) {
     throw new RangeError("duplicate play instance");
   }

@@ -45,7 +45,7 @@ export const INTRO_ROUTES = Object.freeze({
     previewAlt: "熄灯后的床边，手机照亮枕头和一只犹豫着是否点开的手。",
     firstSceneTitle: "这条消息，先由奶蛙来读。",
     directorResponse: "手机给它。尴尬先从已读开始。",
-    hero: "./assets/life-swap/intro/route-message.png",
+    hero: "./assets/life-swap/intro/flashbacks/message-midnight.png",
     alt: "奶蛙在生活化室内拿着亮起的手机，屏幕上出现一条让人犹豫的消息。",
   }),
   "family-care": Object.freeze({
@@ -58,7 +58,7 @@ export const INTRO_ROUTES = Object.freeze({
     previewAlt: "年夜饭桌前，几位亲戚停下筷子同时看向玩家的位置，等着玩家回答有没有对象。",
     firstSceneTitle: "它把你的嘉宾牌摆上了桌。",
     directorResponse: "对象没带回来。交换对象已经到场。",
-    hero: "./assets/life-swap/intro/route-family-dinner-v2.png",
+    hero: "./assets/life-swap/intro/flashbacks/family-dinner-question-v2.png",
     alt: "奶蛙坐在年夜饭桌前，把节目嘉宾牌摆到桌上，亲戚们看向它和镜头。",
   }),
   "group-assignment": Object.freeze({

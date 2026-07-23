@@ -6,11 +6,13 @@ const ROUTE_IDS = Object.freeze([
 ]);
 
 const APPROVED_NAME_ANCHORS = Object.freeze({
-  "late-work.ordinary.01": "喜提工位别墅蛙",
-  "late-work.ordinary.02": "「有空」过敏蛙",
-  "late-work.ordinary.03": "优先级阎王蛙",
-  "late-work.ordinary.04": "三分钟奥特蛙",
-  "late-work.rare.01": "哆啦「工」梦蛙",
+  "late-work.ordinary.01": "工位买房蛙",
+  "late-work.ordinary.02": "P0阎王蛙",
+  "late-work.ordinary.03": "周末守门员蛙",
+  "late-work.ordinary.04": "薛定谔的蛙",
+  "late-work.ordinary.05": "赛博夺舍蛙",
+  "late-work.hidden.01": "赛博替身蛙",
+  "late-work.hidden.02": "“N+1”蛙",
   "revived-friend.ordinary.01": "旧友回锅肉蛙",
   "revived-friend.ordinary.02": "人情防火墙蛙",
   "revived-friend.ordinary.03": "在场但已注销蛙",
@@ -57,13 +59,22 @@ function makeCard(id, routeId, tier, slot) {
 function createManifest() {
   const manifest = {};
   for (const routeId of ROUTE_IDS) {
-    for (let index = 1; index <= 4; index += 1) {
+    const ordinaryCount = routeId === "late-work" ? 5 : 4;
+    for (let index = 1; index <= ordinaryCount; index += 1) {
       const slot = String(index).padStart(2, "0");
       const id = `${routeId}.ordinary.${slot}`;
       manifest[id] = makeCard(id, routeId, "ordinary", slot);
     }
-    const rareId = `${routeId}.rare.01`;
-    manifest[rareId] = makeCard(rareId, routeId, "rare", "01");
+    if (routeId === "late-work") {
+      for (let index = 1; index <= 2; index += 1) {
+        const slot = String(index).padStart(2, "0");
+        const id = `${routeId}.hidden.${slot}`;
+        manifest[id] = makeCard(id, routeId, "hidden", slot);
+      }
+    } else {
+      const rareId = `${routeId}.rare.01`;
+      manifest[rareId] = makeCard(rareId, routeId, "rare", "01");
+    }
   }
   return Object.freeze(manifest);
 }
