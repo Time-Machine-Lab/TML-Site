@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Create Seedance 2.0 and 2.5 videos with text, image, video and audio references." />
+    <title>Studio — Pocket Seedance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="app-body">
+    <div class="promo-bar">✦ New creator rate · one-time credits · no subscription</div>
+    <header class="app-nav">
+      <a class="brand" href="/"><span class="brand-mark">✦</span> pocket<span class="brand-muted">/seedance</span></a>
+      <nav class="app-nav-links" aria-label="Studio navigation">
+        <a href="/">Home</a><a href="/#why">Guide</a><a href="/#pricing">Pricing</a>
+        <button type="button" class="nav-action" id="historyButton">History</button>
+      </nav>
+      <div class="app-nav-right">
+        <span class="credit-pill"><span class="credit-dot"></span><b id="creditBalance">0.00</b> credits</span>
+        <button type="button" id="loginButton" class="button button-small button-light">Sign in with Google</button>
+        <button type="button" id="accountButton" class="avatar" aria-label="Account">◎</button>
+      </div>
+    </header>
+
+    <main class="studio">
+      <aside class="studio-sidebar" aria-label="Model navigation">
+        <div class="sidebar-section">
+          <div class="sidebar-label">AI video</div>
+          <button type="button" class="side-tab" data-model="pro"><span>◈</span> Seedance 2.5 <i class="status-dot pink"></i></button>
+          <button type="button" class="side-tab active" data-model="standard"><span>◈</span> Seedance 2 Pro <i class="status-dot yellow"></i></button>
+          <button type="button" class="side-tab" data-model="fast"><span>◈</span> Seedance 2 Mini <i class="status-dot green"></i></button>
+          <button type="button" class="side-tab" data-model="wan"><span>◌</span> Wan 3.0</button>
+          <button type="button" class="side-more" id="showMoreButton">+ Show more</button>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-label">Resources</div>
+          <button type="button" class="side-tab" id="examplesButton"><span>▣</span> Examples</button>
+          <button type="button" class="side-tab" id="apiButton"><span>⌁</span> API</button>
+        </div>
+        <div class="sidebar-spacer"></div>
+        <div class="sidebar-label">Need credits?</div>
+        <button type="button" class="side-buy" data-buy="creator"><span>＋</span><div><b>Top up</b><small>From $4.99 · never expires</small></div><i>↗</i></button>
+      </aside>
+
+      <section class="studio-main">
+        <div class="studio-title"><div><div class="section-kicker">New generation</div><h1>What do you want to see?</h1></div><div class="live-status"><span class="pulse"></span> Systems ready</div></div>
+        <div class="workspace-grid">
+          <div class="composer-card">
+            <button type="button" class="model-selector" id="modelSelector" aria-label="Select model"><span id="modelLabel">Seedance 2 Pro</span><b>HOT</b><small>Multimodal input with powerful reference capabilities</small><i aria-hidden="true">⌄</i></button>
+            <div class="create-from"><span>Create from</span><button type="button" class="input-tab active" data-input="media">▱ Media</button><button type="button" class="input-tab" data-input="image">▧ Image</button><button type="button" class="input-tab" data-input="text">T Text</button></div>
+            <div class="model-row">
+              <label>Model<select id="model"><option value="fast">Seedance 2.0 Fast</option><option value="standard" selected>Seedance 2.0</option><option value="pro">Seedance 2.5</option></select></label>
+              <label>Resolution<select id="resolution"><option value="480p">480p</option><option value="720p" selected>720p</option></select></label>
+              <label>Duration<select id="duration"><option value="5">5 sec</option><option value="8">8 sec</option><option value="10">10 sec</option></select></label>
+            </div>
+            <div class="prompt-label"><span>Prompt</span><span class="mono">⌘ ↵ to generate</span></div>
+            <textarea id="prompt" placeholder="Describe the video you want to generate… Use @1, @2, @3 to reference uploaded media."></textarea>
+            <div class="preset-row"><span class="mono">Need ideas?</span><div id="presetButtons" class="preset-buttons"></div></div>
+            <div class="upload-row"><button type="button" class="upload-tile" id="uploadButton"><span>＋</span><b>Drop or click to upload</b><small id="uploadCount">Img 0/9 · Vid 0/3 · Aud 0/3</small></button><input id="fileInput" type="file" accept="image/*,video/*,audio/*" multiple hidden /><div class="upload-hint"><span class="upload-icon">↥</span><p>Reference files<br /><small>Image, video or audio</small></p></div></div>
+            <div class="control-label">Mode</div><div class="segmented" role="group" aria-label="Generation mode"><button type="button" class="active" data-mode="standard">★ Standard</button><button type="button" data-mode="real">Real</button><button type="button" data-mode="wild">Wild</button></div>
+            <div class="control-label">Aspect ratio</div><div class="aspect-grid" role="group" aria-label="Aspect ratio"><button type="button" class="active" data-aspect="16:9">16:9</button><button type="button" data-aspect="9:16">9:16</button><button type="button" data-aspect="1:1">1:1</button></div>
+            <div class="generate-row"><div><span class="estimate-label">Estimated cost</span><strong id="estimate">$0.90</strong><small id="estimateDetail">5 sec · 720p</small></div><button type="button" id="generateButton" class="button button-primary button-generate">Generate for $0.90 <span>↗</span></button></div>
+          </div>
+          <div class="preview-stack"><aside class="tip-card"><b>ⓘ &nbsp; Pro tip</b><p>For most scenarios, start with <strong>Standard</strong>. Use references when you need a specific character, product or camera move.</p></aside><div class="preview-card"><div class="preview-top"><span>Examples</span><button type="button" class="preview-link" id="examplesPreviewButton">↗</button></div><div id="previewEmpty" class="preview-empty"><div class="empty-orb">✦</div><h3>Your scene will land here.</h3><p>Start with a preset or write a prompt. The first demo preview is instant.</p></div><video id="previewVideo" class="preview-video hidden" controls loop playsinline></video><div id="previewMeta" class="preview-meta hidden"><span id="previewLabel"></span><span id="previewSettings"></span></div><button type="button" class="example-strip" id="starterPromptButton"><video autoplay muted loop playsinline preload="metadata"><source src="/media/seedance-demo-small.mp4" type="video/mp4" /></video><span>Use a starter prompt →</span></button></div></div>
+        </div>
+        <div class="studio-note"><span>◎</span><p>Preset demos are pre-rendered previews. Your own prompts use credits only after you sign in and top up.</p><button type="button" class="text-button" id="pricingInfoButton">How pricing works ↗</button></div>
+      </section>
+    </main>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-card"><button type="button" id="closeModal" class="modal-close" aria-label="Close">×</button><div id="modalContent"></div></div></div>
+    <script src="/app.js"></script>
+  </body>
+</html>
