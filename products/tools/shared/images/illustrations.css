@@ -1,0 +1,13 @@
+/* Page artwork stays small so the tool controls remain the main focus. */
+.tool-page-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+.tool-page-heading > h1 { margin: 0; }
+.tool-page-illustration { display: block; flex: 0 0 auto; width: 168px; height: auto; border-radius: 12px; }
+.hub-hero.tool-home-hero { display: grid; grid-template-columns: minmax(0, 1fr) 260px; align-items: center; gap: 24px; }
+.tool-home-illustration { display: block; width: 100%; height: auto; border-radius: 12px; }
+.hub-card__image { display: block; width: 100%; height: auto; aspect-ratio: 1.9; object-fit: contain; border-radius: 8px; margin-bottom: 16px; background: #fff; }
+@media (max-width: 720px) {
+  .tool-page-heading { gap: 12px; }
+  .tool-page-illustration { width: 104px; }
+  .hub-hero.tool-home-hero { grid-template-columns: 1fr; gap: 20px; }
+  .tool-home-illustration { width: min(320px, 100%); justify-self: center; }
+}

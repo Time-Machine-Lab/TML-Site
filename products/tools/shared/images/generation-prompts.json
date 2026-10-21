@@ -1,0 +1,37 @@
+{
+  "method": "Built-in image_gen, six independent generation calls; JPEG encoding only, no artwork changes.",
+  "generatedOn": "2026-10-21",
+  "promptTemplate": "Use case: ads-marketing. Asset type: simple website search and social preview illustration for tools.tmlab.site, {slug} page. {subject} Style: minimal polished flat geometric illustration, friendly functional online utility brand, white and very pale lavender background, indigo #4f46e5 and cyan #06b6d4 with restrained orange accents. Landscape canvas approximately 1200x630, centered composition with generous whitespace and all important graphics safely inside the central 70 percent so a square search thumbnail crop still makes sense. Strong readable silhouette at tiny thumbnail sizes. Subtle clean shadows, crisp edges, limited shapes. No people, no photographic textures, no watermark, no website screenshot, no headlines or decorative text except explicitly requested file format labels. Original coherent visual design, practical and simple.",
+  "assets": [
+    {
+      "file": "home.jpg",
+      "slug": "home",
+      "subject": "An elegant toolbox containing three simple overlapping image cards, a crop frame, and a tiny compression arrow, conveying an online image toolkit."
+    },
+    {
+      "file": "image-crop.jpg",
+      "slug": "image-crop",
+      "subject": "A single landscape photo illustration of teal mountains and an orange sun, surrounded by a prominent indigo crop frame with four crop corner handles. Clearly communicate image cropping."
+    },
+    {
+      "file": "image-compress.jpg",
+      "slug": "image-compress",
+      "subject": "Two simple photo cards showing the same teal mountains and orange sun; a larger file card on the left, a more compact file card on the right, connected by a short indigo arrow. Clearly communicate smaller image file size without changing the scene."
+    },
+    {
+      "file": "remove-bg.jpg",
+      "slug": "remove-bg",
+      "subject": "One simple orange potted plant shown as a before-and-after image: left half on a pale lavender solid background, right half on a subtle gray-and-white checkerboard, with a crisp cutout edge around the same plant. Clearly communicate background removal and transparency."
+    },
+    {
+      "file": "image-format-converter.jpg",
+      "slug": "image-format-converter",
+      "subject": "Three elegant overlapping image file cards with only these exact short labels: JPG, PNG, WEBP, connected by a simple indigo circular conversion arrow. Each file card has the same teal mountain thumbnail. Clearly communicate image format conversion."
+    },
+    {
+      "file": "image-stitch.jpg",
+      "slug": "image-stitch",
+      "subject": "Three simple separate photo cards on the left combining via a small indigo arrow into one clean vertical image strip on the right, with visible slim gaps between sections. Use abstract teal mountains, orange sun and blue sea shapes. Clearly communicate image stitching."
+    }
+  ]
+}

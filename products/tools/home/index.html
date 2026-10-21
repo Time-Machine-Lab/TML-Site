@@ -189,14 +189,41 @@
         .hub-category { margin-bottom: 28px; }
       }
     </style>
-  </head>
+    <!-- Search and link preview artwork -->
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+  <link rel="icon" type="image/png" href="/shared/images/icon-48.png" sizes="48x48">
+  <link rel="apple-touch-icon" href="/shared/images/apple-touch-icon.png" sizes="180x180">
+  <link rel="canonical" href="https://tools.tmlab.site/home/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="工具箱">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="在线工具箱 - 图片压缩、图片裁剪、透明图制作">
+  <meta property="og:description" content="免费在线工具箱，聚合图片压缩、图片裁剪、透明图制作、抠图换透明背景等实用工具，打开即用，无需安装，适合网页图片优化、照片处理和日常文件处理。">
+  <meta property="og:url" content="https://tools.tmlab.site/home/">
+  <meta property="og:image" content="https://tools.tmlab.site/shared/images/home.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1730">
+  <meta property="og:image:height" content="909">
+  <meta property="og:image:alt" content="工具箱中的图片卡片、裁剪框与压缩图标">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="在线工具箱 - 图片压缩、图片裁剪、透明图制作">
+  <meta name="twitter:description" content="免费在线工具箱，聚合图片压缩、图片裁剪、透明图制作、抠图换透明背景等实用工具，打开即用，无需安装，适合网页图片优化、照片处理和日常文件处理。">
+  <meta name="twitter:image" content="https://tools.tmlab.site/shared/images/home.jpg">
+  <meta name="twitter:image:alt" content="工具箱中的图片卡片、裁剪框与压缩图标">
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "@id": "https://tools.tmlab.site/home/", "url": "https://tools.tmlab.site/home/", "name": "在线工具箱 - 图片压缩、图片裁剪、透明图制作", "description": "免费在线工具箱，聚合图片压缩、图片裁剪、透明图制作、抠图换透明背景等实用工具，打开即用，无需安装，适合网页图片优化、照片处理和日常文件处理。", "inLanguage": "zh-CN", "primaryImageOfPage": {"@type": "ImageObject", "contentUrl": "https://tools.tmlab.site/shared/images/home.jpg", "url": "https://tools.tmlab.site/shared/images/home.jpg", "width": 1730, "height": 909, "caption": "工具箱中的图片卡片、裁剪框与压缩图标"}}</script>
+  <link rel="stylesheet" href="/shared/images/illustrations.css">
+</head>
   <body>
     <div data-shared-navbar></div>
 
     <main class="hub-main">
-      <section class="hub-hero">
+      <section class="hub-hero tool-home-hero">
+        <div>
         <h1 class="hub-hero__title">在线工具，一站直达。</h1>
         <p class="hub-hero__sub">精选实用工具，按分类整理，打开即用。</p>
+        </div>
+        <img class="tool-home-illustration" src="/shared/images/home.jpg" width="1730" height="909" alt="工具箱中的图片卡片、裁剪框与压缩图标" decoding="async">
       </section>
 
       <div id="categories-root">
@@ -230,6 +257,7 @@
           var badge = item.badge ? '<span class="hub-card__badge">' + item.badge + '</span>' : '';
           var desc = item.description ? '<p class="hub-card__desc">' + item.description + '</p>' : '';
           return '<a class="hub-card" href="' + item.path + '">'
+            + (item.image ? '<img class="hub-card__image" src="' + item.image + '" alt="" width="600" height="315" loading="lazy" decoding="async">' : '')
             + '<div class="hub-card__top"><p class="hub-card__label">' + item.label + '</p>' + badge + '</div>'
             + desc + '</a>';
         }

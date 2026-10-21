@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>在线图片拼接工具 - 多图合成长图与横向拼图 | 工具箱</title>
+  <meta name="description" content="免费在线图片拼接工具，支持多张图片纵向拼成长图或横向拼图、拖动排序、调整间距和背景色，导出 PNG 或 JPG。图片在浏览器本地处理，无需上传服务器。">
+  <meta name="keywords" content="图片拼接,在线拼图,长图拼接,多图合并,横向拼图,截图拼接">
+  <link rel="canonical" href="https://tools.tmlab.site/image-stitch/">
+  <link rel="stylesheet" href="stitch.css">
+  <script>window.ToolHubNav = { currentSlug: 'image-stitch', mark: 'ST' };</script>
+  <script src="/shared/analytics/analytics.js" defer></script>
+  <script src="/shared/navbar/navbar.js" defer></script>
+  <script src="layout.js" defer></script>
+  <script src="stitch.js" defer></script>
+  <!-- Search and link preview artwork -->
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+  <link rel="icon" type="image/png" href="/shared/images/icon-48.png" sizes="48x48">
+  <link rel="apple-touch-icon" href="/shared/images/apple-touch-icon.png" sizes="180x180">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="工具箱">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="在线图片拼接工具 - 多图合成长图与横向拼图 | 工具箱">
+  <meta property="og:description" content="免费在线图片拼接工具，支持多张图片纵向拼成长图或横向拼图、拖动排序、调整间距和背景色，导出 PNG 或 JPG。图片在浏览器本地处理，无需上传服务器。">
+  <meta property="og:url" content="https://tools.tmlab.site/image-stitch/">
+  <meta property="og:image" content="https://tools.tmlab.site/shared/images/image-stitch.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1730">
+  <meta property="og:image:height" content="909">
+  <meta property="og:image:alt" content="三张风景图片按顺序拼接为一张长图的示意">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="在线图片拼接工具 - 多图合成长图与横向拼图 | 工具箱">
+  <meta name="twitter:description" content="免费在线图片拼接工具，支持多张图片纵向拼成长图或横向拼图、拖动排序、调整间距和背景色，导出 PNG 或 JPG。图片在浏览器本地处理，无需上传服务器。">
+  <meta name="twitter:image" content="https://tools.tmlab.site/shared/images/image-stitch.jpg">
+  <meta name="twitter:image:alt" content="三张风景图片按顺序拼接为一张长图的示意">
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "@id": "https://tools.tmlab.site/image-stitch/", "url": "https://tools.tmlab.site/image-stitch/", "name": "在线图片拼接工具 - 多图合成长图与横向拼图 | 工具箱", "description": "免费在线图片拼接工具，支持多张图片纵向拼成长图或横向拼图、拖动排序、调整间距和背景色，导出 PNG 或 JPG。图片在浏览器本地处理，无需上传服务器。", "inLanguage": "zh-CN", "primaryImageOfPage": {"@type": "ImageObject", "contentUrl": "https://tools.tmlab.site/shared/images/image-stitch.jpg", "url": "https://tools.tmlab.site/shared/images/image-stitch.jpg", "width": 1730, "height": 909, "caption": "三张风景图片按顺序拼接为一张长图的示意"}}</script>
+  <link rel="stylesheet" href="/shared/images/illustrations.css">
+</head>
+<body>
+  <div data-shared-navbar></div>
+  <main class="st-page">
+    <div class="st-heading tool-page-heading"><div><h1>图片拼接</h1><p>把零散的图片，拼成一张完整的故事。</p><span class="st-local">本地处理 · 图片无需上传</span></div><img class="tool-page-illustration" src="/shared/images/image-stitch.jpg" width="1730" height="909" alt="三张风景图片按顺序拼接为一张长图的示意" decoding="async"></div>
+    <div class="st-layout">
+      <div class="st-workspace">
+        <section class="st-card st-upload" id="drop-zone" aria-label="添加拼接图片">
+          <div class="st-upload-icon" aria-hidden="true">＋</div>
+          <h2>拖入多张图片，开始拼接</h2>
+          <p>支持 JPG、PNG、WebP 等浏览器可读取的图片</p>
+          <button class="st-button st-primary" id="add-images" type="button">选择图片</button>
+          <input id="file-input" type="file" accept="image/*" multiple hidden>
+          <small>最多 30 张，单张不超过 25 MB；动图仅使用静态画面</small>
+        </section>
+        <section class="st-card st-sources" aria-labelledby="sources-title">
+          <div class="st-section-head"><h2 id="sources-title">图片列表 <span id="image-count">0 张</span></h2><button class="st-button st-text" id="clear-images" disabled type="button">清空</button></div>
+          <p class="st-hint">拖动卡片调整顺序，也可使用前移、后移按钮。</p>
+          <ol id="image-list" class="st-list"></ol>
+          <p id="list-empty" class="st-empty">还没有图片，先添加两张试试。</p>
+        </section>
+        <section class="st-card" aria-labelledby="preview-title">
+          <div class="st-section-head"><h2 id="preview-title">拼接预览</h2><span id="preview-size" class="st-hint">等待添加图片</span></div>
+          <div class="st-preview" id="preview-area"><p id="preview-empty" class="st-empty">拼接效果会显示在这里</p><canvas id="preview" hidden aria-label="拼接结果预览"></canvas></div>
+          <p class="st-footnote">预览按比例缩小，下载按显示的输出尺寸生成。普通拼接不会自动消除截图重叠区域。</p>
+        </section>
+      </div>
+      <aside class="st-card st-settings" aria-labelledby="settings-title">
+        <h2 id="settings-title">拼接设置</h2>
+        <fieldset><legend>排列方向</legend><div class="st-segments"><label><input type="radio" name="direction" value="vertical" checked><span>↓ 纵向长图</span></label><label><input type="radio" name="direction" value="horizontal"><span>→ 横向拼图</span></label></div></fieldset>
+        <label class="st-field" for="output-size"><span id="size-label">统一宽度（px）</span><input id="output-size" type="number" min="100" max="6000" step="1" value="1200" required></label>
+        <p class="st-hint st-under-field">图片保持原比例，自动统一<span id="size-axis">宽度</span>。</p>
+        <div class="st-field-pair"><label class="st-field" for="gap">图片间距（px）<input id="gap" type="number" min="0" max="200" step="1" value="16" required></label><label class="st-field" for="padding">画布边距（px）<input id="padding" type="number" min="0" max="200" step="1" value="16" required></label></div>
+        <label class="st-color-field" for="background">背景颜色<input id="background" type="color" value="#ffffff"></label>
+        <label class="st-checkbox"><input type="checkbox" id="transparent">透明背景（PNG）</label>
+        <label class="st-field" for="format">导出格式<select id="format"><option value="image/png">PNG · 保留清晰细节</option><option value="image/jpeg">JPG · 更小的文件</option></select></label>
+        <p id="format-hint" class="st-hint">PNG 支持透明背景，适合文字截图。</p>
+        <div class="st-output"><span>输出尺寸</span><strong id="output-dimensions">—</strong></div>
+        <button class="st-button st-primary st-download" id="download" type="button" disabled>下载拼接图片</button>
+        <p id="message" class="st-message" role="status" aria-live="polite">添加至少两张图片即可导出。</p>
+        <p id="layout-error" class="st-error" role="alert" hidden></p>
+      </aside>
+    </div>
+    <section class="st-guide"><h2>三步完成图片拼接</h2><div><p><b>01 添加图片</b>一次选择多张截图、照片或商品图。</p><p><b>02 调整排列</b>选择方向，调整顺序、间距与背景。</p><p><b>03 下载结果</b>预览确认后，保存为 PNG 或 JPG。</p></div></section>
+  </main>
+</body>
+</html>
