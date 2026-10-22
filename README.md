@@ -55,6 +55,20 @@ git push origin master
 
 部署完成后访问: `https://my-product.tmlab.site/`
 
+### Tools 首页与重复 URL
+
+工具箱统一使用 `https://tools.tmlab.site/home/` 作为首页。`docker/nginx.conf` 将工具箱的根路径、`/index.html` 和各目录显式的 `index.html` 地址以 301 跳转到规范地址，并保留查询参数；其他产品域名不受影响。
+
+当前 GitHub Actions 只同步 `products/` 文件并重载 Nginx，**不会上传 `docker/nginx.conf`**。发布这类路由改动时，应先备份服务器现有配置，再将更新后的文件同步到服务器挂载目录（本文默认 `/var/www/docker/nginx.conf`），执行 `docker exec static-sites nginx -t`，验证通过后执行 `docker exec static-sites nginx -s reload`。仅发布页面文件不会启用新的 301 规则。
+
+可使用已安装的 Nginx 在本地回归检查路由：
+
+```bash
+python scripts/test-tools-routing.py --nginx /path/to/nginx
+```
+
+脚本使用本机临时端口和临时配置，验证跳转、参数保留、规范地址无循环及其他产品不受影响，结束后自动停止临时服务。
+
 ## GitHub Secrets 配置
 
 在仓库 Settings > Secrets and variables > Actions 中配置：

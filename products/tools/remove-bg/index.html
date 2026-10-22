@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>在线透明图制作工具 - 抠图去背景导出 PNG | 工具箱</title>
-  <meta name="description" content="免费在线透明图制作和抠图去背景工具，支持 AI 自动识别主体、颜色抠图、背景移除和透明 PNG 导出，无需安装软件，适合商品图、头像、证件照和设计素材处理。">
-  <meta name="keywords" content="透明图制作,在线抠图,去背景工具,图片去背景,背景移除,透明PNG,AI抠图,颜色抠图,商品图处理,头像抠图">
+  <meta name="description" content="免费在线透明图制作工具，支持透图在线制作、AI 自动抠图与颜色转透明，可去除白色、纯色或复杂背景，导出带透明通道的 PNG 图片。上传或粘贴 PNG、JPG、WebP 图片后，选择自动识别主体或手动取色，预览结果并调整容差与边缘平滑。适合商品图、头像和设计素材，图片在浏览器本地处理，无需安装软件，也不上传服务器。">
+  <meta name="keywords" content="透明图制作,透图在线制作,透图制作,透明图片在线制作,透明图制作工具,颜色转透明,在线抠图,图片去背景,透明PNG,AI抠图,颜色抠图">
   <script>window.ToolHubNav = { currentSlug: 'remove-bg', mark: 'RB' };</script>
   <script src="/shared/analytics/analytics.js" defer></script>
   <script src="/shared/navbar/navbar.js" defer></script>
@@ -58,6 +58,21 @@
       font-weight: 700;
       line-height: 1.2;
       letter-spacing: .015em;
+    }
+
+    .rb-intro { max-width: 800px; margin: -8px 0 24px; color: var(--muted); font-size: 15px; line-height: 1.8; }
+    .rb-help { margin-top: 32px; padding: 24px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); }
+    .rb-help h2 { margin: 0 0 18px; font-size: 20px; line-height: 1.5; }
+    .rb-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; list-style: none; padding: 0; margin: 0; }
+    .rb-steps h3 { margin: 0 0 8px; font-size: 15px; }
+    .rb-steps p, .rb-faq p { margin: 8px 0 0; color: var(--muted); font-size: 14px; line-height: 1.8; }
+    .rb-faq details { padding: 16px 0; border-top: 1px solid var(--border); }
+    .rb-faq details:last-child { padding-bottom: 0; }
+    .rb-faq summary { cursor: pointer; font-weight: 600; line-height: 1.6; }
+    .rb-faq summary:focus-visible { outline: 3px solid #a5b4fc; outline-offset: 4px; border-radius: 4px; }
+    @media (max-width: 720px) {
+      .rb-help { padding: 20px; }
+      .rb-steps { grid-template-columns: 1fr; gap: 18px; }
     }
 
     /* ── 上传区 ── */
@@ -453,7 +468,7 @@
   <meta property="og:site_name" content="工具箱">
   <meta property="og:locale" content="zh_CN">
   <meta property="og:title" content="在线透明图制作工具 - 抠图去背景导出 PNG | 工具箱">
-  <meta property="og:description" content="免费在线透明图制作和抠图去背景工具，支持 AI 自动识别主体、颜色抠图、背景移除和透明 PNG 导出，无需安装软件，适合商品图、头像、证件照和设计素材处理。">
+  <meta property="og:description" content="免费在线透明图制作工具，支持透图在线制作、AI 自动抠图与颜色转透明，可去除白色、纯色或复杂背景，导出带透明通道的 PNG 图片。上传或粘贴 PNG、JPG、WebP 图片后，选择自动识别主体或手动取色，预览结果并调整容差与边缘平滑。适合商品图、头像和设计素材，图片在浏览器本地处理，无需安装软件，也不上传服务器。">
   <meta property="og:url" content="https://tools.tmlab.site/remove-bg/">
   <meta property="og:image" content="https://tools.tmlab.site/shared/images/remove-bg.jpg">
   <meta property="og:image:type" content="image/jpeg">
@@ -462,10 +477,10 @@
   <meta property="og:image:alt" content="盆栽图片从纯色背景变为透明棋盘背景的示意">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="在线透明图制作工具 - 抠图去背景导出 PNG | 工具箱">
-  <meta name="twitter:description" content="免费在线透明图制作和抠图去背景工具，支持 AI 自动识别主体、颜色抠图、背景移除和透明 PNG 导出，无需安装软件，适合商品图、头像、证件照和设计素材处理。">
+  <meta name="twitter:description" content="免费在线透明图制作工具，支持透图在线制作、AI 自动抠图与颜色转透明，可去除白色、纯色或复杂背景，导出带透明通道的 PNG 图片。上传或粘贴 PNG、JPG、WebP 图片后，选择自动识别主体或手动取色，预览结果并调整容差与边缘平滑。适合商品图、头像和设计素材，图片在浏览器本地处理，无需安装软件，也不上传服务器。">
   <meta name="twitter:image" content="https://tools.tmlab.site/shared/images/remove-bg.jpg">
   <meta name="twitter:image:alt" content="盆栽图片从纯色背景变为透明棋盘背景的示意">
-  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "@id": "https://tools.tmlab.site/remove-bg/", "url": "https://tools.tmlab.site/remove-bg/", "name": "在线透明图制作工具 - 抠图去背景导出 PNG | 工具箱", "description": "免费在线透明图制作和抠图去背景工具，支持 AI 自动识别主体、颜色抠图、背景移除和透明 PNG 导出，无需安装软件，适合商品图、头像、证件照和设计素材处理。", "inLanguage": "zh-CN", "primaryImageOfPage": {"@type": "ImageObject", "contentUrl": "https://tools.tmlab.site/shared/images/remove-bg.jpg", "url": "https://tools.tmlab.site/shared/images/remove-bg.jpg", "width": 1730, "height": 909, "caption": "盆栽图片从纯色背景变为透明棋盘背景的示意"}}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "@id": "https://tools.tmlab.site/remove-bg/", "url": "https://tools.tmlab.site/remove-bg/", "name": "在线透明图制作工具 - 抠图去背景导出 PNG | 工具箱", "description": "免费在线透明图制作工具，支持透图在线制作、AI 自动抠图与颜色转透明，可去除白色、纯色或复杂背景，导出带透明通道的 PNG 图片。上传或粘贴 PNG、JPG、WebP 图片后，选择自动识别主体或手动取色，预览结果并调整容差与边缘平滑。适合商品图、头像和设计素材，图片在浏览器本地处理，无需安装软件，也不上传服务器。", "inLanguage": "zh-CN", "primaryImageOfPage": {"@type": "ImageObject", "contentUrl": "https://tools.tmlab.site/shared/images/remove-bg.jpg", "url": "https://tools.tmlab.site/shared/images/remove-bg.jpg", "width": 1730, "height": 909, "caption": "盆栽图片从纯色背景变为透明棋盘背景的示意"}}</script>
   <link rel="stylesheet" href="/shared/images/illustrations.css">
 </head>
 <body>
@@ -475,6 +490,8 @@
 
   <main class="rb-page">
     <div class="tool-page-heading"><h1 class="rb-heading">透明图制作</h1><img class="tool-page-illustration" src="/shared/images/remove-bg.jpg" width="1730" height="909" alt="盆栽图片从纯色背景变为透明棋盘背景的示意" decoding="async"></div>
+
+    <p class="rb-intro">透图在线制作，支持 AI 自动抠图和颜色转透明。上传或粘贴图片，去除背景后即可免费下载透明 PNG，全程在浏览器本地处理。</p>
 
     <!-- 隐藏文件输入 -->
     <input type="file" id="rb-file-input" accept="image/png,image/jpeg,image/webp">
@@ -574,6 +591,22 @@
         </div>
       </div>
     </div>
+    <section class="rb-help" aria-labelledby="rb-guide-title">
+      <h2 id="rb-guide-title">透明图片在线制作，只需三步</h2>
+      <ol class="rb-steps">
+        <li><h3>01 添加图片</h3><p>选择、拖拽或粘贴一张 PNG、JPG 或 WebP 图片，单张不超过 20MB。</p></li>
+        <li><h3>02 选择去背景方式</h3><p>人物、商品等主体可选「AI 自动抠图」并点击「开始处理」；纯色底图可选「颜色抠图」，调整参数后点击图片取色。</p></li>
+        <li><h3>03 预览并下载</h3><p>切换原图与结果检查效果，可撤销后重试。满意后点击「下载 PNG」，保存带透明通道的图片。</p></li>
+      </ol>
+    </section>
+
+    <section class="rb-help rb-faq" aria-labelledby="rb-faq-title">
+      <h2 id="rb-faq-title">透图制作常见问题</h2>
+      <details open><summary>如何把白色或指定颜色变透明？</summary><p>上传图片后选择「颜色抠图」，先调整容差和边缘平滑，再点击图片中的背景颜色取色并处理。颜色转透明会作用于图中接近所选颜色的像素；如果主体也有相同颜色，可改用 AI 自动抠图。</p></details>
+      <details><summary>AI 自动抠图和颜色抠图怎么选？</summary><p>AI 自动抠图适合人物、商品等需要识别主体的图片；颜色抠图适合白底、纯色底的图标或素材。首次使用 AI 模式需要联网加载模型，实际效果取决于图片内容，可在预览中比较两种方式。</p></details>
+      <details><summary>透图制作需要安装软件或上传服务器吗？</summary><p>这个透明图制作工具直接在浏览器中运行，无需安装软件。图片只在当前设备上处理，不会上传到服务器；AI 模式需要下载推理库和模型资源。</p></details>
+      <details><summary>为什么下载的 PNG 看起来还是白底？</summary><p>先检查结果预览中背景是否已变成透明棋盘格。部分图片查看器会用白色显示透明区域，可在支持透明背景的编辑器中打开确认；若背景尚未去除，请调整取色容差或改用 AI 模式后再导出。</p></details>
+    </section>
   </main>
 
   <!-- Toast -->
