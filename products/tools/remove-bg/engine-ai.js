@@ -7,6 +7,7 @@
 
   /* @imgly/background-removal v1.7.0 — ESM via jsDelivr */
   var ESM_CDN = 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm';
+  var MODEL_ASSET_PATH = 'https://seasonschange.obs.cn-south-1.myhuaweicloud.com/tools/';
   var _lib = null;          /* 已加载的 removeBackground 函数 */
   var _loading = false;
   var _controlsEl = null;
@@ -69,7 +70,7 @@
     id: 'ai',
     name: 'AI 自动抠图',
     icon: '✨',
-    description: '智能识别主体，适合人像、商品图，首次使用需下载模型约 15MB',
+    description: '智能识别主体，适合人像、商品图，首次需下载约 88 MB 模型及配套运行资源',
     mode: 'oneshot',
 
     init: function (controlsEl, onResult, imgEl) {
@@ -86,7 +87,7 @@
           '<p id="rb-ai-progress-text" class="rb-ctrl-hint" style="display:none"></p>',
         '</div>',
         '<ul class="rb-ai-tips">',
-          '<li>首次使用约需下载 15MB 模型，之后秒级加载</li>',
+          '<li>首次需下载约 88 MB 模型及配套运行资源，缓存有效时可复用</li>',
           '<li>图片不会上传至任何服务器，全程本地处理</li>',
         '</ul>',
       ].join('');
@@ -104,15 +105,17 @@
         setStatus('AI 推理中，请稍候…');
 
         var config = {
+          publicPath: MODEL_ASSET_PATH,
+          model: 'medium',
           output: { format: 'image/png', quality: 1 },
-          /* publicPath 省略 → 默认使用 IMG.LY 官方 CDN 下载模型/WASM */
           progress: function (key, current, total) {
             if (_destroyed) return;
             var ratio = total > 0 ? current / total : 0;
             showProgress(ratio);
             var pct = Math.round(ratio * 100);
             if (key === 'fetch:model' || key.indexOf('fetch') === 0) {
-              showProgressText('正在下载模型 ' + pct + '%（约 15MB，仅首次）');
+              var sizeHint = total > 0 ? '（当前资源约 ' + (total / 1000000).toFixed(1) + ' MB）' : '';
+              showProgressText('正在下载 AI 资源 ' + pct + '%' + sizeHint);
             } else {
               showProgressText('推理中 ' + pct + '%');
             }
