@@ -276,7 +276,9 @@
     @keyframes rb-spin { to { transform: rotate(360deg); } }
 
     /* ── 侧边栏 ── */
-    .rb-sidebar { display: flex; flex-direction: column; gap: 16px; }
+    .rb-sidebar { position: relative; display: flex; flex-direction: column; gap: 16px; }
+    .rb-process-row { position: relative; }
+    .rb-process-row[hidden] { display: none; }
 
     /* 引擎选择卡片 */
     .rb-engine-card {
@@ -315,6 +317,34 @@
       font-weight: 600;
     }
     .rb-engine-controls { padding: 16px; }
+    .rb-color-nudge {
+      position: absolute; right: calc(100% + 14px); top: 50%; transform: translateY(-50%);
+      z-index: 5; width: max-content; padding: 11px 14px; border: 1px solid #ddd6fe;
+      border-radius: 9px; background: #faf8ff; box-shadow: 0 4px 16px rgba(49,24,90,.10);
+      color: var(--muted); font-size: 12px; line-height: 1.7;
+    }
+    .rb-color-nudge[hidden] { display: none; }
+    .rb-color-nudge button { border: 0; background: none; padding: 0; color: #6d28d9; font: inherit; font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+    .rb-color-nudge button { white-space: nowrap; text-decoration: none; }
+    .rb-color-nudge button:hover { text-decoration: underline; }
+    .rb-color-nudge small { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
+    .rb-color-nudge::after { content: ""; position: absolute; right: -5px; top: calc(50% - 5px); width: 8px; height: 8px; transform: rotate(45deg); border-top: 1px solid #ddd6fe; border-right: 1px solid #ddd6fe; background: #faf8ff; }
+    .rb-color-nudge svg { width: 14px; height: 14px; margin-left: 3px; vertical-align: -2px; }
+    @media (max-width: 768px) {
+      .rb-process-row { margin-bottom: 76px; }
+      .rb-process-row[hidden] { margin-bottom: 0; }
+      .rb-color-nudge { right: 0; top: calc(100% + 10px); transform: none; }
+      .rb-color-nudge::after { right: 22px; top: -5px; transform: rotate(-45deg); }
+    }
+    .rb-color-preview { position: absolute; pointer-events: none; z-index: 2; }
+    .rb-color-guide { margin-top: 16px; padding: 12px; background: #fdf2f8; border: 1px solid #fce7f3; border-radius: 8px; font-size: 12px; line-height: 1.7; }
+    .rb-color-guide strong { color: #9d174d; font-size: 13px; }
+    .rb-color-guide p { margin: 6px 0 10px; color: var(--muted); }
+    .rb-color-guide span { display: flex; align-items: center; gap: 6px; color: #9d174d; }
+    .rb-color-guide i, .rb-preview-legend i { display: inline-block; width: 10px; height: 10px; background: #f9a8d4; border: 1px solid #f472b6; border-radius: 3px; flex-shrink: 0; }
+    .rb-preview-legend { padding: 10px 14px; border-top: 1px solid #fce7f3; background: #fff7fb; color: #9d174d; font-size: 12px; line-height: 1.6; }
+    .rb-preview-legend i { margin-right: 6px; vertical-align: -1px; }
+    button:focus-visible { outline: 3px solid #a5b4fc; outline-offset: 3px; }
 
     /* 控制面板公共样式（引擎内部使用） */
     .rb-ctrl-row { margin-bottom: 14px; }
@@ -562,6 +592,7 @@
             <img id="rb-view-img" src="" alt="图片预览" draggable="false">
             <div id="rb-processing-spin" class="rb-processing-spin" role="status" aria-label="处理中…"></div>
           </div>
+          <div id="rb-preview-legend" class="rb-preview-legend" hidden><i aria-hidden="true"></i>移入图片预览 · 淡粉色区域将变透明 · 点击确认去色</div>
         </div>
 
         <!-- 右：侧边栏 -->
@@ -574,10 +605,16 @@
           </div>
 
           <!-- 处理按钮 -->
+          <div id="rb-process-row" class="rb-process-row">
           <button type="button" id="rb-process-btn" class="rb-process-btn">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
             开始处理
           </button>
+            <div id="rb-color-nudge" class="rb-color-nudge" hidden>
+              效果不好？<button type="button" id="rb-try-color">尝试颜色抠图<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19L19 5M7 5h12v12"/></svg></button>
+              <small>推荐白底、纯色背景使用，移入即可预览</small>
+            </div>
+          </div>
 
           <!-- 操作卡片 -->
           <div class="rb-action-card">
@@ -615,7 +652,7 @@
 
   <!-- 引擎文件（顺序关键：注册表在 Shell 初始化之前填充） -->
   <script src="engine-ai.js?v=1.7.0-obs"></script>
-  <script src="engine-color.js"></script>
+  <script src="engine-color.js?v=hover-preview-1"></script>
 
   <script>
   (function () {
@@ -684,6 +721,7 @@
 
     /* ── 工作基底图同步（频色引擎从 workingImg 读像素）── */
     function updateWorkingImg() {
+      if (currentEngine && currentEngine.clearPreview) currentEngine.clearPreview();
       workingImg.src = (histIdx >= 0 && currentResultUrl) ? currentResultUrl : (srcUrl || '');
     }
 
@@ -804,6 +842,16 @@
       viewMode = mode;
       viewImg.src = (viewMode === 'result' && currentResultUrl) ? currentResultUrl : (srcUrl || '');
       updateViewToggle();
+      if (currentEngine && currentEngine.setPreviewEnabled) currentEngine.setPreviewEnabled(viewMode === 'result' || histIdx < 0);
+      updateColorLegend();
+    }
+
+    function updateColorLegend() {
+      var legend = document.getElementById('rb-preview-legend');
+      legend.hidden = !currentEngine || currentEngine.id !== 'color';
+      legend.innerHTML = histIdx >= 0 && viewMode === 'original'
+        ? '当前为原图对照 · 切换到「结果」可继续预览和去色'
+        : '<i aria-hidden="true"></i>移入图片预览 · 淡粉色区域将变透明 · 点击确认去色';
     }
 
     function updateViewToggle() {
@@ -814,6 +862,7 @@
 
     /* ── 缩放 ── */
     function applyZoom() {
+      if (currentEngine && currentEngine.clearPreview) currentEngine.clearPreview();
       if (zoom === 1 && offsetX === 0 && offsetY === 0) {
         viewImg.style.transform = '';
       } else {
@@ -870,6 +919,10 @@
       /* 切换引擎时不需要额外清理，历史状态保留 */
       /* 两种引擎统一使用 onEngineResult，区别只在于是否显示处理按鈕 */
       engine.init(controlsEl, onEngineResult, workingImg, viewImg);
+      document.getElementById('rb-color-nudge').hidden = engine.id !== 'ai';
+      document.getElementById('rb-process-row').hidden = engine.mode === 'realtime';
+      if (engine.id === 'color') setViewMode(histIdx >= 0 ? 'result' : 'original');
+      updateColorLegend();
 
       if (engine.mode === 'realtime') {
         processBtn.classList.add('rb-process-btn--hidden');
@@ -880,6 +933,14 @@
       }
       updateDownloadButton();
     }
+
+    document.getElementById('rb-try-color').addEventListener('click', function () {
+      var colorEngine = engines.filter(function (engine) { return engine.id === 'color'; })[0];
+      if (colorEngine) {
+        switchEngine(colorEngine);
+        tabsEl.querySelector('[data-engine-id="color"]').focus();
+      }
+    });
 
     /* ── 处理按钮（oneshot 模式）── */
     processBtn.addEventListener('click', function () {

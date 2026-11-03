@@ -53,6 +53,62 @@
   var _offscreenCanvas = null;
   var _pickClickHandler = null;
   var _pendingFilter = null;
+  var _preview = null, _sample = null, _sampleSrc = null;
+  var _moveHandler = null, _leaveHandler = null, _loadHandler = null;
+  var _frame = null, _point = null, _enabled = true;
+
+  function clearPreview() {
+    if (_frame !== null) cancelAnimationFrame(_frame);
+    _frame = null;
+    _point = null;
+    if (_preview) _preview.hidden = true;
+  }
+
+  /* Same distance and feathering for preview and exported pixels. */
+  function removalAmount(r, g, b, base) {
+    var hsl = rgbToHsl(r, g, b);
+    var dist = hslDistance(hsl[0], hsl[1], hsl[2], base[0], base[1], base[2]);
+    var tolerance = _tolerance / 100 * 1.2;
+    if (dist < tolerance) return 1;
+    var edge = _smooth / 100 * 0.3;
+    return edge > 0 ? Math.max(0, 1 - (dist - tolerance) / edge) : 0;
+  }
+
+  function previewAtPoint() {
+    _frame = null;
+    if (!_enabled || !_point || !_imgEl || !_imgEl.complete || !_imgEl.naturalWidth) return;
+    var rect = _pickEl.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    var src = _imgEl.currentSrc || _imgEl.src;
+    if (!_sample || _sampleSrc !== src) {
+      var scale = Math.min(1, 640 / Math.max(_imgEl.naturalWidth, _imgEl.naturalHeight));
+      var canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(_imgEl.naturalWidth * scale));
+      canvas.height = Math.max(1, Math.round(_imgEl.naturalHeight * scale));
+      var ctx = canvas.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(_imgEl, 0, 0, canvas.width, canvas.height);
+      _sample = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      _sampleSrc = src;
+    }
+    var x = Math.max(0, Math.min(_sample.width - 1, Math.floor((_point.clientX - rect.left) / rect.width * _sample.width)));
+    var y = Math.max(0, Math.min(_sample.height - 1, Math.floor((_point.clientY - rect.top) / rect.height * _sample.height)));
+    var data = _sample.data, idx = (y * _sample.width + x) * 4;
+    if (data[idx + 3] < 10) { clearPreview(); return; }
+    var base = rgbToHsl(data[idx], data[idx + 1], data[idx + 2]);
+    _preview.width = _sample.width; _preview.height = _sample.height;
+    var pctx = _preview.getContext('2d');
+    var mask = pctx.createImageData(_sample.width, _sample.height);
+    for (var i = 0; i < data.length; i += 4) {
+      mask.data[i] = 244; mask.data[i + 1] = 114; mask.data[i + 2] = 182;
+      mask.data[i + 3] = Math.round(removalAmount(data[i], data[i + 1], data[i + 2], base) * data[i + 3] * 0.58);
+    }
+    pctx.putImageData(mask, 0, 0);
+    var parent = _pickEl.parentElement.getBoundingClientRect();
+    _preview.style.left = (rect.left - parent.left) + 'px';
+    _preview.style.top = (rect.top - parent.top) + 'px';
+    _preview.style.width = rect.width + 'px'; _preview.style.height = rect.height + 'px';
+    _preview.hidden = false;
+  }
 
   /* ── 渲染控制面板 ── */
   function renderControls() {
@@ -71,7 +127,8 @@
         '<label class="rb-ctrl-label">边缘平滑 <span id="rb-sm-val">' + _smooth + '</span>px</label>',
         '<input type="range" id="rb-smooth" min="0" max="8" value="' + _smooth + '" class="rb-slider">',
       '</div>',
-      '<p class="rb-ctrl-hint">先调整容差/平滑参数，再点击图片取色并去除背景</p>',
+      '<div class="rb-color-guide"><strong>先预览，再去色</strong><p>鼠标移到背景上，查看将去除的颜色；满意后点击确认。</p><span><i></i> 淡粉色 = 将变透明的区域</span></div>',
+      '<p class="rb-ctrl-hint">作用于整张图中的相近颜色。触屏设备可直接点击取色，可随时撤销。</p>',
     ].join('');
 
     /* 绑定颜色选择器：仅更新参数，不触发过滤 */
@@ -84,6 +141,7 @@
     tolSlider.addEventListener('input', function (e) {
       _tolerance = parseInt(e.target.value, 10);
       _controlsEl.querySelector('#rb-tol-val').textContent = _tolerance;
+      if (_point) previewAtPoint();
     });
 
     /* 绑定平滑滑块：仅更新参数，不触发过滤 */
@@ -91,13 +149,15 @@
     smSlider.addEventListener('input', function (e) {
       _smooth = parseInt(e.target.value, 10);
       _controlsEl.querySelector('#rb-sm-val').textContent = _smooth;
+      if (_point) previewAtPoint();
     });
 
   }
 
   /* ── 从图片取色（点击即执行）── */
   function pickColor(e) {
-    if (!_imgEl || !_imgEl.naturalWidth) return;
+    clearPreview();
+    if (!_enabled || !_imgEl || !_imgEl.complete || !_imgEl.naturalWidth) { if (_onResult) _onResult(null); return; }
 
     var rect = (_pickEl || _imgEl).getBoundingClientRect();
     var sx = (e.clientX - rect.left) / rect.width;
@@ -116,7 +176,7 @@
     var d = tctx.getImageData(px, py, 1, 1).data;
 
     /* 点击在已透明区域则忽略（避免取到无效黑色）*/
-    if (d[3] < 10) return;
+    if (d[3] < 10) { if (_onResult) _onResult(null); return; }
 
     _color = '#' + [d[0], d[1], d[2]].map(function (v) {
       return ('0' + v.toString(16)).slice(-2);
@@ -155,29 +215,17 @@
     var data = imageData.data;
     var rgb = hexToRgb(_color);
     var baseHsl = rgbToHsl(rgb[0], rgb[1], rgb[2]);
-    var normTol = _tolerance / 100 * 1.2; /* 映射到 HSL 距离空间 */
 
     for (var i = 0; i < data.length; i += 4) {
-      var r = data[i], g = data[i + 1], b = data[i + 2];
-      var hsl = rgbToHsl(r, g, b);
-      var dist = hslDistance(hsl[0], hsl[1], hsl[2], baseHsl[0], baseHsl[1], baseHsl[2]);
-
-      if (dist < normTol) {
-        /* 硬抠：完全透明 */
-        data[i + 3] = 0;
-      } else if (_smooth > 0) {
-        /* 平滑过渡边缘 */
-        var edge = normTol + _smooth / 100 * 0.3;
-        if (dist < edge) {
-          data[i + 3] = Math.round(((dist - normTol) / (edge - normTol)) * 255);
-        }
-      }
+      var amount = removalAmount(data[i], data[i + 1], data[i + 2], baseHsl);
+      data[i + 3] = Math.round(data[i + 3] * (1 - amount));
     }
 
     ctx.putImageData(imageData, 0, 0);
+    var callback = _onResult;
     _offscreenCanvas.toBlob(function (blob) {
       /* blob 为 null 表示失败，仍须通知 shell 隐藏 spinner */
-      if (_onResult) _onResult(blob);
+      if (_onResult === callback && callback) callback(blob);
     }, 'image/png');
   }
 
@@ -195,16 +243,35 @@
       _imgEl = imgEl || null;               /* 原图，供 Canvas 处理 */
       _pickEl = pickTargetEl || imgEl;      /* 吸管点击目标（可见元素）*/
       _offscreenCanvas = null;
+      _enabled = true;
       renderControls();
 
       /* 注册点击取色事件，并设置十字光标 */
       if (_pickEl) {
+        _preview = document.createElement('canvas');
+        _preview.className = 'rb-color-preview';
+        _preview.setAttribute('aria-hidden', 'true');
+        _preview.hidden = true;
+        _pickEl.parentElement.appendChild(_preview);
+        _moveHandler = function (e) {
+          if (e.pointerType === 'touch' || !_enabled) return;
+          _point = { clientX: e.clientX, clientY: e.clientY };
+          if (_frame === null) _frame = requestAnimationFrame(previewAtPoint);
+        };
+        _leaveHandler = clearPreview;
+        _loadHandler = function () { _sample = null; clearPreview(); };
+        _pickEl.addEventListener('pointermove', _moveHandler);
+        _pickEl.addEventListener('pointerleave', _leaveHandler);
+        _imgEl.addEventListener('load', _loadHandler);
         _pickClickHandler = function (e) { pickColor(e); };
         _pickEl.addEventListener('click', _pickClickHandler);
         _pickEl.style.cursor = 'crosshair';
       }
       /* 不自动执行过滤，等待用户点击图片取色后再处理 */
     },
+
+    clearPreview: clearPreview,
+    setPreviewEnabled: function (enabled) { _enabled = enabled; clearPreview(); },
 
     process: function (imgEl) {
       /* realtime 模式下 Shell 不调用此方法，仅作兜底 */
@@ -215,6 +282,14 @@
     },
 
     destroy: function () {
+      clearPreview();
+      if (_preview) _preview.remove();
+      _preview = null; _sample = null; _sampleSrc = null;
+      if (_pickEl) {
+        _pickEl.removeEventListener('pointermove', _moveHandler);
+        _pickEl.removeEventListener('pointerleave', _leaveHandler);
+      }
+      if (_imgEl) _imgEl.removeEventListener('load', _loadHandler);
       if (_pickEl && _pickClickHandler) {
         _pickEl.removeEventListener('click', _pickClickHandler);
       }
