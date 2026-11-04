@@ -331,7 +331,7 @@
     .rb-color-nudge::after { content: ""; position: absolute; right: -5px; top: calc(50% - 5px); width: 8px; height: 8px; transform: rotate(45deg); border-top: 1px solid #ddd6fe; border-right: 1px solid #ddd6fe; background: #faf8ff; }
     .rb-color-nudge svg { width: 14px; height: 14px; margin-left: 3px; vertical-align: -2px; }
     @media (max-width: 768px) {
-      .rb-process-row { margin-bottom: 76px; }
+      .rb-process-row--has-nudge { margin-bottom: 76px; }
       .rb-process-row[hidden] { margin-bottom: 0; }
       .rb-color-nudge { right: 0; top: calc(100% + 10px); transform: none; }
       .rb-color-nudge::after { right: 22px; top: -5px; transform: rotate(-45deg); }
@@ -687,6 +687,7 @@
     /* ── 状态 ── */
     var engines          = window.RBEngines || [];
     var currentEngine    = null;
+    var hasClickedProcess = false;
     var srcUrl           = null;   /* 上传图片的 Blob URL（保活，供原图预览）*/
     var history          = [];     /* Blob[] 历史栈 */
     var histIdx          = -1;     /* 当前索引，-1 = 未处理 */
@@ -746,6 +747,8 @@
 
     /* ── 显示编辑器 ── */
     function showEditor() {
+      hasClickedProcess = false;
+      updateColorNudge();
       uploadZone.style.display = 'none';
       editor.classList.add('rb-editor--visible');
       resetHistory();
@@ -761,6 +764,8 @@
 
     /* ── 重置到上传区 ── */
     function resetToUpload() {
+      hasClickedProcess = false;
+      updateColorNudge();
       if (currentEngine) { currentEngine.destroy(); currentEngine = null; }
       resetHistory();
       if (srcUrl) { URL.revokeObjectURL(srcUrl); srcUrl = null; }
@@ -919,7 +924,7 @@
       /* 切换引擎时不需要额外清理，历史状态保留 */
       /* 两种引擎统一使用 onEngineResult，区别只在于是否显示处理按鈕 */
       engine.init(controlsEl, onEngineResult, workingImg, viewImg);
-      document.getElementById('rb-color-nudge').hidden = engine.id !== 'ai';
+      updateColorNudge();
       document.getElementById('rb-process-row').hidden = engine.mode === 'realtime';
       if (engine.id === 'color') setViewMode(histIdx >= 0 ? 'result' : 'original');
       updateColorLegend();
@@ -934,6 +939,12 @@
       updateDownloadButton();
     }
 
+    function updateColorNudge() {
+      var visible = hasClickedProcess && currentEngine && currentEngine.id === 'ai';
+      document.getElementById('rb-color-nudge').hidden = !visible;
+      document.getElementById('rb-process-row').classList.toggle('rb-process-row--has-nudge', !!visible);
+    }
+
     document.getElementById('rb-try-color').addEventListener('click', function () {
       var colorEngine = engines.filter(function (engine) { return engine.id === 'color'; })[0];
       if (colorEngine) {
@@ -945,6 +956,8 @@
     /* ── 处理按钮（oneshot 模式）── */
     processBtn.addEventListener('click', function () {
       if (!currentEngine || currentEngine.mode !== 'oneshot') return;
+      hasClickedProcess = true;
+      updateColorNudge();
       showProcessing();
       processBtn.disabled = true;
       processBtn.textContent = '处理中…';
