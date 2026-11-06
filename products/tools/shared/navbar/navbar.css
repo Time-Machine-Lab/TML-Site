@@ -59,18 +59,20 @@
 }
 
 .pp-nav-brand__mark {
+  flex-shrink: 0;
   width: 40px;
   height: 40px;
   display: grid;
   place-items: center;
   border-radius: 12px;
-  background:
-    linear-gradient(135deg, var(--pp-primary), var(--pp-secondary));
-  color: #ffffff;
-  font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
-  font-size: 18px;
-  font-weight: 700;
+  background: transparent;
   box-shadow: 0 12px 24px -12px rgba(79, 70, 229, 0.75);
+}
+
+.pp-nav-brand__mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .pp-nav-brand__text {

@@ -17,7 +17,7 @@
     var link = document.createElement('link');
     link.id = styleId;
     link.rel = 'stylesheet';
-    link.href = '/shared/navbar/navbar.css';
+    link.href = '/shared/navbar/navbar.css?v=20261106';
     document.head.appendChild(link);
   }
 
@@ -48,7 +48,13 @@
 
       var mark = document.createElement('span');
       mark.className = 'pp-nav-brand__mark';
-      mark.textContent = pageConfig.mark || 'TH';
+      mark.setAttribute('aria-hidden', 'true');
+      var logo = document.createElement('img');
+      logo.src = '/shared/images/logo.svg';
+      logo.alt = '';
+      logo.width = 40;
+      logo.height = 40;
+      mark.appendChild(logo);
       brandLink.appendChild(mark);
 
       var brandText = document.createElement('span');
